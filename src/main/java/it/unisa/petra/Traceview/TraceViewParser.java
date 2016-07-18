@@ -1,5 +1,6 @@
 package it.unisa.petra.Traceview;
 
+import it.unisa.petra.ConfigManager;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -54,7 +55,15 @@ public class TraceViewParser {
 
                         String signature = matcher2.group(4);
 
-                        if (traceID == processId && signature.contains(appName)) {
+                        boolean filter = false;
+                        if (traceID == processId) {
+                            filter = true;
+                        }
+                        if (ConfigManager.getCompleteTrace()) {
+                            filter &= signature.contains(appName);
+                        }
+
+                        if (filter) {
                             if (action.equals("ent")) {
                                 TraceLine tl = new TraceLine();
                                 tl.setTraceId(traceID);
