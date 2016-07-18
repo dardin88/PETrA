@@ -26,11 +26,11 @@ public class PowerProfileParser {
         PowerProfile powerProfile = new PowerProfile();
 
         try {
-            HashMap<String, Integer> devices = new HashMap<>();
-            ArrayList<Integer> radioInfo = new ArrayList<>();
+            HashMap<String, Double> devices = new HashMap<>();
+            ArrayList<Double> radioInfo = new ArrayList<>();
             ArrayList<Integer> speedValues = new ArrayList<>();
-            ArrayList<Integer> speedActives = new ArrayList<>();
-            HashMap<Integer, Integer> cpuInfo = new HashMap<>();
+            ArrayList<Double> speedActives = new ArrayList<>();
+            HashMap<Integer, Double> cpuInfo = new HashMap<>();
 
             File powerProfileFile = new File(fileName);
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -42,7 +42,7 @@ public class PowerProfileParser {
 
             for (int i = 0; i < deviceList.getLength(); i++) {
                 Element e = (Element) deviceList.item(i);
-                devices.put(e.getAttribute("name"), Integer.parseInt(e.getTextContent()));
+                devices.put(e.getAttribute("name"), Double.parseDouble(e.getTextContent()));
             }
 
             NodeList cpuRadioInfoList = doc.getElementsByTagName("array");
@@ -51,7 +51,7 @@ public class PowerProfileParser {
                 switch (e.getAttribute("name")) {
                     case "radio.on":
                         for (int j = 0; j < e.getElementsByTagName("value").getLength(); j++) {
-                            radioInfo.add(Integer.parseInt(e.getElementsByTagName("value").item(j).getTextContent()));
+                            radioInfo.add(Double.parseDouble(e.getElementsByTagName("value").item(j).getTextContent()));
                         }   break;
                     case "cpu.speeds":
                         for (int j = 0; j < e.getElementsByTagName("value").getLength(); j++) {
@@ -59,7 +59,7 @@ public class PowerProfileParser {
                         }   break;
                     case "cpu.active":
                         for (int j = 0; j < e.getElementsByTagName("value").getLength(); j++) {
-                            speedActives.add(Integer.parseInt(e.getElementsByTagName("value").item(j).getTextContent()));
+                            speedActives.add(Double.parseDouble(e.getElementsByTagName("value").item(j).getTextContent()));
                         }   break;
                     default:
                         break;

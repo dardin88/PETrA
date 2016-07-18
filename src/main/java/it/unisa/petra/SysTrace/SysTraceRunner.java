@@ -26,7 +26,13 @@ public class SysTraceRunner implements Runnable {
 
     @Override
     public void run() {
-        SysTraceRunner.executeCommand("python systrace/systrace.py --time=" + this.timeCapturing / 1000 + " freq -o " + this.systraceFilename, this.platformToolsFolder, null, true);
+        String command1 = "adb kill-server";
+        String command2 = "adb start-server";
+        String command3 = "python " + platformToolsFolder + "/systrace/systrace.py --time=" + this.timeCapturing / 1000 + " freq -o " + this.systraceFilename;
+
+        SysTraceRunner.executeCommand(command1, null, null, true);
+        SysTraceRunner.executeCommand(command2, null, null, true);
+        SysTraceRunner.executeCommand(command3, null, null, true);
     }
 
     private static void executeCommand(String command, File directoryFolder, File outputFile, boolean waitfor) {

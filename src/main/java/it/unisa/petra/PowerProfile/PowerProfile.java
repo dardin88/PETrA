@@ -9,31 +9,31 @@ import java.util.List;
  */
 public class PowerProfile {
 
-    private HashMap<String, Integer> devices = new HashMap<>();
-    private HashMap<Integer,Integer> cpuInfo;
-    private List<Integer> radioInfo;
+    private HashMap<String, Double> devices = new HashMap<>();
+    private HashMap<Integer, Double> cpuInfo;
+    private List<Double> radioInfo;
 
-    public HashMap<String, Integer>  getDevices() {
+    public HashMap<String, Double> getDevices() {
         return devices;
     }
-    
-    public void setDevices(HashMap<String, Integer> devices){
+
+    public void setDevices(HashMap<String, Double> devices) {
         this.devices = devices;
     }
 
-    public HashMap<Integer, Integer> getCpuInfo() {
+    public HashMap<Integer, Double> getCpuInfo() {
         return cpuInfo;
     }
 
-    public void setCpuInfo(HashMap<Integer, Integer> cpuInfo) {
+    public void setCpuInfo(HashMap<Integer, Double> cpuInfo) {
         this.cpuInfo = cpuInfo;
     }
 
-    public List<Integer> getRadioInfo() {
+    public List<Double> getRadioInfo() {
         return radioInfo;
     }
 
-    public void setRadioInfo(List<Integer> radioInfo) {
+    public void setRadioInfo(List<Double> radioInfo) {
         this.radioInfo = radioInfo;
     }
 }
