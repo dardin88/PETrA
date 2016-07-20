@@ -24,6 +24,8 @@ public class TraceViewParser {
 
         int firstRowTime = 0;
         int actualRowTime = 0;
+        
+        boolean getCompleteTrace = ConfigManager.getCompleteTrace();
 
         Pattern traceViewPattern = Pattern.compile("(\\d*)\\s(\\w{3})\\s*(\\d*)[\\s|-](.*)");
         Pattern processPattern = Pattern.compile("(\\d*)\\smain");
@@ -59,7 +61,7 @@ public class TraceViewParser {
                         if (traceID == processId) {
                             filter = true;
                         }
-                        if (ConfigManager.getCompleteTrace()) {
+                        if (!getCompleteTrace) {
                             filter &= signature.contains(appName);
                         }
 
@@ -86,6 +88,7 @@ public class TraceViewParser {
                     }
                 }
             }
+            readAll.close();
         }
         int lastRowTime = actualRowTime;
         int timeLength = lastRowTime - firstRowTime;

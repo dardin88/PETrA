@@ -23,56 +23,63 @@ public class ConfigManager {
 
     public static String getPlatformToolsFolder() throws IOException {
         Properties prop = new Properties();
-        InputStream inputStream = ConfigManager.getPropertiesStream();
-        prop.load(inputStream);
+        try (InputStream inputStream = ConfigManager.getPropertiesStream()) {
+            prop.load(inputStream);
+        }
 
         return prop.getProperty("platformToolsFolder");
     }
     
     public static String getToolsFolder() throws IOException {
         Properties prop = new Properties();
-        InputStream inputStream = ConfigManager.getPropertiesStream();
-        prop.load(inputStream);
+        try (InputStream inputStream = ConfigManager.getPropertiesStream()) {
+            prop.load(inputStream);
+        }
 
         return prop.getProperty("toolsFolder");
     }
 
     public static String getPowerProfileFile() throws IOException {
         Properties prop = new Properties();
-        InputStream inputStream = ConfigManager.getPropertiesStream();
-        prop.load(inputStream);
+        try (InputStream inputStream = ConfigManager.getPropertiesStream()) {
+            prop.load(inputStream);
+        }
 
         return prop.getProperty("powerProfileFile");
     }
 
     public static int getMaxRun() throws IOException {
         Properties prop = new Properties();
-        InputStream inputStream = ConfigManager.getPropertiesStream();
-        prop.load(inputStream);
+        try (InputStream inputStream = ConfigManager.getPropertiesStream()) {
+            prop.load(inputStream);
+        }
 
         return Integer.parseInt(prop.getProperty("maxRun"));
     }
 
     public static int getInteractions() throws IOException {
         Properties prop = new Properties();
-        InputStream inputStream = ConfigManager.getPropertiesStream();
-        prop.load(inputStream);
+        try (InputStream inputStream = ConfigManager.getPropertiesStream()) {
+            prop.load(inputStream);
+        }
 
         return Integer.parseInt(prop.getProperty("interactions"));
     }
 
     public static int getTimeBetweenInteractions() throws IOException {
         Properties prop = new Properties();
-        InputStream inputStream = ConfigManager.getPropertiesStream();
-        prop.load(inputStream);
+        try (InputStream inputStream = ConfigManager.getPropertiesStream()) {
+            prop.load(inputStream);
+        }
 
         return Integer.parseInt(prop.getProperty("timeBetweenInteractions"));
     }
     
     public static boolean getCompleteTrace() throws IOException {
         Properties prop = new Properties();
-        InputStream inputStream = ConfigManager.getPropertiesStream();
-        prop.load(inputStream);
+        try (InputStream inputStream = ConfigManager.getPropertiesStream()) {
+            prop.load(inputStream);
+        }
 
         return Boolean.parseBoolean(prop.getProperty("completeTrace"));
     }
