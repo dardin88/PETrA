@@ -10,8 +10,11 @@ import it.unisa.petra.SysTrace.SysTraceParser;
 import it.unisa.petra.SysTrace.SysTraceRunner;
 import it.unisa.petra.Traceview.TraceLine;
 import it.unisa.petra.Traceview.TraceViewParser;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -26,27 +29,29 @@ import java.util.logging.Logger;
 public class PETrA {
 
     public static void main(String[] args) throws InterruptedException, ParseException {
-
+        
         ArrayList<String> appNames = new ArrayList<>();
-        appNames.add("acr.browser.lightning");
-        appNames.add("ch.blinkenlights.battery");
-        appNames.add("org.jfedor.frozenbubble");
-        appNames.add("com.ringdroid");
-        appNames.add("de.freewarepoint.whohasmystuff");
-
         ArrayList<String> apkNames = new ArrayList<>();
-        apkNames.add("acr.browser.lightning_88.apk");
-        apkNames.add("ch.blinkenlights.battery_1335983644.apk");
-        apkNames.add("org.jfedor.frozenbubble_46.apk");
-        apkNames.add("com.ringdroid_20703.apk");
-        apkNames.add("de.freewarepoint.whohasmystuff_25.apk");
+        
+        String line;
+        try {
+            BufferedReader br = new BufferedReader(new FileReader("/home/dardin88/Desktop/energy_consumption_bad_smell/icse_experiment/app_list.csv"));
+            while ((line =br.readLine()) != null){
+                appNames.add(line);
+                apkNames.add(line+".apk");
+            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(PETrA.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(PETrA.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         for (int appCounter = 0; appCounter < appNames.size(); appCounter++) {
 
             String appName = appNames.get(appCounter);
             String apkName = apkNames.get(appCounter);
-            String outputLocation = "/home/dardin88/Desktop/energy_consumption_bad_smell/test_data/" + appName + "/";
-            String apkLocation = "/home/dardin88/Desktop/energy_consumption_bad_smell/debug_apk/" + apkName;
+            String outputLocation = "/home/dardin88/Desktop/energy_consumption_bad_smell/icse_experiment/test_data/" + appName + "/";
+            String apkLocation = "/home/dardin88/Desktop/energy_consumption_bad_smell/icse_experiment/apks/" + apkName;
             String powerProfileName = null;
             File platformToolsFolder = null;
             int maxRun = 0;
@@ -65,7 +70,6 @@ public class PETrA {
 
             File appDataFolder = new File(outputLocation);
 
-            //1h of iterations
             int timeCapturing = interactions * timeBetweenInteractions;
 
             appDataFolder.mkdirs();
@@ -102,6 +106,7 @@ public class PETrA {
                 System.out.println("Opening app.");
                 PETrA.executeCommand("adb shell input keyevent 82", null, null, true);
                 PETrA.executeCommand("adb shell monkey -p " + appName + " 1", null, null, true);
+                PETrA.executeCommand("adb shell am broadcast -a org.thisisafactory.simiasque.SET_OVERLAY --ez enable true", null, null, true);
 
                 System.out.println("Start profiling.");
                 PETrA.executeCommand("adb shell am profile start " + appName + " ./data/local/tmp/log.trace", null, null, true);
@@ -114,7 +119,8 @@ public class PETrA {
                 System.out.println("Executing random actions.");
                 Random random = new Random();
                 int seed = random.nextInt();
-
+                PETrA.executeCommand("adb kill-server", null, null, true);
+                PETrA.executeCommand("adb start-server", null, null, true);
                 PETrA.executeCommand("adb shell monkey -p " + appName + " -s " + seed + " --throttle " + timeBetweenInteractions + " --ignore-crashes --ignore-timeouts --ignore-security-exceptions " + interactions, null, null, true);
 
                 System.out.println("Stop profiling.");
@@ -160,19 +166,21 @@ public class PETrA {
                     }
 
                     System.out.println("Stop app.");
+                    PETrA.executeCommand("adb shell am broadcast -a org.thisisafactory.simiasque.SET_OVERLAY --ez enable false", null, null, true);
                     PETrA.executeCommand("adb shell am force-stop " + appName, null, null, true);
 
                     PETrA.executeCommand("adb shell pm clear " + appName, null, null, true);
 
                     resultsWriter.flush();
+                    resultsWriter.close();
                 } catch (IOException | ParseException | InterruptedException | IndexOutOfBoundsException ex) {
                     run -= 1;
-                    continue;
                 }
                 try {
                     if (seedsWriter != null) {
                         seedsWriter.append(seed + "\n");
                         seedsWriter.flush();
+                        seedsWriter.close();
                     }
                 } catch (IOException ex) {
                     Logger.getLogger(PETrA.class.getName()).log(Level.SEVERE, null, ex);
