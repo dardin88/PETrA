@@ -157,22 +157,22 @@ public class PETrA {
                     SysTrace cpuInfo = SysTraceParser.main(systraceFilename, traceviewStart, traceviewLength);
 
                     System.out.println("Aggregating results");
-                    PrintWriter resultsWriter = new PrintWriter(runDataFolderName + "result.csv", "UTF-8");
-                    resultsWriter.println("signature, joule, seconds");
-                    energyInfoArray = PETrA.mergeEnergyInfo(energyInfoArray, cpuInfo, powerProfile);
-                    for (TraceLine traceLine : traceLines) {
-                        List<Double> result = PETrA.calculateConsumption(traceLine.getEntrance(), traceLine.getExit(), energyInfoArray, powerProfile);
-                        resultsWriter.println(traceLine.getSignature() + "," + result.get(0) + "," + result.get(1));
+                    try (PrintWriter resultsWriter = new PrintWriter(runDataFolderName + "result.csv", "UTF-8")) {
+                        resultsWriter.println("signature, joule, seconds");
+                        energyInfoArray = PETrA.mergeEnergyInfo(energyInfoArray, cpuInfo, powerProfile);
+                        for (TraceLine traceLine : traceLines) {
+                            List<Double> result = PETrA.calculateConsumption(traceLine.getEntrance(), traceLine.getExit(), energyInfoArray, powerProfile);
+                            resultsWriter.println(traceLine.getSignature() + "," + result.get(0) + "," + result.get(1));
+                        }
+                        
+                        System.out.println("Stop app.");
+                        PETrA.executeCommand("adb shell am broadcast -a org.thisisafactory.simiasque.SET_OVERLAY --ez enable false", null, null, true);
+                        PETrA.executeCommand("adb shell am force-stop " + appName, null, null, true);
+                        
+                        PETrA.executeCommand("adb shell pm clear " + appName, null, null, true);
+                        
+                        resultsWriter.flush();
                     }
-
-                    System.out.println("Stop app.");
-                    PETrA.executeCommand("adb shell am broadcast -a org.thisisafactory.simiasque.SET_OVERLAY --ez enable false", null, null, true);
-                    PETrA.executeCommand("adb shell am force-stop " + appName, null, null, true);
-
-                    PETrA.executeCommand("adb shell pm clear " + appName, null, null, true);
-
-                    resultsWriter.flush();
-                    resultsWriter.close();
                 } catch (IOException | ParseException | InterruptedException | IndexOutOfBoundsException ex) {
                     run -= 1;
                 }
