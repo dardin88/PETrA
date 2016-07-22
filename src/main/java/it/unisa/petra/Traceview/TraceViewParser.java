@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
  */
 public class TraceViewParser {
 
-    public static ArrayList<TraceLine> parseFile(String fileName, String appName, String appDataFolder) throws IOException {
+    public static ArrayList<TraceLine> parseFile(String fileName, String appName, String appDataFolder) throws IOException, NumberFormatException {
 
         File file = new File(fileName);
 

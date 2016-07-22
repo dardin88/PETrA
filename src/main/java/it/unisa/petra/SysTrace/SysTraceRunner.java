@@ -28,7 +28,7 @@ public class SysTraceRunner implements Runnable {
     public void run() {
         String command1 = "adb kill-server";
         String command2 = "adb start-server";
-        String command3 = "python " + platformToolsFolder + "/systrace/systrace.py --time=" + this.timeCapturing / 1000 + " freq -o " + this.systraceFilename;
+        String command3 = "python " + platformToolsFolder + "/systrace/systrace.py --time=" + this.timeCapturing + " freq -o " + this.systraceFilename;
 
         SysTraceRunner.executeCommand(command1, null, null, true);
         SysTraceRunner.executeCommand(command2, null, null, true);

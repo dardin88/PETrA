@@ -21,6 +21,7 @@ import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
@@ -29,16 +30,16 @@ import java.util.logging.Logger;
 public class PETrA {
 
     public static void main(String[] args) throws InterruptedException, ParseException {
-        
+
         ArrayList<String> appNames = new ArrayList<>();
         ArrayList<String> apkNames = new ArrayList<>();
-        
+
         String line;
         try {
             BufferedReader br = new BufferedReader(new FileReader("/home/dardin88/Desktop/energy_consumption_bad_smell/icse_experiment/app_list.csv"));
-            while ((line =br.readLine()) != null){
+            while ((line = br.readLine()) != null) {
                 appNames.add(line);
-                apkNames.add(line+".apk");
+                apkNames.add(line + ".apk");
             }
         } catch (FileNotFoundException ex) {
             Logger.getLogger(PETrA.class.getName()).log(Level.SEVERE, null, ex);
@@ -86,10 +87,10 @@ public class PETrA {
 
             System.out.println("Installing app.");
             PETrA.executeCommand("adb install " + apkLocation, null, null, true);
-
+            
             for (int run = 0; run < maxRun; run++) {
                 System.out.println("==========================RUN_" + run + "======================================");
-
+                
                 String runDataFolderName = outputLocation + "run_" + run + "/";
                 File runDataFolder = new File(runDataFolderName);
                 runDataFolder.mkdirs();
@@ -164,28 +165,38 @@ public class PETrA {
                             List<Double> result = PETrA.calculateConsumption(traceLine.getEntrance(), traceLine.getExit(), energyInfoArray, powerProfile);
                             resultsWriter.println(traceLine.getSignature() + "," + result.get(0) + "," + result.get(1));
                         }
-                        
-                        System.out.println("Stop app.");
-                        PETrA.executeCommand("adb shell am broadcast -a org.thisisafactory.simiasque.SET_OVERLAY --ez enable false", null, null, true);
-                        PETrA.executeCommand("adb shell am force-stop " + appName, null, null, true);
-                        
-                        PETrA.executeCommand("adb shell pm clear " + appName, null, null, true);
-                        
+
                         resultsWriter.flush();
                     }
-                } catch (IOException | ParseException | InterruptedException | IndexOutOfBoundsException ex) {
-                    run -= 1;
+                } catch (IOException | ParseException | InterruptedException | IndexOutOfBoundsException | NumberFormatException ex) {
+                    ex.printStackTrace();
+                    run--;
+                    continue;
+                } finally {
+                    System.out.println("Stop app.");
+                    PETrA.executeCommand("adb shell am broadcast -a org.thisisafactory.simiasque.SET_OVERLAY --ez enable false", null, null, true);
+                    PETrA.executeCommand("adb shell am force-stop " + appName, null, null, true);
+
+                    PETrA.executeCommand("adb shell pm clear " + appName, null, null, true);
                 }
                 try {
                     if (seedsWriter != null) {
                         seedsWriter.append(seed + "\n");
                         seedsWriter.flush();
-                        seedsWriter.close();
                     }
                 } catch (IOException ex) {
                     Logger.getLogger(PETrA.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+
+            try {
+                if (seedsWriter != null) {
+                    seedsWriter.close();
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(PETrA.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
             PETrA.executeCommand("adb shell dumpsys battery reset", null, null, true);
 
             System.out.println("Uninstalling app.");
