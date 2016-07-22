@@ -71,7 +71,7 @@ public class PETrA {
 
             File appDataFolder = new File(outputLocation);
 
-            int timeCapturing = interactions * timeBetweenInteractions;
+            int timeCapturing = (interactions * timeBetweenInteractions) / 1000;
 
             appDataFolder.mkdirs();
 
@@ -111,6 +111,7 @@ public class PETrA {
 
                 System.out.println("Start profiling.");
                 PETrA.executeCommand("adb shell am profile start " + appName + " ./data/local/tmp/log.trace", null, null, true);
+                Date time1 = new Date();
 
                 System.out.println("Capturing system traces.");
                 SysTraceRunner sysTraceRunner = new SysTraceRunner(timeCapturing, systraceFilename, platformToolsFolder);
@@ -123,6 +124,11 @@ public class PETrA {
                 PETrA.executeCommand("adb kill-server", null, null, true);
                 PETrA.executeCommand("adb start-server", null, null, true);
                 PETrA.executeCommand("adb shell monkey -p " + appName + " -s " + seed + " --throttle " + timeBetweenInteractions + " --ignore-crashes --ignore-timeouts --ignore-security-exceptions " + interactions, null, null, true);
+
+                Date time2 = new Date();
+                long timespent = time2.getTime() - time1.getTime();
+
+                timeCapturing = (int) ((timespent + 10000) / 1000);
 
                 System.out.println("Stop profiling.");
                 PETrA.executeCommand("adb shell am profile stop " + appName, null, null, true);
