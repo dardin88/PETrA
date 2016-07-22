@@ -87,10 +87,12 @@ public class PETrA {
 
             System.out.println("Installing app.");
             PETrA.executeCommand("adb install " + apkLocation, null, null, true);
-            
+
             for (int run = 0; run < maxRun; run++) {
                 System.out.println("==========================RUN_" + run + "======================================");
-                
+
+                int trials = 0;
+
                 String runDataFolderName = outputLocation + "run_" + run + "/";
                 File runDataFolder = new File(runDataFolderName);
                 runDataFolder.mkdirs();
@@ -175,9 +177,13 @@ public class PETrA {
                         resultsWriter.flush();
                     }
                 } catch (IOException | ParseException | InterruptedException | IndexOutOfBoundsException | NumberFormatException ex) {
-                    ex.printStackTrace();
                     run--;
-                    continue;
+                    trials++;
+                    if (trials == 10) {
+                        break;
+                    } else {
+                        continue;
+                    }
                 } finally {
                     System.out.println("Stop app.");
                     PETrA.executeCommand("adb shell am broadcast -a org.thisisafactory.simiasque.SET_OVERLAY --ez enable false", null, null, true);
