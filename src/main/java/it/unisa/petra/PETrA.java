@@ -87,11 +87,11 @@ public class PETrA {
 
             System.out.println("Installing app.");
             PETrA.executeCommand("adb install " + apkLocation, null, null, true);
+            
+            int trials = 0;
 
             for (int run = 0; run < maxRun; run++) {
                 System.out.println("==========================RUN_" + run + "======================================");
-
-                int trials = 0;
 
                 String runDataFolderName = outputLocation + "run_" + run + "/";
                 File runDataFolder = new File(runDataFolderName);
