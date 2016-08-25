@@ -13,8 +13,8 @@ import java.util.Properties;
 public class ConfigManager {
 
     private static InputStream getPropertiesStream() throws IOException {
-        File jarPath=new File(ConfigManager.class.getProtectionDomain().getCodeSource().getLocation().getPath());
-        String propertiesPath=jarPath.getParentFile().getAbsolutePath();
+        File jarPath = new File(ConfigManager.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+        String propertiesPath = jarPath.getParentFile().getAbsolutePath();
 
         InputStream inputStream = new FileInputStream(propertiesPath + File.separator + "config.properties");
 
@@ -29,7 +29,7 @@ public class ConfigManager {
 
         return prop.getProperty("platformToolsFolder");
     }
-    
+
     public static String getToolsFolder() throws IOException {
         Properties prop = new Properties();
         try (InputStream inputStream = ConfigManager.getPropertiesStream()) {
@@ -74,7 +74,7 @@ public class ConfigManager {
 
         return Integer.parseInt(prop.getProperty("timeBetweenInteractions"));
     }
-    
+
     public static boolean getCompleteTrace() throws IOException {
         Properties prop = new Properties();
         try (InputStream inputStream = ConfigManager.getPropertiesStream()) {
@@ -82,5 +82,41 @@ public class ConfigManager {
         }
 
         return Boolean.parseBoolean(prop.getProperty("completeTrace"));
+    }
+
+    static String getAppName() throws IOException {
+        Properties prop = new Properties();
+        try (InputStream inputStream = ConfigManager.getPropertiesStream()) {
+            prop.load(inputStream);
+        }
+
+        return prop.getProperty("appName");
+    }
+    
+    static String getApkName() throws IOException {
+        Properties prop = new Properties();
+        try (InputStream inputStream = ConfigManager.getPropertiesStream()) {
+            prop.load(inputStream);
+        }
+
+        return prop.getProperty("apkName");
+    }
+
+    static String getApkLocation() throws IOException {
+        Properties prop = new Properties();
+        try (InputStream inputStream = ConfigManager.getPropertiesStream()) {
+            prop.load(inputStream);
+        }
+
+        return prop.getProperty("apkLocation");
+    }
+
+    static String getOutputLocation() throws IOException {
+        Properties prop = new Properties();
+        try (InputStream inputStream = ConfigManager.getPropertiesStream()) {
+            prop.load(inputStream);
+        }
+
+        return prop.getProperty("outputLocation");
     }
 }
