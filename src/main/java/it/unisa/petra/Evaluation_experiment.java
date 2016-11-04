@@ -32,7 +32,7 @@ public class Evaluation_experiment {
 
         String line;
         try {
-            BufferedReader br = new BufferedReader(new FileReader("/home/dardin88/Desktop/energy_consumption_bad_smell/prop_list.csv"));
+            BufferedReader br = new BufferedReader(new FileReader("/home/dardin88/Desktop/energy_consumption_bad_smell/PETrA_evaluation/prop_list.csv"));
             while ((line = br.readLine()) != null) {
                 appNames.add(line);
                 apkNames.add(line + ".apk");
@@ -50,30 +50,24 @@ public class Evaluation_experiment {
             while (toRepeat) {
 
                 String appName = appNames.get(appCounter);
-                String apkName = apkNames.get(appCounter);
-                String outputLocation = "/home/dardin88/Desktop/energy_consumption_bad_smell/prop_test_data/" + appName + "/";
-                String apkLocation = "/home/dardin88/Desktop/energy_consumption_bad_smell/prop_debug_apk/" + apkName;
-                String testLocation = "/home/dardin88/Desktop/energy_consumption_bad_smell/test-scripts/" + appName + ".txt";
+                String apkLocation = apkNames.get(appCounter);
+                String outputLocation = "/home/dardin88/Desktop/energy_consumption_bad_smell/PETrA_evaluation/prop_test_data/" + appName + "/";
+                String testLocation = "/home/dardin88/Desktop/energy_consumption_bad_smell/PETrA_evaluation/test-scripts/" + appName + ".txt";
                 String powerProfileName = null;
                 File platformToolsFolder = null;
                 String toolsFolder = null;
-                int interactions = 0;
-                int timeBetweenInteractions = 0;
 
                 try {
                     powerProfileName = ConfigManager.getPowerProfileFile();
                     platformToolsFolder = new File(ConfigManager.getPlatformToolsFolder());
                     toolsFolder = ConfigManager.getToolsFolder();
-                    interactions = ConfigManager.getInteractions();
-                    timeBetweenInteractions = ConfigManager.getTimeBetweenInteractions();
                 } catch (IOException ex) {
                     Logger.getLogger(Evaluation_experiment.class.getName()).log(Level.SEVERE, null, ex);
                 }
 
                 File appDataFolder = new File(outputLocation);
 
-                //1h of iterations
-                int timeCapturing = interactions * timeBetweenInteractions;
+                int timeCapturing = 120;
 
                 appDataFolder.mkdirs();
 
@@ -118,7 +112,7 @@ public class Evaluation_experiment {
 
                 System.out.println("Saving battery stats.");
                 Evaluation_experiment.executeCommand("adb shell dumpsys batterystats", null, new File(batteryStatsFilename), true);
-
+                
                 System.out.println("Saving traceviews.");
                 Evaluation_experiment.executeCommand("adb pull ./data/local/tmp/log.trace " + runDataFolderName, null, null, true);
                 Evaluation_experiment.executeCommand("./dmtracedump -o " + runDataFolderName + "log.trace", platformToolsFolder, new File(traceviewFilename), true);
@@ -172,6 +166,7 @@ public class Evaluation_experiment {
                 System.out.println("Uninstalling app.");
                 Evaluation_experiment.executeCommand("adb shell pm uninstall " + appName, null, null, true);
             }
+            return;
         }
 
     }
