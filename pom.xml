@@ -53,7 +53,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>it.unisa.petra.PETrA</mainClass>
+                            <mainClass>it.unisa.petra.MainUI</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
