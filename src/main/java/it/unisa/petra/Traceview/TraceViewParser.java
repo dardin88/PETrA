@@ -25,7 +25,13 @@ public class TraceViewParser {
         int firstRowTime = 0;
         int actualRowTime = 0;
         
-        boolean getCompleteTrace = ConfigManager.getCompleteTrace();
+        boolean getCompleteTrace;
+
+        try {
+            getCompleteTrace = ConfigManager.getCompleteTrace();
+        } catch (IOException ioe) {
+            getCompleteTrace = false;
+        }
 
         Pattern traceViewPattern = Pattern.compile("(\\d*)\\s(\\w{3})\\s*(\\d*)[\\s|-](.*)");
         Pattern processPattern = Pattern.compile("(\\d*)\\smain");
