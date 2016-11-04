@@ -1,6 +1,5 @@
 package it.unisa.petra;
 
-import java.awt.Color;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -10,6 +9,7 @@ import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
@@ -55,15 +55,13 @@ public class MainUI extends javax.swing.JFrame {
         timeInteractionsSlider = new javax.swing.JSlider();
         monkeyInteractionsSlider = new javax.swing.JSlider();
         runsSlider = new javax.swing.JSlider();
-        showTimeInteractions = new javax.swing.JTextField();
-        showMonkeyInteractions = new javax.swing.JTextField();
-        showRuns = new javax.swing.JTextField();
         viewStats = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         statusLabel = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("PETrA");
+        setIconImage(new javax.swing.ImageIcon(getClass().getResource("/petra.png")).getImage());
         setResizable(false);
 
         jLabel1.setText("App Name");
@@ -138,11 +136,6 @@ public class MainUI extends javax.swing.JFrame {
         timeInteractionsSlider.setSnapToTicks(true);
         timeInteractionsSlider.setToolTipText("Time between an Android Monkey event and the next one in ms.");
         timeInteractionsSlider.setValue(0);
-        timeInteractionsSlider.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                timeInteractionsSliderStateChanged(evt);
-            }
-        });
 
         monkeyInteractionsSlider.setMajorTickSpacing(500);
         monkeyInteractionsSlider.setMaximum(5000);
@@ -152,11 +145,6 @@ public class MainUI extends javax.swing.JFrame {
         monkeyInteractionsSlider.setSnapToTicks(true);
         monkeyInteractionsSlider.setToolTipText("Number of Android Monkey event to perform.");
         monkeyInteractionsSlider.setValue(0);
-        monkeyInteractionsSlider.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                monkeyInteractionsSliderStateChanged(evt);
-            }
-        });
 
         runsSlider.setMajorTickSpacing(5);
         runsSlider.setMaximum(30);
@@ -166,38 +154,6 @@ public class MainUI extends javax.swing.JFrame {
         runsSlider.setSnapToTicks(true);
         runsSlider.setToolTipText("Number of repetitions of the measurement process.");
         runsSlider.setValue(0);
-        runsSlider.addChangeListener(new javax.swing.event.ChangeListener() {
-            public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                runsSliderStateChanged(evt);
-            }
-        });
-
-        showTimeInteractions.setEditable(false);
-        showTimeInteractions.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        showTimeInteractions.setText("0");
-        showTimeInteractions.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                showTimeInteractionsActionPerformed(evt);
-            }
-        });
-
-        showMonkeyInteractions.setEditable(false);
-        showMonkeyInteractions.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        showMonkeyInteractions.setText("0");
-        showMonkeyInteractions.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                showMonkeyInteractionsActionPerformed(evt);
-            }
-        });
-
-        showRuns.setEditable(false);
-        showRuns.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        showRuns.setText("0");
-        showRuns.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                showRunsActionPerformed(evt);
-            }
-        });
 
         viewStats.setIcon(new javax.swing.ImageIcon(getClass().getResource("/graph.png"))); // NOI18N
         viewStats.setText("Statistics");
@@ -214,7 +170,6 @@ public class MainUI extends javax.swing.JFrame {
 
         statusLabel.setEditable(false);
         statusLabel.setColumns(20);
-        statusLabel.setRows(6);
         statusLabel.setDisabledTextColor(new java.awt.Color(1, 1, 1));
         statusLabel.setEnabled(false);
         jScrollPane1.setViewportView(statusLabel);
@@ -250,25 +205,15 @@ public class MainUI extends javax.swing.JFrame {
                         .addGap(4, 4, 4)
                         .addComponent(locationButton))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addGap(103, 103, 103)
-                                .addComponent(monkeyInteractionsSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel4)
-                                    .addComponent(jLabel6))
-                                .addGap(62, 62, 62)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(runsSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(timeInteractionsSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(showTimeInteractions, javax.swing.GroupLayout.DEFAULT_SIZE, 58, Short.MAX_VALUE)
-                                .addComponent(showMonkeyInteractions))
-                            .addComponent(showRuns, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel5))
+                        .addGap(62, 62, 62)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(runsSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(monkeyInteractionsSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(timeInteractionsSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING))
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
@@ -288,39 +233,24 @@ public class MainUI extends javax.swing.JFrame {
                     .addComponent(jLabel3)
                     .addComponent(apkLocationField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(locationButton))
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(28, 28, 28)
+                        .addGap(22, 22, 22)
                         .addComponent(jLabel6))
+                    .addComponent(timeInteractionsSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(23, 23, 23)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(monkeyInteractionsSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(21, 21, 21)
+                        .addComponent(jLabel5)))
+                .addGap(35, 35, 35)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(runsSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(20, 20, 20)
-                        .addComponent(showTimeInteractions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(timeInteractionsSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(35, 35, 35)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(monkeyInteractionsSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(21, 21, 21)
-                                .addComponent(jLabel5))))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(showRuns, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(26, 26, 26)))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(35, 35, 35)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(runsSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(20, 20, 20)
-                                .addComponent(jLabel4))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(48, 48, 48)
-                        .addComponent(showMonkeyInteractions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jLabel4)))
                 .addGap(18, 18, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
@@ -331,14 +261,14 @@ public class MainUI extends javax.swing.JFrame {
                     .addComponent(jLabel9)
                     .addComponent(powerprofileFile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(powerprofileButton))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(startProcessButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(viewStats, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(startProcessButton)
+                    .addComponent(viewStats, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -349,7 +279,7 @@ public class MainUI extends javax.swing.JFrame {
 
     private void startProcessButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startProcessButtonActionPerformed
         try {
-            statusLabel.setText("");
+            statusLabel.setText(null);
             viewStats.setEnabled(false);
 
             String appName = this.appNameField.getText();
@@ -360,7 +290,7 @@ public class MainUI extends javax.swing.JFrame {
             String platformToolsFolderPath = platformFolder.getText();
             String powerProfilePath = powerprofileFile.getText();
 
-            String outputLocationPath = new File(apkLocationPath).getParent() + "/test_data/" + appName;
+            String outputLocationPath = new File(apkLocationPath).getParent() + File.separator + "test_data" + File.separator + appName;
 
             boolean valid = true;
 
@@ -403,35 +333,36 @@ public class MainUI extends javax.swing.JFrame {
                 return;
             }
 
-            progressBar.setIndeterminate(true);
             PETrAProcess process = new PETrAProcess();
 
             File appDataFolder = new File(outputLocationPath);
             appDataFolder.mkdirs();
-            File seedsFile = new File(outputLocationPath + "seeds");
+            File seedsFile = new File(outputLocationPath + File.separator + "seeds");
             BufferedWriter seedsWriter = new BufferedWriter(new FileWriter(seedsFile, true));
             process.installApp(outputLocationPath, apkLocationPath);
 
             int trials = 0;
             int timeCapturing = (interactions * timeBetweenInteractions) / 1000;
-            progressBar.setIndeterminate(false);
             for (int run = 0; run < runs; run++) {
-                PETrAProcessOutput output = process.playRun(run, trials, appName, interactions, timeBetweenInteractions, timeCapturing,
-                        platformToolsFolderPath, powerProfilePath, outputLocationPath);
-                if (output == null) {
-                    run--;
-                    trials++;
-                } else {
+                try {
+                    PETrAProcessOutput output = process.playRun(run, trials, appName, interactions, timeBetweenInteractions, timeCapturing,
+                            platformToolsFolderPath, powerProfilePath, outputLocationPath);
                     seedsWriter.append(output.getSeed() + "\n");
                     timeCapturing = output.getTimeCapturing();
-                    progressBar.setValue((run / runs) * 100);
+                    int progressBarValue = ((run + 1) / runs) * 100;
+                    SwingUtilities.invokeLater(() -> {
+                        progressBar.setValue(progressBarValue);
+                    });
+                    progressBar.updateUI();
+                } catch (IOException | ParseException | InterruptedException | NoDeviceFoundException ex) {
+                    run--;
+                    trials++;
                 }
             }
             process.uninstallApp(appName);
             viewStats.setEnabled(true);
-        } catch (IOException | ParseException | InterruptedException | NoDeviceFoundException ex) {
+        } catch (IOException | NoDeviceFoundException ex) {
             Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);
-            progressBar.setIndeterminate(false);
             viewStats.setEnabled(false);
         }
     }//GEN-LAST:event_startProcessButtonActionPerformed
@@ -474,48 +405,6 @@ public class MainUI extends javax.swing.JFrame {
     private void powerprofileFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_powerprofileFileActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_powerprofileFileActionPerformed
-
-    private void timeInteractionsSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_timeInteractionsSliderStateChanged
-        showTimeInteractions.setText(Integer.toString(timeInteractionsSlider.getValue()));
-    }//GEN-LAST:event_timeInteractionsSliderStateChanged
-
-    private void showTimeInteractionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showTimeInteractionsActionPerformed
-        int value;
-        if (Integer.parseInt(showTimeInteractions.getText()) > 5000) {
-            value = 5000;
-        } else {
-            value = Integer.parseInt(showTimeInteractions.getText());
-        }
-        timeInteractionsSlider.setValue(value);
-    }//GEN-LAST:event_showTimeInteractionsActionPerformed
-
-    private void monkeyInteractionsSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_monkeyInteractionsSliderStateChanged
-        showRuns.setText(Integer.toString(monkeyInteractionsSlider.getValue()));
-    }//GEN-LAST:event_monkeyInteractionsSliderStateChanged
-
-    private void showRunsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showRunsActionPerformed
-        int value;
-        if (Integer.parseInt(showRuns.getText()) > 5000) {
-            value = 5000;
-        } else {
-            value = Integer.parseInt(showRuns.getText());
-        }
-        monkeyInteractionsSlider.setValue(value);
-    }//GEN-LAST:event_showRunsActionPerformed
-
-    private void showMonkeyInteractionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showMonkeyInteractionsActionPerformed
-        int value;
-        if (Integer.parseInt(showMonkeyInteractions.getText()) > 30) {
-            value = 30;
-        } else {
-            value = Integer.parseInt(showMonkeyInteractions.getText());
-        }
-        runsSlider.setValue(value);
-    }//GEN-LAST:event_showMonkeyInteractionsActionPerformed
-
-    private void runsSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_runsSliderStateChanged
-        showMonkeyInteractions.setText(Integer.toString(runsSlider.getValue()));
-    }//GEN-LAST:event_runsSliderStateChanged
 
     private void viewStatsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewStatsActionPerformed
         // TODO add your handling code here:
@@ -573,9 +462,6 @@ public class MainUI extends javax.swing.JFrame {
     private javax.swing.JTextField powerprofileFile;
     private javax.swing.JProgressBar progressBar;
     private javax.swing.JSlider runsSlider;
-    private javax.swing.JTextField showMonkeyInteractions;
-    private javax.swing.JTextField showRuns;
-    private javax.swing.JTextField showTimeInteractions;
     private javax.swing.JButton startProcessButton;
     private javax.swing.JTextArea statusLabel;
     private javax.swing.JSlider timeInteractionsSlider;

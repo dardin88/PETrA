@@ -35,5 +35,7 @@ public class TextAreaOutputStream extends OutputStream {
     public void write(int b) throws IOException {
         // append the data as characters to the JTextArea control
         textControl.append(String.valueOf((char) b));
+        textControl.update(textControl.getGraphics());
+        textControl.setCaretPosition(textControl.getText().length() - 1);
     }
 }
