@@ -68,9 +68,12 @@ public class MainUI extends javax.swing.JFrame {
 
         jLabel1.setText("App Name");
 
+        appNameField.setToolTipText("Name of the app to analyze (must be the same of the app process).");
+
         jLabel3.setText("Apk Location");
 
         apkLocationField.setEditable(false);
+        apkLocationField.setToolTipText("Apk to analyze.");
 
         jLabel4.setText("Runs");
 
@@ -81,10 +84,12 @@ public class MainUI extends javax.swing.JFrame {
         jLabel7.setText("Android SDK Platform Tools folder");
 
         platformFolder.setEditable(false);
+        platformFolder.setToolTipText("Path of the Android SDK Platform Tools folder.");
 
         jLabel9.setText("Power Profile File");
 
         powerprofileFile.setEditable(false);
+        powerprofileFile.setToolTipText("Device power profile (see https://source.android.com/devices/tech/power/).");
         powerprofileFile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 powerprofileFileActionPerformed(evt);
@@ -131,7 +136,7 @@ public class MainUI extends javax.swing.JFrame {
         timeInteractionsSlider.setPaintLabels(true);
         timeInteractionsSlider.setPaintTicks(true);
         timeInteractionsSlider.setSnapToTicks(true);
-        timeInteractionsSlider.setToolTipText("");
+        timeInteractionsSlider.setToolTipText("Time between an Android Monkey event and the next one in ms.");
         timeInteractionsSlider.setValue(0);
         timeInteractionsSlider.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -145,6 +150,7 @@ public class MainUI extends javax.swing.JFrame {
         monkeyInteractionsSlider.setPaintLabels(true);
         monkeyInteractionsSlider.setPaintTicks(true);
         monkeyInteractionsSlider.setSnapToTicks(true);
+        monkeyInteractionsSlider.setToolTipText("Number of Android Monkey event to perform.");
         monkeyInteractionsSlider.setValue(0);
         monkeyInteractionsSlider.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
@@ -158,6 +164,7 @@ public class MainUI extends javax.swing.JFrame {
         runsSlider.setPaintLabels(true);
         runsSlider.setPaintTicks(true);
         runsSlider.setSnapToTicks(true);
+        runsSlider.setToolTipText("Number of repetitions of the measurement process.");
         runsSlider.setValue(0);
         runsSlider.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {

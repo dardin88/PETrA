@@ -188,6 +188,9 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="appNameField">
+      <Properties>
+        <Property name="toolTipText" type="java.lang.String" value="Name of the app to analyze (must be the same of the app process)."/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel3">
       <Properties>
@@ -197,6 +200,7 @@
     <Component class="javax.swing.JTextField" name="apkLocationField">
       <Properties>
         <Property name="editable" type="boolean" value="false"/>
+        <Property name="toolTipText" type="java.lang.String" value="Apk to analyze."/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel4">
@@ -222,6 +226,7 @@
     <Component class="javax.swing.JTextField" name="platformFolder">
       <Properties>
         <Property name="editable" type="boolean" value="false"/>
+        <Property name="toolTipText" type="java.lang.String" value="Path of the Android SDK Platform Tools folder."/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel9">
@@ -232,6 +237,7 @@
     <Component class="javax.swing.JTextField" name="powerprofileFile">
       <Properties>
         <Property name="editable" type="boolean" value="false"/>
+        <Property name="toolTipText" type="java.lang.String" value="Device power profile (see https://source.android.com/devices/tech/power/)."/>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="powerprofileFileActionPerformed"/>
@@ -297,7 +303,7 @@
         <Property name="paintLabels" type="boolean" value="true"/>
         <Property name="paintTicks" type="boolean" value="true"/>
         <Property name="snapToTicks" type="boolean" value="true"/>
-        <Property name="toolTipText" type="java.lang.String" value=""/>
+        <Property name="toolTipText" type="java.lang.String" value="Time between an Android Monkey event and the next one in ms."/>
         <Property name="value" type="int" value="0"/>
       </Properties>
       <Events>
@@ -312,6 +318,7 @@
         <Property name="paintLabels" type="boolean" value="true"/>
         <Property name="paintTicks" type="boolean" value="true"/>
         <Property name="snapToTicks" type="boolean" value="true"/>
+        <Property name="toolTipText" type="java.lang.String" value="Number of Android Monkey event to perform."/>
         <Property name="value" type="int" value="0"/>
       </Properties>
       <Events>
@@ -326,6 +333,7 @@
         <Property name="paintLabels" type="boolean" value="true"/>
         <Property name="paintTicks" type="boolean" value="true"/>
         <Property name="snapToTicks" type="boolean" value="true"/>
+        <Property name="toolTipText" type="java.lang.String" value="Number of repetitions of the measurement process."/>
         <Property name="value" type="int" value="0"/>
       </Properties>
       <Events>
