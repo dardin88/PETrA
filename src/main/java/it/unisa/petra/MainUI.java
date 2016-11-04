@@ -1,8 +1,16 @@
 package it.unisa.petra;
 
+import java.awt.Color;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.text.ParseException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFileChooser;
-import javax.swing.UIManager;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -15,6 +23,8 @@ public class MainUI extends javax.swing.JFrame {
      */
     public MainUI() {
         initComponents();
+        PrintStream out = new PrintStream(new TextAreaOutputStream(statusLabel));
+        System.setOut(out);
     }
 
     /**
@@ -27,32 +37,30 @@ public class MainUI extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        appName = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
-        apkName = new javax.swing.JTextField();
+        appNameField = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        apkLocation = new javax.swing.JTextField();
+        apkLocationField = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         platformFolder = new javax.swing.JTextField();
-        jLabel8 = new javax.swing.JLabel();
-        toolsFolder = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
         powerprofileFile = new javax.swing.JTextField();
         startProcessButton = new javax.swing.JButton();
         locationButton = new javax.swing.JButton();
         platformToolsFolderButton = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jButton6 = new javax.swing.JButton();
-        jProgressBar1 = new javax.swing.JProgressBar();
-        timeInteractions = new javax.swing.JSlider();
-        monkeyInteractions = new javax.swing.JSlider();
-        runs = new javax.swing.JSlider();
+        powerprofileButton = new javax.swing.JButton();
+        progressBar = new javax.swing.JProgressBar();
+        timeInteractionsSlider = new javax.swing.JSlider();
+        monkeyInteractionsSlider = new javax.swing.JSlider();
+        runsSlider = new javax.swing.JSlider();
         showTimeInteractions = new javax.swing.JTextField();
         showMonkeyInteractions = new javax.swing.JTextField();
         showRuns = new javax.swing.JTextField();
+        viewStats = new javax.swing.JButton();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        statusLabel = new javax.swing.JTextArea();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("PETrA");
@@ -60,11 +68,9 @@ public class MainUI extends javax.swing.JFrame {
 
         jLabel1.setText("App Name");
 
-        jLabel2.setText("Apk Name");
-
         jLabel3.setText("Apk Location");
 
-        apkLocation.setEditable(false);
+        apkLocationField.setEditable(false);
 
         jLabel4.setText("Runs");
 
@@ -72,13 +78,9 @@ public class MainUI extends javax.swing.JFrame {
 
         jLabel6.setText("Time Between Interactions");
 
-        jLabel7.setText("Platform Tools Folder");
+        jLabel7.setText("Android SDK Platform Tools folder");
 
         platformFolder.setEditable(false);
-
-        jLabel8.setText("Tools Folder");
-
-        toolsFolder.setEditable(false);
 
         jLabel9.setText("Power Profile File");
 
@@ -89,6 +91,7 @@ public class MainUI extends javax.swing.JFrame {
             }
         });
 
+        startProcessButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/play-button.png"))); // NOI18N
         startProcessButton.setText("Start Energy Estimation");
         startProcessButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -96,6 +99,7 @@ public class MainUI extends javax.swing.JFrame {
             }
         });
 
+        locationButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/folder.png"))); // NOI18N
         locationButton.setText("Open");
         locationButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -103,6 +107,7 @@ public class MainUI extends javax.swing.JFrame {
             }
         });
 
+        platformToolsFolderButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/folder.png"))); // NOI18N
         platformToolsFolderButton.setText("Open");
         platformToolsFolderButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -110,57 +115,57 @@ public class MainUI extends javax.swing.JFrame {
             }
         });
 
-        jButton4.setText("Open");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        powerprofileButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/folder.png"))); // NOI18N
+        powerprofileButton.setText("Open");
+        powerprofileButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                powerprofileButtonActionPerformed(evt);
             }
         });
 
-        jButton6.setText("Open");
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
-            }
-        });
+        progressBar.setStringPainted(true);
 
-        timeInteractions.setMajorTickSpacing(500);
-        timeInteractions.setMaximum(5000);
-        timeInteractions.setMinorTickSpacing(100);
-        timeInteractions.setPaintLabels(true);
-        timeInteractions.setPaintTicks(true);
-        timeInteractions.setToolTipText("");
-        timeInteractions.setValue(0);
-        timeInteractions.addChangeListener(new javax.swing.event.ChangeListener() {
+        timeInteractionsSlider.setMajorTickSpacing(500);
+        timeInteractionsSlider.setMaximum(5000);
+        timeInteractionsSlider.setMinorTickSpacing(100);
+        timeInteractionsSlider.setPaintLabels(true);
+        timeInteractionsSlider.setPaintTicks(true);
+        timeInteractionsSlider.setSnapToTicks(true);
+        timeInteractionsSlider.setToolTipText("");
+        timeInteractionsSlider.setValue(0);
+        timeInteractionsSlider.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                timeInteractionsStateChanged(evt);
+                timeInteractionsSliderStateChanged(evt);
             }
         });
 
-        monkeyInteractions.setMajorTickSpacing(500);
-        monkeyInteractions.setMaximum(5000);
-        monkeyInteractions.setMinorTickSpacing(100);
-        monkeyInteractions.setPaintLabels(true);
-        monkeyInteractions.setPaintTicks(true);
-        monkeyInteractions.setValue(0);
-        monkeyInteractions.addChangeListener(new javax.swing.event.ChangeListener() {
+        monkeyInteractionsSlider.setMajorTickSpacing(500);
+        monkeyInteractionsSlider.setMaximum(5000);
+        monkeyInteractionsSlider.setMinorTickSpacing(100);
+        monkeyInteractionsSlider.setPaintLabels(true);
+        monkeyInteractionsSlider.setPaintTicks(true);
+        monkeyInteractionsSlider.setSnapToTicks(true);
+        monkeyInteractionsSlider.setValue(0);
+        monkeyInteractionsSlider.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                monkeyInteractionsStateChanged(evt);
+                monkeyInteractionsSliderStateChanged(evt);
             }
         });
 
-        runs.setMajorTickSpacing(10);
-        runs.setMaximum(30);
-        runs.setMinorTickSpacing(5);
-        runs.setPaintLabels(true);
-        runs.setPaintTicks(true);
-        runs.setValue(0);
-        runs.addChangeListener(new javax.swing.event.ChangeListener() {
+        runsSlider.setMajorTickSpacing(5);
+        runsSlider.setMaximum(30);
+        runsSlider.setMinorTickSpacing(1);
+        runsSlider.setPaintLabels(true);
+        runsSlider.setPaintTicks(true);
+        runsSlider.setSnapToTicks(true);
+        runsSlider.setValue(0);
+        runsSlider.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
-                runsStateChanged(evt);
+                runsSliderStateChanged(evt);
             }
         });
 
+        showTimeInteractions.setEditable(false);
         showTimeInteractions.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         showTimeInteractions.setText("0");
         showTimeInteractions.addActionListener(new java.awt.event.ActionListener() {
@@ -169,6 +174,7 @@ public class MainUI extends javax.swing.JFrame {
             }
         });
 
+        showMonkeyInteractions.setEditable(false);
         showMonkeyInteractions.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         showMonkeyInteractions.setText("0");
         showMonkeyInteractions.addActionListener(new java.awt.event.ActionListener() {
@@ -177,6 +183,7 @@ public class MainUI extends javax.swing.JFrame {
             }
         });
 
+        showRuns.setEditable(false);
         showRuns.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         showRuns.setText("0");
         showRuns.addActionListener(new java.awt.event.ActionListener() {
@@ -185,131 +192,147 @@ public class MainUI extends javax.swing.JFrame {
             }
         });
 
+        viewStats.setIcon(new javax.swing.ImageIcon(getClass().getResource("/graph.png"))); // NOI18N
+        viewStats.setText("Statistics");
+        viewStats.setEnabled(false);
+        viewStats.setFocusPainted(false);
+        viewStats.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                viewStatsActionPerformed(evt);
+            }
+        });
+
+        jScrollPane1.setToolTipText("");
+        jScrollPane1.setEnabled(false);
+
+        statusLabel.setEditable(false);
+        statusLabel.setColumns(20);
+        statusLabel.setRows(6);
+        statusLabel.setDisabledTextColor(new java.awt.Color(1, 1, 1));
+        statusLabel.setEnabled(false);
+        jScrollPane1.setViewportView(statusLabel);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(startProcessButton)
-                .addGap(311, 311, 311))
-            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jProgressBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(progressBar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel7)
+                            .addComponent(jLabel9))
+                        .addGap(18, 18, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(platformFolder, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 526, Short.MAX_VALUE)
+                            .addComponent(powerprofileFile))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(platformToolsFolderButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(powerprofileButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
+                        .addComponent(appNameField, javax.swing.GroupLayout.PREFERRED_SIZE, 348, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(apkLocationField, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(4, 4, 4)
+                        .addComponent(locationButton))
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel5)
+                                .addGap(103, 103, 103)
+                                .addComponent(monkeyInteractionsSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jLabel4)
                                     .addComponent(jLabel6))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
+                                .addGap(62, 62, 62)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(timeInteractions, javax.swing.GroupLayout.PREFERRED_SIZE, 526, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(runs, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 526, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(appName, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jLabel2))
-                                    .addComponent(apkLocation, javax.swing.GroupLayout.PREFERRED_SIZE, 613, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                    .addComponent(runsSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(timeInteractionsSlider, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(locationButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(showMonkeyInteractions)
-                            .addComponent(showTimeInteractions)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel7)
-                                    .addComponent(jLabel8)
-                                    .addComponent(jLabel9))
-                                .addGap(18, 18, Short.MAX_VALUE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(toolsFolder, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 526, Short.MAX_VALUE)
-                                    .addComponent(platformFolder, javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(powerprofileFile)))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(monkeyInteractions, javax.swing.GroupLayout.PREFERRED_SIZE, 526, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(platformToolsFolderButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(showRuns)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(apkName, javax.swing.GroupLayout.PREFERRED_SIZE, 287, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(showTimeInteractions, javax.swing.GroupLayout.DEFAULT_SIZE, 58, Short.MAX_VALUE)
+                                .addComponent(showMonkeyInteractions))
+                            .addComponent(showRuns, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 61, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING))
                 .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addGap(225, 225, 225)
+                .addComponent(startProcessButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(viewStats, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(17, 17, 17)
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(appName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2)
-                    .addComponent(apkName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(appNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel3)
-                    .addComponent(apkLocation, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(apkLocationField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(locationButton))
-                .addGap(30, 30, 30)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(timeInteractions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(22, 22, 22)
+                        .addGap(28, 28, 28)
                         .addComponent(jLabel6))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(14, 14, 14)
-                        .addComponent(showTimeInteractions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(35, 35, 35)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(monkeyInteractions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(21, 21, 21)
-                        .addComponent(jLabel5))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(showRuns, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(29, 29, 29)))
-                .addGap(35, 35, 35)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(runs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
                         .addGap(20, 20, 20)
-                        .addComponent(jLabel4))
+                        .addComponent(showTimeInteractions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(timeInteractionsSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(35, 35, 35)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(monkeyInteractionsSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(21, 21, 21)
+                                .addComponent(jLabel5))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(showMonkeyInteractions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(29, 29, 29)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(showRuns, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(26, 26, 26)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(35, 35, 35)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(runsSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(20, 20, 20)
+                                .addComponent(jLabel4))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(48, 48, 48)
+                        .addComponent(showMonkeyInteractions, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel7)
                     .addComponent(platformFolder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(platformToolsFolderButton))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel8)
-                    .addComponent(toolsFolder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton4))
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
                     .addComponent(powerprofileFile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jButton6))
-                .addGap(32, 32, 32)
-                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(startProcessButton)
-                .addGap(6, 6, 6))
+                    .addComponent(powerprofileButton))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(startProcessButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(viewStats, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         startProcessButton.getAccessibleContext().setAccessibleName("");
@@ -318,21 +341,111 @@ public class MainUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void startProcessButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startProcessButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            statusLabel.setText("");
+            viewStats.setEnabled(false);
+
+            String appName = this.appNameField.getText();
+            String apkLocationPath = this.apkLocationField.getText();
+            int runs = this.runsSlider.getValue();
+            int interactions = monkeyInteractionsSlider.getValue();
+            int timeBetweenInteractions = timeInteractionsSlider.getValue();
+            String platformToolsFolderPath = platformFolder.getText();
+            String powerProfilePath = powerprofileFile.getText();
+
+            String outputLocationPath = new File(apkLocationPath).getParent() + "/test_data/" + appName;
+
+            boolean valid = true;
+
+            if (appName.isEmpty()) {
+                System.out.println("App name missing.");
+                valid = false;
+            }
+
+            if (apkLocationPath.isEmpty()) {
+                System.out.println("Apk location missing.");
+                valid = false;
+            }
+
+            if (powerProfilePath.isEmpty()) {
+                System.out.println("Power profile missing.");
+                valid = false;
+            }
+
+            if (runs <= 0) {
+                System.out.println("You must execute at least one run.");
+                valid = false;
+            }
+
+            if (interactions <= 0) {
+                System.out.println("You must perform at least one Monkey interaction.");
+                valid = false;
+            }
+
+            if (platformToolsFolderPath.isEmpty()) {
+                System.out.println("Please select the Android SDK Platform Tools folder.");
+                valid = false;
+            }
+
+            if (powerProfilePath.isEmpty()) {
+                System.out.println("Please select an Android Power Profile file.");
+                valid = false;
+            }
+
+            if (valid == false) {
+                return;
+            }
+
+            progressBar.setIndeterminate(true);
+            PETrAProcess process = new PETrAProcess();
+
+            File appDataFolder = new File(outputLocationPath);
+            appDataFolder.mkdirs();
+            File seedsFile = new File(outputLocationPath + "seeds");
+            BufferedWriter seedsWriter = new BufferedWriter(new FileWriter(seedsFile, true));
+            process.installApp(outputLocationPath, apkLocationPath);
+
+            int trials = 0;
+            int timeCapturing = (interactions * timeBetweenInteractions) / 1000;
+            progressBar.setIndeterminate(false);
+            for (int run = 0; run < runs; run++) {
+                PETrAProcessOutput output = process.playRun(run, trials, appName, interactions, timeBetweenInteractions, timeCapturing,
+                        platformToolsFolderPath, powerProfilePath, outputLocationPath);
+                if (output == null) {
+                    run--;
+                    trials++;
+                } else {
+                    seedsWriter.append(output.getSeed() + "\n");
+                    timeCapturing = output.getTimeCapturing();
+                    progressBar.setValue((run / runs) * 100);
+                }
+            }
+            process.uninstallApp(appName);
+            viewStats.setEnabled(true);
+        } catch (IOException | ParseException | InterruptedException | NoDeviceFoundException ex) {
+            Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);
+            progressBar.setIndeterminate(false);
+            viewStats.setEnabled(false);
+        }
     }//GEN-LAST:event_startProcessButtonActionPerformed
 
     private void locationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_locationButtonActionPerformed
         JFileChooser chooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Apk Files", "apk");
+        chooser.setFileFilter(filter);
         int res = chooser.showOpenDialog(null);
         if (res == JFileChooser.APPROVE_OPTION) {
             File f = chooser.getSelectedFile();
             String filename = f.getAbsolutePath();
-            apkLocation.setText(filename);
+            apkLocationField.setText(filename);
         }
     }//GEN-LAST:event_locationButtonActionPerformed
 
     private void platformToolsFolderButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_platformToolsFolderButtonActionPerformed
         JFileChooser chooser = new JFileChooser();
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setAcceptAllFileFilterUsed(false);
+
         int res = chooser.showOpenDialog(null);
         if (res == JFileChooser.APPROVE_OPTION) {
             File f = chooser.getSelectedFile();
@@ -341,17 +454,7 @@ public class MainUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_platformToolsFolderButtonActionPerformed
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        JFileChooser chooser = new JFileChooser();
-        int res = chooser.showOpenDialog(null);
-        if (res == JFileChooser.APPROVE_OPTION) {
-            File f = chooser.getSelectedFile();
-            String filename = f.getAbsolutePath();
-            toolsFolder.setText(filename);
-        }
-    }//GEN-LAST:event_jButton4ActionPerformed
-
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+    private void powerprofileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_powerprofileButtonActionPerformed
         JFileChooser chooser = new JFileChooser();
         int res = chooser.showOpenDialog(null);
         if (res == JFileChooser.APPROVE_OPTION) {
@@ -359,15 +462,15 @@ public class MainUI extends javax.swing.JFrame {
             String filename = f.getAbsolutePath();
             powerprofileFile.setText(filename);
         }
-    }//GEN-LAST:event_jButton6ActionPerformed
+    }//GEN-LAST:event_powerprofileButtonActionPerformed
 
     private void powerprofileFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_powerprofileFileActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_powerprofileFileActionPerformed
 
-    private void timeInteractionsStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_timeInteractionsStateChanged
-        showTimeInteractions.setText(Integer.toString(timeInteractions.getValue()));
-    }//GEN-LAST:event_timeInteractionsStateChanged
+    private void timeInteractionsSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_timeInteractionsSliderStateChanged
+        showTimeInteractions.setText(Integer.toString(timeInteractionsSlider.getValue()));
+    }//GEN-LAST:event_timeInteractionsSliderStateChanged
 
     private void showTimeInteractionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showTimeInteractionsActionPerformed
         int value;
@@ -376,12 +479,12 @@ public class MainUI extends javax.swing.JFrame {
         } else {
             value = Integer.parseInt(showTimeInteractions.getText());
         }
-        timeInteractions.setValue(value);
+        timeInteractionsSlider.setValue(value);
     }//GEN-LAST:event_showTimeInteractionsActionPerformed
 
-    private void monkeyInteractionsStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_monkeyInteractionsStateChanged
-        showRuns.setText(Integer.toString(monkeyInteractions.getValue()));
-    }//GEN-LAST:event_monkeyInteractionsStateChanged
+    private void monkeyInteractionsSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_monkeyInteractionsSliderStateChanged
+        showRuns.setText(Integer.toString(monkeyInteractionsSlider.getValue()));
+    }//GEN-LAST:event_monkeyInteractionsSliderStateChanged
 
     private void showRunsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showRunsActionPerformed
         int value;
@@ -390,7 +493,7 @@ public class MainUI extends javax.swing.JFrame {
         } else {
             value = Integer.parseInt(showRuns.getText());
         }
-        monkeyInteractions.setValue(value);
+        monkeyInteractionsSlider.setValue(value);
     }//GEN-LAST:event_showRunsActionPerformed
 
     private void showMonkeyInteractionsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showMonkeyInteractionsActionPerformed
@@ -400,12 +503,16 @@ public class MainUI extends javax.swing.JFrame {
         } else {
             value = Integer.parseInt(showMonkeyInteractions.getText());
         }
-        runs.setValue(value);
+        runsSlider.setValue(value);
     }//GEN-LAST:event_showMonkeyInteractionsActionPerformed
 
-    private void runsStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_runsStateChanged
-        showMonkeyInteractions.setText(Integer.toString(runs.getValue()));
-    }//GEN-LAST:event_runsStateChanged
+    private void runsSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_runsSliderStateChanged
+        showMonkeyInteractions.setText(Integer.toString(runsSlider.getValue()));
+    }//GEN-LAST:event_runsSliderStateChanged
+
+    private void viewStatsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewStatsActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_viewStatsActionPerformed
 
     /**
      * @param args the command line arguments
@@ -428,10 +535,9 @@ public class MainUI extends javax.swing.JFrame {
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(MainUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        
-        //</editor-fold>
-        //</editor-fold>
 
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
@@ -442,32 +548,30 @@ public class MainUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField apkLocation;
-    private javax.swing.JTextField apkName;
-    private javax.swing.JTextField appName;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton6;
+    private javax.swing.JTextField apkLocationField;
+    private javax.swing.JTextField appNameField;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JProgressBar jProgressBar1;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton locationButton;
-    private javax.swing.JSlider monkeyInteractions;
+    private javax.swing.JSlider monkeyInteractionsSlider;
     private javax.swing.JTextField platformFolder;
     private javax.swing.JButton platformToolsFolderButton;
+    private javax.swing.JButton powerprofileButton;
     private javax.swing.JTextField powerprofileFile;
-    private javax.swing.JSlider runs;
+    private javax.swing.JProgressBar progressBar;
+    private javax.swing.JSlider runsSlider;
     private javax.swing.JTextField showMonkeyInteractions;
     private javax.swing.JTextField showRuns;
     private javax.swing.JTextField showTimeInteractions;
     private javax.swing.JButton startProcessButton;
-    private javax.swing.JSlider timeInteractions;
-    private javax.swing.JTextField toolsFolder;
+    private javax.swing.JTextArea statusLabel;
+    private javax.swing.JSlider timeInteractionsSlider;
+    private javax.swing.JButton viewStats;
     // End of variables declaration//GEN-END:variables
 }
