@@ -50,7 +50,7 @@ public class PETrAProcess {
         String seed = random.nextInt() + "";
 
         System.out.println(runString + "seed: " + seed);
-        String runDataFolderName = outputLocation + "run_" + run + "/";
+        String runDataFolderName = outputLocation + File.separator +"run_" + run + File.separator;
         File runDataFolder = new File(runDataFolderName);
         runDataFolder.mkdirs();
 
