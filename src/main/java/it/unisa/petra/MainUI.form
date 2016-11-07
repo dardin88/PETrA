@@ -204,9 +204,6 @@
         <Property name="editable" type="boolean" value="false"/>
         <Property name="toolTipText" type="java.lang.String" value="Device power profile (see https://source.android.com/devices/tech/power/)."/>
       </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="powerprofileFileActionPerformed"/>
-      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="startProcessButton">
       <Properties>

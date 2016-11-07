@@ -1,5 +1,7 @@
 package it.unisa.petra;
 
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -18,13 +20,14 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  */
 public class MainUI extends javax.swing.JFrame {
 
-    /**
-     * Creates new form ContactEditorUI
-     */
     public MainUI() {
         initComponents();
         PrintStream out = new PrintStream(new TextAreaOutputStream(statusLabel));
         System.setOut(out);
+        Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
+        int x = (int) ((dimension.getWidth() - this.getWidth()) / 2);
+        int y = (int) ((dimension.getHeight() - this.getHeight()) / 2);
+        this.setLocation(x, y);
     }
 
     /**
@@ -88,11 +91,6 @@ public class MainUI extends javax.swing.JFrame {
 
         powerprofileFile.setEditable(false);
         powerprofileFile.setToolTipText("Device power profile (see https://source.android.com/devices/tech/power/).");
-        powerprofileFile.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                powerprofileFileActionPerformed(evt);
-            }
-        });
 
         startProcessButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/play-button.png"))); // NOI18N
         startProcessButton.setText("Start Energy Estimation");
@@ -402,45 +400,44 @@ public class MainUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_powerprofileButtonActionPerformed
 
-    private void powerprofileFileActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_powerprofileFileActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_powerprofileFileActionPerformed
-
     private void viewStatsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewStatsActionPerformed
-        // TODO add your handling code here:
+        this.setVisible(false);
+        new StatsUI("/home/dardin88/Desktop/PETrA_test/test_data/a2dp.Vol").setVisible(true);
     }//GEN-LAST:event_viewStatsActionPerformed
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
         try {
+            OUTER:
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("GTK+".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                } else if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                if (info.getName() != null) {
+                    switch (info.getName()) {
+                        case "GTK+":
+                            javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                            break OUTER;
+                        case "Windows":
+                            javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                            break OUTER;
+                        case "Nimbus":
+                            javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(MainUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-        //</editor-fold>
-
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> {
-            new MainUI().setVisible(true);
-        });
+        java.awt.EventQueue.invokeLater(
+                () -> {
+                    new MainUI().setVisible(true);
+                }
+        );
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
