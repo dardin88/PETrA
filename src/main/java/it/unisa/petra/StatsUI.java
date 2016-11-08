@@ -244,6 +244,7 @@ public class StatsUI extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("PETrA");
+        setIconImage(new javax.swing.ImageIcon(getClass().getResource("/petra.png")).getImage());
 
         filterResultsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/filter.png"))); // NOI18N
         filterResultsButton.setText("Filter Results");
