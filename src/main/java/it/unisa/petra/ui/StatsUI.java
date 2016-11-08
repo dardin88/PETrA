@@ -254,6 +254,7 @@ public class StatsUI extends javax.swing.JFrame {
             }
         });
 
+        filterField.setToolTipText("Filter results.");
         filterField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 filterFieldKeyPressed(evt);
