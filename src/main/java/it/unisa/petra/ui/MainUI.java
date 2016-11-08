@@ -1,5 +1,7 @@
-package it.unisa.petra;
+package it.unisa.petra.ui;
 
+import it.unisa.petra.process.PETrAProcess;
+import it.unisa.petra.process.PETrAProcessOutput;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.BufferedWriter;

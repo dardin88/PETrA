@@ -1,4 +1,4 @@
-package it.unisa.petra;
+package it.unisa.petra.ui;
 
 import java.awt.Dimension;
 import java.awt.Font;

@@ -1,5 +1,8 @@
 package it.unisa.petra;
 
+import it.unisa.petra.process.PETrAProcess;
+import it.unisa.petra.process.PETrAProcessOutput;
+import it.unisa.petra.ui.NoDeviceFoundException;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;

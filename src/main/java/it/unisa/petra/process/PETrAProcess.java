@@ -1,5 +1,6 @@
-package it.unisa.petra;
+package it.unisa.petra.process;
 
+import it.unisa.petra.ui.NoDeviceFoundException;
 import it.unisa.petra.BatteryStats.BatteryStatsParser;
 import it.unisa.petra.BatteryStats.EnergyInfo;
 import it.unisa.petra.PowerProfile.PowerProfile;
