@@ -404,7 +404,8 @@ public class MainUI extends javax.swing.JFrame {
 
     private void viewStatsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewStatsActionPerformed
         this.setVisible(false);
-        new StatsUI("/home/dardin88/Desktop/PETrA_test/test_data/a2dp.Vol").setVisible(true);
+        String outputLocationPath = new File(apkLocationField.getText()).getParent() + File.separator + "test_data" + File.separator + appNameField.getText();
+        new StatsUI(outputLocationPath).setVisible(true);
     }//GEN-LAST:event_viewStatsActionPerformed
 
     /**
