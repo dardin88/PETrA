@@ -1,6 +1,5 @@
 package it.unisa.petra.Traceview;
 
-import it.unisa.petra.ConfigManager;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -24,14 +23,6 @@ public class TraceViewParser {
 
         int firstRowTime = 0;
         int actualRowTime = 0;
-        
-        boolean getCompleteTrace;
-
-        try {
-            getCompleteTrace = ConfigManager.getCompleteTrace();
-        } catch (IOException ioe) {
-            getCompleteTrace = false;
-        }
 
         Pattern traceViewPattern = Pattern.compile("(\\d*)\\s(\\w{3})\\s*(\\d*)[\\s|-](.*)");
         Pattern processPattern = Pattern.compile("(\\d*)\\smain");
@@ -65,10 +56,7 @@ public class TraceViewParser {
 
                         boolean filter = false;
                         if (traceID == processId) {
-                            filter = true;
-                        }
-                        if (!getCompleteTrace) {
-                            filter &= signature.contains(appName);
+                            filter = signature.contains(appName);
                         }
 
                         if (filter) {
