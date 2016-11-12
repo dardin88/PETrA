@@ -40,18 +40,19 @@ public class PETrAProcess {
     }
 
     public PETrAProcessOutput playRun(int run, int trials, String appName, int interactions, int timeBetweenInteractions,
-            int timeCapturing, String platformToolsFolderPath, String powerProfileName, String outputLocation)
+            int timeCapturing, String scriptLocationPath, String sdkFolderPath, String powerProfilePath, String outputLocation)
             throws InterruptedException, IOException, ParseException, NoDeviceFoundException {
 
         String runString = "Run " + run + ": ";
 
-        File platformToolsFolder = new File(platformToolsFolderPath);
+        File platformToolsFolder = new File(sdkFolderPath + File.separator + "platform-tools");
+        File toolsFolder = new File(sdkFolderPath + File.separator + "tools");
 
         Random random = new Random();
         String seed = random.nextInt() + "";
 
         System.out.println(runString + "seed: " + seed);
-        String runDataFolderName = outputLocation + File.separator +"run_" + run + File.separator;
+        String runDataFolderName = outputLocation + File.separator + "run_" + run + File.separator;
         File runDataFolder = new File(runDataFolderName);
         runDataFolder.mkdirs();
 
@@ -81,7 +82,11 @@ public class PETrAProcess {
         System.out.println(runString + "executing random actions.");
         this.executeCommand("adb kill-server", null, null, true);
         this.executeCommand("adb start-server", null, null, true);
-        this.executeCommand("adb shell monkey -p " + appName + " -s " + seed + " --throttle " + timeBetweenInteractions + " --ignore-crashes --ignore-timeouts --ignore-security-exceptions " + interactions, null, null, true);
+        if (interactions > 0) {
+            this.executeCommand("adb shell monkey -p " + appName + " -s " + seed + " --throttle " + timeBetweenInteractions + " --ignore-crashes --ignore-timeouts --ignore-security-exceptions " + interactions, null, null, true);
+        } else {
+            this.executeCommand(toolsFolder + "/monkeyrunner " + toolsFolder + "monkey_playback.py " + scriptLocationPath, null, null, true);
+        }
 
         Date time2 = new Date();
         long timespent = time2.getTime() - time1.getTime();
@@ -96,14 +101,14 @@ public class PETrAProcess {
 
         System.out.println(runString + "saving traceviews.");
         this.executeCommand("adb pull ./data/local/tmp/log.trace " + runDataFolderName, null, null, true);
-        this.executeCommand("./dmtracedump -o " + runDataFolderName + "log.trace", platformToolsFolder, new File(traceviewFilename), true);
+        this.executeCommand(platformToolsFolder + "/dmtracedump -o " + runDataFolderName + "log.trace", null, new File(traceviewFilename), true);
 
         systraceThread.join();
 
         System.out.println(runString + "loading power profile.");
         PowerProfile powerProfile = null;
         try {
-            powerProfile = PowerProfileParser.parseFile(powerProfileName);
+            powerProfile = PowerProfileParser.parseFile(powerProfilePath);
         } catch (IOException ex) {
             Logger.getLogger(PETrAProcess.class.getName()).log(Level.SEVERE, null, ex);
         }
