@@ -385,7 +385,6 @@ public class MainUI extends javax.swing.JFrame {
                 scriptLocationPath, runs, sdkFolderPath, powerProfilePath, outputLocationPath);
         task.addPropertyChangeListener((PropertyChangeEvent evt1) -> {
             if ("progress".equals(evt1.getPropertyName())) {
-                System.out.println("ciao");
                 progressBar.setValue((Integer) evt1.getNewValue());
             }
         });
