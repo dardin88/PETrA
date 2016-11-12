@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@Deprecated
 public class Evaluation_experiment {
 
     public static void main(String[] args) throws InterruptedException, ParseException {

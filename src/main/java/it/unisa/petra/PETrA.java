@@ -11,6 +11,7 @@ import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@Deprecated
 public class PETrA {
 
     public static void main(String[] args) {
@@ -35,7 +36,7 @@ public class PETrA {
             int timeCapturing = (interactions * timeBetweenInteractions) / 1000;
             for (int run = 0; run < runs; run++) {
                 PETrAProcessOutput output = process.playRun(run, trials, appName, interactions, timeBetweenInteractions, timeCapturing,
-                        platformToolsFolderPath, powerProfilePath, outputLocationPath);
+                        null, platformToolsFolderPath, powerProfilePath, outputLocationPath);
 
                 if (output == null) {
                     run--;

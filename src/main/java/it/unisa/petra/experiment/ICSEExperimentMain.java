@@ -30,6 +30,7 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+@Deprecated
 public class ICSEExperimentMain {
 
     public static void main(String[] args) throws InterruptedException, ParseException {
