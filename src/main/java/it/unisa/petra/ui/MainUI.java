@@ -381,6 +381,9 @@ public class MainUI extends javax.swing.JFrame {
         if (valid == false) {
             return;
         }
+        
+        progressBar.setValue(0);
+        
         Task task = new Task(appName, apkLocationPath, interactions, timeBetweenInteractions,
                 scriptLocationPath, runs, sdkFolderPath, powerProfilePath, outputLocationPath);
         task.addPropertyChangeListener((PropertyChangeEvent evt1) -> {
