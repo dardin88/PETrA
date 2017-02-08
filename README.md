@@ -34,7 +34,7 @@ https://developer.android.com/studio/profile/traceview.html
 
 ##License
 
-PETrA is released under Creative Common 4.0 by-nc-nd, but we plan to release it as open source in the future.
+PETrA is released under MIT License.
 
 Icons made by Freepik from www.flaticon.com is licensed by CC 3.0 BY.
 
