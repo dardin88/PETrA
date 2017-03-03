@@ -22,6 +22,12 @@ chmod +x PETrA.sh
 ./PETrA.sh
 ```
 
+##Hiding the status bar
+
+If you would like to hide the status bar to allow Monkey to not lose focus from the app under test please refer to SIMIASQUE.
+
+https://github.com/Orange-OpenSource/simiasque
+
 ##References
 
 https://developer.android.com/studio/test/monkey.html
