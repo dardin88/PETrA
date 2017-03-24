@@ -51,7 +51,9 @@ public class PETrAProcess {
         Random random = new Random();
         String seed = random.nextInt() + "";
 
-        System.out.println(runString + "seed: " + seed);
+        if (scriptLocationPath.isEmpty()) {
+            System.out.println(runString + "seed: " + seed);
+        }
         String runDataFolderName = outputLocation + File.separator + "run_" + run + File.separator;
         File runDataFolder = new File(runDataFolderName);
         runDataFolder.mkdirs();
@@ -79,13 +81,17 @@ public class PETrAProcess {
         Thread systraceThread = new Thread(sysTraceRunner);
         systraceThread.start();
 
-        System.out.println(runString + "executing random actions.");
+        if (scriptLocationPath.isEmpty()) {
+            System.out.println(runString + "executing random actions.");
+        }else{
+            System.out.println(runString + "running monkeyrunner script.");
+        }
         this.executeCommand("adb kill-server", null, null, true);
         this.executeCommand("adb start-server", null, null, true);
         if (interactions > 0) {
             this.executeCommand("adb shell monkey -p " + appName + " -s " + seed + " --throttle " + timeBetweenInteractions + " --ignore-crashes --ignore-timeouts --ignore-security-exceptions " + interactions, null, null, true);
         } else {
-            this.executeCommand(toolsFolder + "/monkeyrunner " + toolsFolder + "monkey_playback.py " + scriptLocationPath, null, null, true);
+            this.executeCommand(toolsFolder + "/bin/monkeyrunner " + toolsFolder + "monkey_playback.py " + scriptLocationPath, null, null, true);
         }
 
         Date time2 = new Date();

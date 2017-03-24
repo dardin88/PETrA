@@ -362,7 +362,7 @@ public class MainUI extends javax.swing.JFrame {
             System.out.println("You must perform at least one Monkey interaction or select a Monkeyrunner script.");
             valid = false;
         }
-        
+
         if (runs <= 0) {
             System.out.println("You must execute at least one run.");
             valid = false;
@@ -381,9 +381,9 @@ public class MainUI extends javax.swing.JFrame {
         if (valid == false) {
             return;
         }
-        
+
         progressBar.setValue(0);
-        
+
         Task task = new Task(appName, apkLocationPath, interactions, timeBetweenInteractions,
                 scriptLocationPath, runs, sdkFolderPath, powerProfilePath, outputLocationPath);
         task.addPropertyChangeListener((PropertyChangeEvent evt1) -> {
@@ -517,11 +517,14 @@ public class MainUI extends javax.swing.JFrame {
                 setProgress(0);
                 int progress;
                 int trials = 0;
+                BufferedWriter seedsWriter = null;
 
                 File appDataFolder = new File(outputLocationPath);
                 appDataFolder.mkdirs();
-                File seedsFile = new File(outputLocationPath + File.separator + "seeds");
-                BufferedWriter seedsWriter = new BufferedWriter(new FileWriter(seedsFile, true));
+                if (this.scriptLocationPath.isEmpty()) {
+                    File seedsFile = new File(outputLocationPath + File.separator + "seeds");
+                    seedsWriter = new BufferedWriter(new FileWriter(seedsFile, true));
+                }
                 process.installApp(outputLocationPath, apkLocationPath);
 
                 int timeCapturing = (interactions * timeBetweenInteractions) / 1000;
@@ -540,7 +543,9 @@ public class MainUI extends javax.swing.JFrame {
                     try {
                         PETrAProcessOutput output = process.playRun(run, trials, appName, interactions, timeBetweenInteractions, timeCapturing,
                                 scriptLocationPath, sdkFolderPath, powerProfilePath, outputLocationPath);
-                        seedsWriter.append(output.getSeed() + "\n");
+                        if (seedsWriter != null) {
+                            seedsWriter.append(output.getSeed() + "\n");
+                        }
                         timeCapturing = output.getTimeCapturing();
                         progress = (100 * run / runs);
                         setProgress(progress);
