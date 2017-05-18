@@ -1,28 +1,5 @@
 package it.unisa.petra.ui;
 
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Toolkit;
-import java.awt.event.KeyEvent;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.Reader;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import javax.swing.RowSorter;
-import javax.swing.SortOrder;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.FileUtils;
@@ -38,18 +15,40 @@ import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.renderer.category.BoxAndWhiskerRenderer;
 import org.jfree.data.statistics.DefaultBoxAndWhiskerCategoryDataset;
 
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
+import java.awt.*;
+import java.awt.event.KeyEvent;
+import java.io.*;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
- *
  * @author Antonio Prota
  */
-public class StatsUI extends javax.swing.JFrame {
+class StatsUI extends javax.swing.JFrame {
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTextField filterField;
+    private javax.swing.JScrollPane tab2;
+    private javax.swing.JTable tableConsumption;
+    // End of variables declaration//GEN-END:variables
+    private String csvFile;
 
     /**
      * Creates new form SecondStepUI
      *
-     * @param inputLocationPath
+     * @param inputLocationPath The path where are saved the data to display
      */
-    public StatsUI(String inputLocationPath) {
+    StatsUI(String inputLocationPath) {
         initComponents();
         Dimension dimension = Toolkit.getDefaultToolkit().getScreenSize();
         int x = (int) ((dimension.getWidth() - this.getWidth()) / 2);
@@ -75,7 +74,7 @@ public class StatsUI extends javax.swing.JFrame {
                 LineIterator it = FileUtils.lineIterator(runResult, "UTF-8");
                 while (it.hasNext()) {
                     String line = it.nextLine();
-                    if (isHeader == false | run == 0) {
+                    if (!isHeader | run == 0) {
                         pw.write(line + "\n");
                     }
                     isHeader = false;
@@ -101,16 +100,17 @@ public class StatsUI extends javax.swing.JFrame {
 
             if (signature.contains(nameFilter) || nameFilter.equals("")) {
                 Matcher matcher = pattern.matcher(signature);
-                matcher.find();
-                ConsumptionData consumptionData = new ConsumptionData(matcher.group(), joule, seconds);
-                consumptionDataList.add(consumptionData);
+                if (matcher.find()) {
+                    ConsumptionData consumptionData = new ConsumptionData(matcher.group(), joule, seconds);
+                    consumptionDataList.add(consumptionData);
+                }
             }
         }
 
         return consumptionDataList;
     }
 
-    private List<ConsumptionData> calculateAverages(List<ConsumptionData> filteredData) throws IOException {
+    private List<ConsumptionData> calculateAverages(List<ConsumptionData> filteredData) {
 
         List<ConsumptionData> averageConsumptionDataList = new ArrayList<>();
 
@@ -128,7 +128,7 @@ public class StatsUI extends javax.swing.JFrame {
                     found = true;
                 }
             }
-            if (found == false) {
+            if (!found) {
                 ConsumptionData averageConsumptionData = new ConsumptionData(signature, joule, seconds);
                 averageConsumptionDataList.add(averageConsumptionData);
             }
@@ -172,7 +172,7 @@ public class StatsUI extends javax.swing.JFrame {
         List<ConsumptionData> filteredDataList = this.filterData(nameFilter);
         List<ConsumptionData> averagedDataList = this.calculateAverages(filteredDataList);
 
-        Collections.sort(averagedDataList, (ConsumptionData o1, ConsumptionData o2) -> -Double.compare(o1.getJoule(), o2.getJoule()));
+        averagedDataList.sort((ConsumptionData o1, ConsumptionData o2) -> -Double.compare(o1.getJoule(), o2.getJoule()));
 
         int numOfBoxplot = 5;
 
@@ -234,13 +234,13 @@ public class StatsUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        filterResultsButton = new javax.swing.JButton();
+        javax.swing.JButton filterResultsButton = new javax.swing.JButton();
         filterField = new javax.swing.JTextField();
-        tabbed_panel = new javax.swing.JTabbedPane();
-        tab1 = new javax.swing.JScrollPane();
+        javax.swing.JTabbedPane tabbed_panel = new javax.swing.JTabbedPane();
+        javax.swing.JScrollPane tab1 = new javax.swing.JScrollPane();
         tableConsumption = new javax.swing.JTable();
         tab2 = new javax.swing.JScrollPane();
-        goBack = new javax.swing.JButton();
+        javax.swing.JButton goBack = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("PETrA");
@@ -248,11 +248,7 @@ public class StatsUI extends javax.swing.JFrame {
 
         filterResultsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/filter.png"))); // NOI18N
         filterResultsButton.setText("Filter Results");
-        filterResultsButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                filterResultsButtonActionPerformed(evt);
-            }
-        });
+        filterResultsButton.addActionListener(this::filterResultsButtonActionPerformed);
 
         filterField.setToolTipText("Filter results.");
         filterField.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -262,26 +258,26 @@ public class StatsUI extends javax.swing.JFrame {
         });
 
         tableConsumption.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
+                new Object[][]{
 
-            },
-            new String [] {
-                "Signature", "Joule", "Seconds"
-            }
+                },
+                new String[]{
+                        "Signature", "Joule", "Seconds"
+                }
         ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class
+            final Class[] types = new Class[]{
+                    java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
-            boolean[] canEdit = new boolean [] {
-                false, false, false
+            final boolean[] canEdit = new boolean[]{
+                    false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
+                return types[columnIndex];
             }
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
+                return canEdit[columnIndex];
             }
         });
         tableConsumption.setColumnSelectionAllowed(true);
@@ -296,44 +292,40 @@ public class StatsUI extends javax.swing.JFrame {
 
         goBack.setIcon(new javax.swing.ImageIcon(getClass().getResource("/back.png"))); // NOI18N
         goBack.setText("Go back");
-        goBack.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                goBackActionPerformed(evt);
-            }
-        });
+        goBack.addActionListener(this::goBackActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(tabbed_panel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(goBack, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(filterField, javax.swing.GroupLayout.DEFAULT_SIZE, 624, Short.MAX_VALUE)
-                        .addGap(18, 18, 18)
-                        .addComponent(filterResultsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap())
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(tabbed_panel)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                                .addComponent(goBack, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addComponent(filterField, javax.swing.GroupLayout.DEFAULT_SIZE, 624, Short.MAX_VALUE)
+                                                .addGap(18, 18, 18)
+                                                .addComponent(filterResultsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addContainerGap())
         );
         layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(24, 24, 24)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(filterField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(filterResultsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(23, 23, 23)
-                        .addComponent(tabbed_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 573, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(goBack)))
-                .addContainerGap())
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                                .addGap(24, 24, 24)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                        .addComponent(filterField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(filterResultsButton, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addGap(23, 23, 23)
+                                                .addComponent(tabbed_panel, javax.swing.GroupLayout.DEFAULT_SIZE, 573, Short.MAX_VALUE))
+                                        .addGroup(layout.createSequentialGroup()
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                                .addComponent(goBack)))
+                                .addContainerGap())
         );
 
         tabbed_panel.getAccessibleContext().setAccessibleName("");
@@ -365,15 +357,4 @@ public class StatsUI extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_filterFieldKeyPressed
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField filterField;
-    private javax.swing.JButton filterResultsButton;
-    private javax.swing.JButton goBack;
-    private javax.swing.JScrollPane tab1;
-    private javax.swing.JScrollPane tab2;
-    private javax.swing.JTabbedPane tabbed_panel;
-    private javax.swing.JTable tableConsumption;
-    // End of variables declaration//GEN-END:variables
-    private String csvFile;
 }
