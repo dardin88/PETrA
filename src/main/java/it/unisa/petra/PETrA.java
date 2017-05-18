@@ -1,13 +1,13 @@
 package it.unisa.petra;
 
+import it.unisa.petra.process.NoDeviceFoundException;
 import it.unisa.petra.process.PETrAProcess;
 import it.unisa.petra.process.PETrAProcessOutput;
-import it.unisa.petra.ui.NoDeviceFoundException;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,12 +31,12 @@ public class PETrA {
             appDataFolder.mkdirs();
             File seedsFile = new File(outputLocationPath + "seeds");
             BufferedWriter seedsWriter = new BufferedWriter(new FileWriter(seedsFile, true));
-            process.installApp(outputLocationPath, apkLocationPath);
+            process.installApp(apkLocationPath);
             int trials = 0;
             int timeCapturing = (interactions * timeBetweenInteractions) / 1000;
             for (int run = 0; run < runs; run++) {
-                PETrAProcessOutput output = process.playRun(run, trials, appName, interactions, timeBetweenInteractions, timeCapturing,
-                        null, platformToolsFolderPath, powerProfilePath, outputLocationPath);
+                PETrAProcessOutput output = process.playRun(run, appName, interactions, timeBetweenInteractions, timeCapturing,
+                        "", platformToolsFolderPath, powerProfilePath, outputLocationPath);
 
                 if (output == null) {
                     run--;
@@ -47,7 +47,7 @@ public class PETrA {
                 }
             }
             process.uninstallApp(appName);
-        } catch (IOException | InterruptedException | ParseException | NoDeviceFoundException ex) {
+        } catch (IOException | InterruptedException | NoDeviceFoundException ex) {
             Logger.getLogger(PETrA.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

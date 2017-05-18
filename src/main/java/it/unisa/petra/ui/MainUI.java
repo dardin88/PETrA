@@ -9,7 +9,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.io.*;
-import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -514,7 +513,7 @@ public class MainUI extends javax.swing.JFrame {
                     File seedsFile = new File(outputLocationPath + File.separator + "seeds");
                     seedsWriter = new BufferedWriter(new FileWriter(seedsFile, true));
                 }
-                process.installApp(outputLocationPath, apkLocationPath);
+                process.installApp(apkLocationPath);
 
                 int timeCapturing = (interactions * timeBetweenInteractions) / 1000;
 
@@ -530,7 +529,7 @@ public class MainUI extends javax.swing.JFrame {
 
                 for (int run = 1; run <= runs; run++) {
                     try {
-                        PETrAProcessOutput output = process.playRun(run, trials, appName, interactions, timeBetweenInteractions, timeCapturing,
+                        PETrAProcessOutput output = process.playRun(run, appName, interactions, timeBetweenInteractions, timeCapturing,
                                 scriptLocationPath, sdkFolderPath, powerProfilePath, outputLocationPath);
                         if (seedsWriter != null) {
                             seedsWriter.append(output.getSeed()).append("\n");
@@ -538,7 +537,7 @@ public class MainUI extends javax.swing.JFrame {
                         timeCapturing = output.getTimeCapturing();
                         progress = (100 * run / runs);
                         setProgress(progress);
-                    } catch (InterruptedException | ParseException | IOException ex) {
+                    } catch (InterruptedException | IOException ex) {
                         run--;
                         trials++;
                     }

@@ -1,6 +1,5 @@
 package it.unisa.petra.process;
 
-import it.unisa.petra.ui.NoDeviceFoundException;
 import it.unisa.petra.BatteryStats.BatteryStatsParser;
 import it.unisa.petra.BatteryStats.EnergyInfo;
 import it.unisa.petra.PowerProfile.PowerProfile;
@@ -8,40 +7,32 @@ import it.unisa.petra.PowerProfile.PowerProfileParser;
 import it.unisa.petra.SysTrace.CpuFreq;
 import it.unisa.petra.SysTrace.SysTrace;
 import it.unisa.petra.SysTrace.SysTraceParser;
-import it.unisa.petra.SysTrace.SysTraceRunner;
 import it.unisa.petra.Traceview.TraceLine;
 import it.unisa.petra.Traceview.TraceViewParser;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import it.unisa.petra.experiment.SysTraceRunner;
+
+import java.io.*;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class PETrAProcess {
 
-    public void installApp(String outputLocation, String apkLocation) throws NoDeviceFoundException {
-        this.executeCommand("adb shell dumpsys battery set usb 0", null, null, true);
+    public void installApp(String apkLocation) throws NoDeviceFoundException {
+        this.executeCommand("adb shell dumpsys battery set usb 0", null);
 
         System.out.println("Installing app.");
-        this.executeCommand("adb install " + apkLocation, null, null, true);
+        this.executeCommand("adb install " + apkLocation, null);
     }
 
     public void uninstallApp(String appName) throws NoDeviceFoundException {
         System.out.println("Uninstalling app.");
-        this.executeCommand("adb shell pm uninstall " + appName, null, null, true);
+        this.executeCommand("adb shell pm uninstall " + appName, null);
     }
 
-    public PETrAProcessOutput playRun(int run, int trials, String appName, int interactions, int timeBetweenInteractions,
-            int timeCapturing, String scriptLocationPath, String sdkFolderPath, String powerProfilePath, String outputLocation)
-            throws InterruptedException, IOException, ParseException, NoDeviceFoundException {
+    public PETrAProcessOutput playRun(int run, String appName, int interactions, int timeBetweenInteractions,
+                                      int timeCapturing, String scriptLocationPath, String sdkFolderPath, String powerProfilePath, String outputLocation)
+            throws InterruptedException, IOException, NoDeviceFoundException {
 
         String runString = "Run " + run + ": ";
 
@@ -56,24 +47,27 @@ public class PETrAProcess {
         }
         String runDataFolderName = outputLocation + File.separator + "run_" + run + File.separator;
         File runDataFolder = new File(runDataFolderName);
-        runDataFolder.mkdirs();
+
+        if (!runDataFolder.mkdirs()) {
+            throw new IOException();
+        }
 
         String batteryStatsFilename = runDataFolderName + "batterystats";
         String systraceFilename = runDataFolderName + "systrace";
         String traceviewFilename = runDataFolderName + "tracedump";
 
-        this.executeCommand("adb shell pm clear " + appName, null, null, true);
+        this.executeCommand("adb shell pm clear " + appName, null);
 
         System.out.println(runString + "resetting battery stats.");
-        this.executeCommand("adb shell dumpsys batterystats --reset", null, null, true);
+        this.executeCommand("adb shell dumpsys batterystats --reset", null);
 
         System.out.println(runString + "opening app.");
-        this.executeCommand("adb shell input keyevent 82", null, null, true);
-        this.executeCommand("adb shell monkey -p " + appName + " 1", null, null, true);
-        this.executeCommand("adb shell am broadcast -a org.thisisafactory.simiasque.SET_OVERLAY --ez enable true", null, null, true);
+        this.executeCommand("adb shell input keyevent 82", null);
+        this.executeCommand("adb shell monkey -p " + appName + " 1", null);
+        this.executeCommand("adb shell am broadcast -a org.thisisafactory.simiasque.SET_OVERLAY --ez enable true", null);
 
         System.out.println(runString + "start profiling.");
-        this.executeCommand("adb shell am profile start " + appName + " ./data/local/tmp/log.trace", null, null, true);
+        this.executeCommand("adb shell am profile start " + appName + " ./data/local/tmp/log.trace", null);
         Date time1 = new Date();
 
         System.out.println(runString + "capturing system traces.");
@@ -86,12 +80,12 @@ public class PETrAProcess {
         }else{
             System.out.println(runString + "running monkeyrunner script.");
         }
-        this.executeCommand("adb kill-server", null, null, true);
-        this.executeCommand("adb start-server", null, null, true);
+        this.executeCommand("adb kill-server", null);
+        this.executeCommand("adb start-server", null);
         if (interactions > 0) {
-            this.executeCommand("adb shell monkey -p " + appName + " -s " + seed + " --throttle " + timeBetweenInteractions + " --ignore-crashes --ignore-timeouts --ignore-security-exceptions " + interactions, null, null, true);
+            this.executeCommand("adb shell monkey -p " + appName + " -s " + seed + " --throttle " + timeBetweenInteractions + " --ignore-crashes --ignore-timeouts --ignore-security-exceptions " + interactions, null);
         } else {
-            this.executeCommand(toolsFolder + "/bin/monkeyrunner " + toolsFolder + "monkey_playback.py " + scriptLocationPath, null, null, true);
+            this.executeCommand(toolsFolder + "/bin/monkeyrunner " + toolsFolder + "monkey_playback.py " + scriptLocationPath, null);
         }
 
         Date time2 = new Date();
@@ -100,14 +94,14 @@ public class PETrAProcess {
         timeCapturing = (int) ((timespent + 10000) / 1000);
 
         System.out.println(runString + "stop profiling.");
-        this.executeCommand("adb shell am profile stop " + appName, null, null, true);
+        this.executeCommand("adb shell am profile stop " + appName, null);
 
         System.out.println(runString + "saving battery stats.");
-        this.executeCommand("adb shell dumpsys batterystats", null, new File(batteryStatsFilename), true);
+        this.executeCommand("adb shell dumpsys batterystats", new File(batteryStatsFilename));
 
         System.out.println(runString + "saving traceviews.");
-        this.executeCommand("adb pull ./data/local/tmp/log.trace " + runDataFolderName, null, null, true);
-        this.executeCommand(platformToolsFolder + "/dmtracedump -o " + runDataFolderName + "log.trace", null, new File(traceviewFilename), true);
+        this.executeCommand("adb pull ./data/local/tmp/log.trace " + runDataFolderName, null);
+        this.executeCommand(platformToolsFolder + "/dmtracedump -o " + runDataFolderName + "log.trace", new File(traceviewFilename));
 
         systraceThread.join();
 
@@ -127,35 +121,35 @@ public class PETrAProcess {
             int traceviewStart = traceLines.get(0).getTraceViewStartingTime();
 
             System.out.println(runString + "elaborating battery stats info.");
-            List<EnergyInfo> energyInfoArray = BatteryStatsParser.parseFile(batteryStatsFilename, traceviewStart, traceviewLength, appName);
+            List<EnergyInfo> energyInfoArray = BatteryStatsParser.parseFile(batteryStatsFilename, traceviewStart, traceviewLength);
 
             System.out.println(runString + "elaborating sys trace stats info.");
-            SysTrace cpuInfo = SysTraceParser.main(systraceFilename, traceviewStart, traceviewLength);
+            SysTrace cpuInfo = SysTraceParser.parseFile(systraceFilename, traceviewStart, traceviewLength);
 
             System.out.println(runString + "aggregating results.");
 
             PrintWriter resultsWriter = new PrintWriter(runDataFolderName + "result.csv", "UTF-8");
             resultsWriter.println("signature, joule, seconds");
-            energyInfoArray = this.mergeEnergyInfo(energyInfoArray, cpuInfo, powerProfile);
+            energyInfoArray = this.mergeEnergyInfo(energyInfoArray, cpuInfo);
             for (TraceLine traceLine : traceLines) {
-                List<Double> result = this.calculateConsumption(traceLine.getEntrance(), traceLine.getExit(), energyInfoArray, powerProfile);
+                List result = this.calculateConsumption(traceLine.getEntrance(), traceLine.getExit(), energyInfoArray, powerProfile);
                 resultsWriter.println(traceLine.getSignature() + "," + result.get(0) + "," + result.get(1));
             }
             resultsWriter.flush();
         } finally {
             System.out.println(runString + "stop app.");
-            this.executeCommand("adb shell am broadcast -a org.thisisafactory.simiasque.SET_OVERLAY --ez enable false", null, null, true);
-            this.executeCommand("adb shell am force-stop " + appName, null, null, true);
-            this.executeCommand("adb shell pm clear " + appName, null, null, true);
+            this.executeCommand("adb shell am broadcast -a org.thisisafactory.simiasque.SET_OVERLAY --ez enable false", null);
+            this.executeCommand("adb shell am force-stop " + appName, null);
+            this.executeCommand("adb shell pm clear " + appName, null);
         }
 
-        this.executeCommand("adb shell dumpsys battery reset", null, null, true);
+        this.executeCommand("adb shell dumpsys battery reset", null);
 
         System.out.println(runString + "complete.");
         return new PETrAProcessOutput(timeCapturing, seed);
     }
 
-    private List<EnergyInfo> mergeEnergyInfo(List<EnergyInfo> energyInfoArray, SysTrace cpuInfo, PowerProfile powerProfile) throws IOException, ParseException {
+    private List<EnergyInfo> mergeEnergyInfo(List<EnergyInfo> energyInfoArray, SysTrace cpuInfo) {
         for (EnergyInfo energyInfo : energyInfoArray) {
             int fixedEnergyInfoTime = cpuInfo.getSystraceStartTime() + energyInfo.getTime();
             for (CpuFreq freq : cpuInfo.getFrequency()) {
@@ -167,15 +161,15 @@ public class PETrAProcess {
         return energyInfoArray;
     }
 
-    private List calculateConsumption(int timeEnter, int timeExit, List<EnergyInfo> energyInfoArray, PowerProfile powerProfile) throws IOException, ParseException {
+    private List calculateConsumption(int timeEnter, int timeExit, List<EnergyInfo> energyInfoArray, PowerProfile powerProfile) {
 
         double joul = 0;
         double totalSeconds = 0;
 
-        for (int i = 0; i < energyInfoArray.size(); i++) {
-            int cpuFrequency = energyInfoArray.get(i).getCpuFreq();
-            double ampere = (double) powerProfile.getCpuInfo().get(cpuFrequency) / 1000;
-            for (String deviceString : energyInfoArray.get(i).getDevices()) {
+        for (EnergyInfo energyInfo : energyInfoArray) {
+            int cpuFrequency = energyInfo.getCpuFreq();
+            double ampere = powerProfile.getCpuInfo().get(cpuFrequency) / 1000;
+            for (String deviceString : energyInfo.getDevices()) {
                 if (deviceString.contains("wifi")) {
                     ampere += powerProfile.getDevices().get("wifi.on") / 1000;
                 } else if (deviceString.contains("screen")) {
@@ -184,11 +178,11 @@ public class PETrAProcess {
                     ampere += powerProfile.getDevices().get("gps.on") / 1000;
                 }
             }
-            double watt = ampere * energyInfoArray.get(i).getVoltage() / 1000;
+            double watt = ampere * energyInfo.getVoltage() / 1000;
             double microseconds = 0;
-            if (timeEnter >= energyInfoArray.get(i).getTime()) {
-                if (timeEnter > energyInfoArray.get(i).getTime()) {
-                    microseconds = timeExit - energyInfoArray.get(i).getTime();
+            if (timeEnter >= energyInfo.getTime()) {
+                if (timeEnter > energyInfo.getTime()) {
+                    microseconds = timeExit - energyInfo.getTime();
                 } else {
                     microseconds = timeExit - timeEnter;
                 }
@@ -204,16 +198,13 @@ public class PETrAProcess {
         return result;
     }
 
-    private void executeCommand(String command, File directoryFolder, File outputFile, boolean waitfor) throws NoDeviceFoundException {
+    private void executeCommand(String command, File outputFile) throws NoDeviceFoundException {
         try {
             List<String> listCommands = new ArrayList<>();
 
             String[] arrayExplodedCommands = command.split(" ");
             listCommands.addAll(Arrays.asList(arrayExplodedCommands));
             ProcessBuilder pb = new ProcessBuilder(listCommands);
-            if (directoryFolder != null) {
-                pb.directory(directoryFolder);
-            }
             pb.redirectErrorStream(true);
             if (outputFile != null) {
                 pb.redirectOutput(outputFile);

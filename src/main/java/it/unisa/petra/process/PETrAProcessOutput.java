@@ -6,10 +6,10 @@ package it.unisa.petra.process;
  */
 public class PETrAProcessOutput {
 
-    int timeCapturing;
-    String seed;
+    private final int timeCapturing;
+    private final String seed;
 
-    public PETrAProcessOutput(int timeCapturing, String seed) {
+    PETrAProcessOutput(int timeCapturing, String seed) {
         this.timeCapturing = timeCapturing;
         this.seed = seed;
     }
@@ -18,16 +18,8 @@ public class PETrAProcessOutput {
         return timeCapturing;
     }
 
-    public void setTimeCapturing(int timeCapturing) {
-        this.timeCapturing = timeCapturing;
-    }
-
     public String getSeed() {
         return seed;
-    }
-
-    public void setSeed(String seed) {
-        this.seed = seed;
     }
 
 }
