@@ -1,0 +1,575 @@
+Battery History (0% used, 84 used of 256KB, 3 strings using 134):
+                    0 (9) RESET:TIME: 2016-07-17-22-21-06
+                    0 (2) 100 status=full health=good plug=none temp=370 volt=4317 +running +wake_lock +phone_scanning phone_state=out +wifi_running +wifi wifi_signal_strength=3 wifi_suppl=completed top=u0a14:"com.android.launcher"
+                    0 (2) 100 user=0:"0"
+                    0 (2) 100 userfg=0:"0"
+             +3s487ms (2) 100 +screen
+             +7s432ms (2) 100 -top=u0a14:"com.android.launcher"
+             +7s432ms (2) 100 +top=u0a122:"ch.smalltech.battery.free"
+
+Per-PID Stats:
+  PID 565 wake time: +1s550ms
+  PID 1031 wake time: +19ms
+  PID 1003 wake time: +74ms
+  PID 1424 wake time: +5ms
+  PID 4576 wake time: +13m11s290ms
+  PID 565 wake time: 0
+
+Statistics since last charge:
+  System starts: 0, currently on battery: true
+  Time on battery: 58s 772ms (100.0%) realtime, 58s 772ms (100.0%) uptime
+  Time on battery screen off: 3s 487ms (5.9%) realtime, 3s 487ms (5.9%) uptime
+  Total run time: 58s 783ms realtime, 58s 783ms uptime
+  Start clock time: 2016-07-17-22-21-06
+  Screen on: 55s 285ms (94.1%) 1x, Interactive: 55s 289ms (94.1%)
+  Screen brightnesses:
+    dark 55s 285ms (100.0%)
+  Total partial wakelock time: 3s 478ms
+  Mobile total received: 0B, sent: 0B (packets received 0, sent 0)
+  Phone signal levels:
+    none 58s 772ms (100.0%) 0x
+  Signal scanning time: 9s 0ms
+  Radio types: (no activity)
+  Mobile radio active time: 0ms (0.0%) 0x
+  Wi-Fi total received: 24.27KB, sent: 8.05KB (packets received 113, sent 60)
+  Wifi on: 58s 772ms (100.0%), Wifi running: 58s 772ms (100.0%)
+  Wifi states: (no activity)
+  Wifi supplicant states:
+    completed 58s 772ms (100.0%) 0x
+  Wifi signal levels:
+    level(3) 58s 772ms (100.0%) 0x
+  Bluetooth on: 0ms (0.0%)
+  Bluetooth states: (no activity)
+
+  Device battery use since last full charge
+    Amount discharged (lower bound): 0
+    Amount discharged (upper bound): 0
+    Amount discharged while screen on: 0
+    Amount discharged while screen off: 0
+
+  Estimated power use (mAh):
+    Capacity: 2100, Computed drain: 3.99, actual drain: 0.00000000
+    Screen: 1.83
+    Uid u0a122: 1.24
+    Cell standby: 0.432
+    Uid 1000: 0.274
+    Uid 0: 0.107
+    Uid u0a8: 0.0547
+    Wifi: 0.0225
+    Uid u0a22: 0.0137
+    Uid u0a14: 0.00584
+    Idle: 0.00356
+    Uid u0a69: 0.00166
+    Uid 1001: 0.00117
+    Uid u0a18: 0.000998
+    Uid u0a5: 0.000664
+    Uid u0a24: 0.000568
+    Uid 1027: 0.000332
+    Uid u0a6: 0.000332
+    Uid u0a42: 0.000332
+    Uid u0a58: 0.000284
+
+  All kernel wake locks:
+  Kernel Wake lock PowerManagerService.WakeLocks: 3s 487ms (0 times) realtime
+  Kernel Wake lock msm_otg: 3s 487ms (0 times) realtime
+  Kernel Wake lock PowerManagerService.Broadcasts: 5ms (1 times) realtime
+
+  All partial wake locks:
+  Wake lock u0a8 Config Service fetch: 1s 739ms (0 times) realtime
+  Wake lock u0a8 wake:com.google.android.gms/.config.ConfigFetchService: 1s 739ms (0 times) realtime
+
+  0:
+    Wi-Fi network: 20.15KB received, 1.91KB sent (packets 89 received, 22 sent)
+    Proc TX_Thread:
+      CPU: 0ms usr + 10ms krn ; 0ms fg
+    Proc flush-179:0:
+      CPU: 0ms usr + 10ms krn ; 0ms fg
+    Proc zygote:
+      CPU: 10ms usr + 10ms krn ; 0ms fg
+    Proc ueventd:
+      CPU: 30ms usr + 80ms krn ; 0ms fg
+    Proc jbd2/mmcblk0p23:
+      CPU: 0ms usr + 10ms krn ; 0ms fg
+    Proc MC_Thread:
+      CPU: 0ms usr + 60ms krn ; 0ms fg
+    Proc adbd:
+      CPU: 20ms usr + 40ms krn ; 0ms fg
+    Proc logd:
+      CPU: 0ms usr + 10ms krn ; 0ms fg
+    Proc netd:
+      CPU: 0ms usr + 20ms krn ; 0ms fg
+    Proc rild:
+      CPU: 10ms usr + 0ms krn ; 0ms fg
+    Proc mpdecision:
+      CPU: 120ms usr + 830ms krn ; 0ms fg
+    Proc kthreadd:
+      CPU: 0ms usr + 10ms krn ; 0ms fg
+    Proc kworker/0:1:
+      CPU: 0ms usr + 200ms krn ; 0ms fg
+    Proc kworker/0:3:
+      CPU: 0ms usr + 60ms krn ; 0ms fg
+    Proc kworker/0:4:
+      CPU: 0ms usr + 260ms krn ; 0ms fg
+    Proc kworker/1:1:
+      CPU: 0ms usr + 150ms krn ; 0ms fg
+    Proc kworker/1:2:
+      CPU: 0ms usr + 290ms krn ; 0ms fg
+    Proc kworker/u:0:
+      CPU: 0ms usr + 290ms krn ; 0ms fg
+    Proc kworker/u:2:
+      CPU: 0ms usr + 230ms krn ; 0ms fg
+    Proc kworker/u:6:
+      CPU: 0ms usr + 260ms krn ; 0ms fg
+    Proc sensors.qcom:
+      CPU: 210ms usr + 240ms krn ; 0ms fg
+    Proc healthd:
+      CPU: 10ms usr + 10ms krn ; 0ms fg
+    Proc thermald:
+      CPU: 0ms usr + 20ms krn ; 0ms fg
+    Proc mmcqd/0:
+      CPU: 0ms usr + 60ms krn ; 0ms fg
+    Proc wpa_supplicant:
+      CPU: 10ms usr + 30ms krn ; 0ms fg
+    Proc migration/0:
+      CPU: 0ms usr + 10ms krn ; 0ms fg
+    Proc RX_Thread:
+      CPU: 0ms usr + 30ms krn ; 0ms fg
+  1000:
+    User activity: 1 other
+    Wake lock ActivityManager-Launch realtime
+    Wake lock *alarm* realtime
+    Sensor 0: 55s 196ms realtime (3 times)
+    Sensor 5: 3s 851ms realtime (1 times)
+    Foreground for: 58s 764ms 
+    Proc system:
+      CPU: 1s 320ms usr + 910ms krn ; 0ms fg
+    Proc surfaceflinger:
+      CPU: 3s 190ms usr + 3s 650ms krn ; 0ms fg
+    Proc servicemanager:
+      CPU: 10ms usr + 20ms krn ; 0ms fg
+  1001:
+    Wake lock RILJ realtime
+    Foreground for: 58s 763ms 
+    Proc com.android.phone:
+      CPU: 20ms usr + 20ms krn ; 0ms fg
+  1002:
+    Foreground for: 58s 763ms 
+  1027:
+    Wake lock NfcService:mRoutingWakeLock realtime
+    Foreground for: 58s 763ms 
+    Proc com.android.nfc:
+      CPU: 10ms usr + 0ms krn ; 0ms fg
+  2000:
+    (nothing executed)
+  u0a2:
+    Foreground for: 58s 763ms 
+  u0a3:
+    Foreground for: 58s 763ms 
+  u0a4:
+    Running for: 58s 763ms 
+  u0a5:
+    Running for: 58s 763ms 
+    Proc com.android.defcontainer:
+      CPU: 20ms usr + 0ms krn ; 0ms fg
+  u0a6:
+    Active for: 58s 763ms 
+    Proc android.process.media:
+      CPU: 10ms usr + 0ms krn ; 0ms fg
+  u0a7:
+    Foreground for: 58s 763ms 
+  u0a8:
+    Wi-Fi network: 1.32KB received, 1.73KB sent (packets 9 received, 15 sent)
+    Wake lock Config Service fetch: 1s 739ms partial (0 times) realtime
+    Wake lock wake:com.google.android.gms/.config.ConfigFetchService: 1s 739ms partial (0 times) realtime
+    Wake lock Wakeful StateMachine: GeofencerStateMachine realtime
+    Wake lock GCoreFlp realtime
+    TOTAL wake: 3s 478ms partial realtime
+    Foreground for: 58s 763ms 
+    Proc com.google.process.location:
+      CPU: 30ms usr + 10ms krn ; 0ms fg
+    Proc com.google.android.gms:
+      CPU: 40ms usr + 20ms krn ; 0ms fg
+    Proc *wakelock*:
+      CPU: 630ms usr + 440ms krn ; 0ms fg
+    Proc com.google.process.gapps:
+      CPU: 50ms usr + 10ms krn ; 0ms fg
+    Apk com.google.android.gms:
+      Service com.google.android.gms.playlog.service.PlayLogBrokerService:
+        Created for: 0ms uptime
+        Starts: 0, launches: 1
+  u0a10:
+    Foreground for: 58s 762ms 
+  u0a12:
+    Foreground for: 58s 762ms 
+  u0a13:
+    Running for: 58s 762ms 
+  u0a14:
+    Foreground activities: 3s 717ms realtime (1 times)
+    Foreground for: 8s 441ms 
+    Running for: 58s 762ms 
+    Proc com.android.launcher:
+      CPU: 170ms usr + 30ms krn ; 100ms fg
+  u0a15:
+    Foreground for: 58s 762ms 
+  u0a16:
+    Foreground for: 58s 762ms 
+  u0a17:
+    Running for: 58s 762ms 
+  u0a18:
+    Wi-Fi network: 1.49KB received, 3.33KB sent (packets 8 received, 12 sent)
+    Wake lock *alarm* realtime
+    Active for: 176ms 
+    Running for: 58s 762ms 
+    Proc com.android.vending:
+      CPU: 30ms usr + 0ms krn ; 0ms fg
+    Apk com.android.vending:
+      1 wakeup alarms
+      Service com.google.android.finsky.services.ContentSyncService:
+        Created for: 177ms uptime
+        Starts: 1, launches: 1
+  u0a22:
+    Foreground for: 58s 761ms 
+    Proc com.android.systemui:
+      CPU: 350ms usr + 120ms krn ; 0ms fg
+  u0a24:
+    Foreground for: 58s 761ms 
+    Proc com.google.android.googlequicksearchbox:search:
+      CPU: 0ms usr + 20ms krn ; 0ms fg
+  u0a28:
+    Foreground for: 58s 761ms 
+  u0a29:
+    Running for: 58s 761ms 
+  u0a32:
+    Running for: 58s 761ms 
+  u0a36:
+    Foreground for: 58s 761ms 
+  u0a40:
+    Foreground for: 58s 761ms 
+  u0a42:
+    Running for: 58s 761ms 
+    Proc com.google.android.deskclock:
+      CPU: 10ms usr + 0ms krn ; 0ms fg
+  u0a43:
+    Running for: 58s 761ms 
+  u0a44:
+    Running for: 58s 761ms 
+  u0a58:
+    Active for: 58s 761ms 
+    Proc com.google.android.inputmethod.latin:
+      CPU: 0ms usr + 10ms krn ; 0ms fg
+  u0a61:
+    Foreground for: 58s 761ms 
+  u0a63:
+    Foreground for: 58s 761ms 
+  u0a64:
+    Foreground for: 58s 761ms 
+  u0a67:
+    Foreground for: 58s 761ms 
+  u0a69:
+    Foreground for: 58s 761ms 
+    Proc com.android.phasebeam:
+      CPU: 30ms usr + 20ms krn ; 0ms fg
+  u0a72:
+    Running for: 58s 761ms 
+  u0a74:
+    Foreground for: 58s 761ms 
+  u0a75:
+    Foreground for: 58s 761ms 
+  u0a76:
+    Foreground for: 58s 761ms 
+  u0a78:
+    Foreground for: 58s 761ms 
+  u0a81:
+    Foreground for: 58s 761ms 
+  u0a84:
+    Active for: 58s 761ms 
+  u0a122:
+    Wi-Fi network: 1.32KB received, 1.09KB sent (packets 7 received, 11 sent)
+    Foreground activities: 51s 336ms realtime (1 times)
+    Foreground for: 51s 337ms 
+    Proc ch.smalltech.battery.free:
+      CPU: 31s 530ms usr + 10s 900ms krn ; 0ms fg
+      1 starts
+    Apk ch.smalltech.battery.free:
+      Service ch.smalltech.battery.core.widgets.BatteryUsageService:
+        Created for: 51s 135ms uptime
+        Starts: 1, launches: 1
+
+Statistics since last unplugged:
+  Time on battery: 58s 800ms (100.0%) realtime, 58s 800ms (100.0%) uptime
+  Time on battery screen off: 3s 487ms (5.9%) realtime, 3s 487ms (5.9%) uptime
+  Total run time: 58s 800ms realtime, 58s 800ms uptime
+  Start clock time: 2016-07-17-22-21-06
+  Screen on: 55s 313ms (94.1%) 1x, Interactive: 55s 317ms (94.1%)
+  Screen brightnesses:
+    dark 55s 313ms (100.0%)
+  Total partial wakelock time: 3s 478ms
+  Mobile total received: 0B, sent: 0B (packets received 0, sent 0)
+  Phone signal levels:
+    none 58s 800ms (100.0%) 0x
+  Signal scanning time: 9s 0ms
+  Radio types: (no activity)
+  Mobile radio active time: 0ms (0.0%) 0x
+  Wi-Fi total received: 24.27KB, sent: 8.05KB (packets received 113, sent 60)
+  Wifi on: 58s 800ms (100.0%), Wifi running: 58s 800ms (100.0%)
+  Wifi states: (no activity)
+  Wifi supplicant states:
+    completed 58s 800ms (100.0%) 0x
+  Wifi signal levels:
+    level(3) 58s 800ms (100.0%) 0x
+  Bluetooth on: 0ms (0.0%)
+  Bluetooth states: (no activity)
+
+  Device is currently unplugged
+    Discharge cycle start level: 100
+    Discharge cycle current level: 100
+    Amount discharged while screen on: 0
+    Amount discharged while screen off: 0
+ 
+  Estimated power use (mAh):
+    Capacity: 2100, Computed drain: 3.99, actual drain: 0.00000000
+    Screen: 1.83
+    Uid u0a122: 1.24
+    Cell standby: 0.432
+    Uid 1000: 0.274
+    Uid 0: 0.107
+    Uid u0a8: 0.0547
+    Wifi: 0.0225
+    Uid u0a22: 0.0137
+    Uid u0a14: 0.00584
+    Idle: 0.00356
+    Uid u0a69: 0.00166
+    Uid 1001: 0.00117
+    Uid u0a18: 0.000998
+    Uid u0a5: 0.000664
+    Uid u0a24: 0.000568
+    Uid 1027: 0.000332
+    Uid u0a6: 0.000332
+    Uid u0a42: 0.000332
+    Uid u0a58: 0.000284
+
+  All kernel wake locks:
+  Kernel Wake lock PowerManagerService.WakeLocks: 3s 487ms (0 times) realtime
+  Kernel Wake lock msm_otg: 3s 487ms (0 times) realtime
+  Kernel Wake lock PowerManagerService.Broadcasts: 5ms (1 times) realtime
+
+  All partial wake locks:
+  Wake lock u0a8 Config Service fetch: 1s 739ms (0 times) realtime
+  Wake lock u0a8 wake:com.google.android.gms/.config.ConfigFetchService: 1s 739ms (1 times) realtime
+
+  0:
+    Wi-Fi network: 20.15KB received, 1.91KB sent (packets 89 received, 22 sent)
+    Proc TX_Thread:
+      CPU: 0ms usr + 10ms krn ; 0ms fg
+    Proc flush-179:0:
+      CPU: 0ms usr + 10ms krn ; 0ms fg
+    Proc zygote:
+      CPU: 10ms usr + 10ms krn ; 0ms fg
+    Proc ueventd:
+      CPU: 30ms usr + 80ms krn ; 0ms fg
+    Proc jbd2/mmcblk0p23:
+      CPU: 0ms usr + 10ms krn ; 0ms fg
+    Proc MC_Thread:
+      CPU: 0ms usr + 60ms krn ; 0ms fg
+    Proc adbd:
+      CPU: 20ms usr + 40ms krn ; 0ms fg
+    Proc logd:
+      CPU: 0ms usr + 10ms krn ; 0ms fg
+    Proc netd:
+      CPU: 0ms usr + 20ms krn ; 0ms fg
+    Proc rild:
+      CPU: 10ms usr + 0ms krn ; 0ms fg
+    Proc mpdecision:
+      CPU: 120ms usr + 830ms krn ; 0ms fg
+    Proc kthreadd:
+      CPU: 0ms usr + 10ms krn ; 0ms fg
+    Proc kworker/0:1:
+      CPU: 0ms usr + 200ms krn ; 0ms fg
+    Proc kworker/0:3:
+      CPU: 0ms usr + 60ms krn ; 0ms fg
+    Proc kworker/0:4:
+      CPU: 0ms usr + 260ms krn ; 0ms fg
+    Proc kworker/1:1:
+      CPU: 0ms usr + 150ms krn ; 0ms fg
+    Proc kworker/1:2:
+      CPU: 0ms usr + 290ms krn ; 0ms fg
+    Proc kworker/u:0:
+      CPU: 0ms usr + 290ms krn ; 0ms fg
+    Proc kworker/u:2:
+      CPU: 0ms usr + 230ms krn ; 0ms fg
+    Proc kworker/u:6:
+      CPU: 0ms usr + 260ms krn ; 0ms fg
+    Proc sensors.qcom:
+      CPU: 210ms usr + 240ms krn ; 0ms fg
+    Proc healthd:
+      CPU: 10ms usr + 10ms krn ; 0ms fg
+    Proc thermald:
+      CPU: 0ms usr + 20ms krn ; 0ms fg
+    Proc mmcqd/0:
+      CPU: 0ms usr + 60ms krn ; 0ms fg
+    Proc wpa_supplicant:
+      CPU: 10ms usr + 30ms krn ; 0ms fg
+    Proc migration/0:
+      CPU: 0ms usr + 10ms krn ; 0ms fg
+    Proc RX_Thread:
+      CPU: 0ms usr + 30ms krn ; 0ms fg
+  1000:
+    User activity: 1 other
+    Wake lock ActivityManager-Launch realtime
+    Wake lock *alarm* realtime
+    Sensor 0: 55s 224ms realtime (3 times)
+    Sensor 5: 3s 851ms realtime (1 times)
+    Foreground for: 58s 792ms 
+    Proc system:
+      CPU: 1s 320ms usr + 910ms krn ; 0ms fg
+    Proc surfaceflinger:
+      CPU: 3s 190ms usr + 3s 650ms krn ; 0ms fg
+    Proc servicemanager:
+      CPU: 10ms usr + 20ms krn ; 0ms fg
+  1001:
+    Wake lock RILJ realtime
+    Foreground for: 58s 791ms 
+    Proc com.android.phone:
+      CPU: 20ms usr + 20ms krn ; 0ms fg
+  1002:
+    Foreground for: 58s 791ms 
+  1027:
+    Wake lock NfcService:mRoutingWakeLock realtime
+    Foreground for: 58s 791ms 
+    Proc com.android.nfc:
+      CPU: 10ms usr + 0ms krn ; 0ms fg
+  2000:
+    (nothing executed)
+  u0a2:
+    Foreground for: 58s 791ms 
+  u0a3:
+    Foreground for: 58s 791ms 
+  u0a4:
+    Running for: 58s 791ms 
+  u0a5:
+    Running for: 58s 791ms 
+    Proc com.android.defcontainer:
+      CPU: 20ms usr + 0ms krn ; 0ms fg
+  u0a6:
+    Active for: 58s 791ms 
+    Proc android.process.media:
+      CPU: 10ms usr + 0ms krn ; 0ms fg
+  u0a7:
+    Foreground for: 58s 791ms 
+  u0a8:
+    Wi-Fi network: 1.32KB received, 1.73KB sent (packets 9 received, 15 sent)
+    Wake lock Config Service fetch: 1s 739ms partial (0 times) realtime
+    Wake lock wake:com.google.android.gms/.config.ConfigFetchService: 1s 739ms partial (1 times) realtime
+    Wake lock Wakeful StateMachine: GeofencerStateMachine realtime
+    Wake lock GCoreFlp realtime
+    TOTAL wake: 3s 478ms partial realtime
+    Foreground for: 58s 791ms 
+    Proc com.google.process.location:
+      CPU: 30ms usr + 10ms krn ; 0ms fg
+    Proc com.google.android.gms:
+      CPU: 40ms usr + 20ms krn ; 0ms fg
+    Proc *wakelock*:
+      CPU: 630ms usr + 440ms krn ; 0ms fg
+    Proc com.google.process.gapps:
+      CPU: 50ms usr + 10ms krn ; 0ms fg
+    Apk com.google.android.gms:
+      Service com.google.android.gms.playlog.service.PlayLogBrokerService:
+        Created for: 0ms uptime
+        Starts: 0, launches: 1
+  u0a10:
+    Foreground for: 58s 790ms 
+  u0a12:
+    Foreground for: 58s 790ms 
+  u0a13:
+    Running for: 58s 790ms 
+  u0a14:
+    Foreground activities: 3s 717ms realtime (1 times)
+    Foreground for: 8s 441ms 
+    Running for: 58s 790ms 
+    Proc com.android.launcher:
+      CPU: 170ms usr + 30ms krn ; 100ms fg
+  u0a15:
+    Foreground for: 58s 790ms 
+  u0a16:
+    Foreground for: 58s 790ms 
+  u0a17:
+    Running for: 58s 790ms 
+  u0a18:
+    Wi-Fi network: 1.49KB received, 3.33KB sent (packets 8 received, 12 sent)
+    Wake lock *alarm* realtime
+    Active for: 176ms 
+    Running for: 58s 790ms 
+    Proc com.android.vending:
+      CPU: 30ms usr + 0ms krn ; 0ms fg
+    Apk com.android.vending:
+      1 wakeup alarms
+      Service com.google.android.finsky.services.ContentSyncService:
+        Created for: 177ms uptime
+        Starts: 1, launches: 1
+  u0a22:
+    Foreground for: 58s 789ms 
+    Proc com.android.systemui:
+      CPU: 350ms usr + 120ms krn ; 0ms fg
+  u0a24:
+    Foreground for: 58s 789ms 
+    Proc com.google.android.googlequicksearchbox:search:
+      CPU: 0ms usr + 20ms krn ; 0ms fg
+  u0a28:
+    Foreground for: 58s 789ms 
+  u0a29:
+    Running for: 58s 789ms 
+  u0a32:
+    Running for: 58s 789ms 
+  u0a36:
+    Foreground for: 58s 789ms 
+  u0a40:
+    Foreground for: 58s 789ms 
+  u0a42:
+    Running for: 58s 789ms 
+    Proc com.google.android.deskclock:
+      CPU: 10ms usr + 0ms krn ; 0ms fg
+  u0a43:
+    Running for: 58s 789ms 
+  u0a44:
+    Running for: 58s 789ms 
+  u0a58:
+    Active for: 58s 789ms 
+    Proc com.google.android.inputmethod.latin:
+      CPU: 0ms usr + 10ms krn ; 0ms fg
+  u0a61:
+    Foreground for: 58s 789ms 
+  u0a63:
+    Foreground for: 58s 789ms 
+  u0a64:
+    Foreground for: 58s 789ms 
+  u0a67:
+    Foreground for: 58s 789ms 
+  u0a69:
+    Foreground for: 58s 789ms 
+    Proc com.android.phasebeam:
+      CPU: 30ms usr + 20ms krn ; 0ms fg
+  u0a72:
+    Running for: 58s 789ms 
+  u0a74:
+    Foreground for: 58s 789ms 
+  u0a75:
+    Foreground for: 58s 789ms 
+  u0a76:
+    Foreground for: 58s 789ms 
+  u0a78:
+    Foreground for: 58s 789ms 
+  u0a81:
+    Foreground for: 58s 789ms 
+  u0a84:
+    Active for: 58s 789ms 
+  u0a122:
+    Wi-Fi network: 1.32KB received, 1.09KB sent (packets 7 received, 11 sent)
+    Foreground activities: 51s 364ms realtime (1 times)
+    Foreground for: 51s 365ms 
+    Proc ch.smalltech.battery.free:
+      CPU: 31s 530ms usr + 10s 900ms krn ; 0ms fg
+      1 starts
+    Apk ch.smalltech.battery.free:
+      Service ch.smalltech.battery.core.widgets.BatteryUsageService:
+        Created for: 51s 163ms uptime
+        Starts: 1, launches: 1
