@@ -4,18 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author Antonio Prota
  */
 public class EnergyInfo {
 
     private int time;
     private int volt;
-    private List<String> devices;
-    private float consumption;
+    private List devices;
     private int cpuFreq;
 
-    public EnergyInfo() {
+    EnergyInfo() {
         this.devices = new ArrayList<>();
     }
 
@@ -31,7 +29,7 @@ public class EnergyInfo {
         return volt;
     }
 
-    public void setVoltage(int volt) {
+    void setVoltage(int volt) {
         this.volt = volt;
     }
 
@@ -39,28 +37,20 @@ public class EnergyInfo {
         return devices;
     }
 
-    public void setDevices(List<String> devices) {
-        this.devices = devices;
+    void setDevices(List<String> devices) {
+        this.devices = new ArrayList(devices);
     }
 
-    public void addDevice(String device) {
+    void addDevice(String device) {
         this.devices.add(device);
     }
 
-    public void removeDevice(String device) {
+    void removeDevice(String device) {
         for (int i = 0; i < this.getDevices().size(); i++) {
             if (this.getDevices().get(i).equals(device)) {
                 this.devices.remove(i);
             }
         }
-    }
-
-    public float getConsumption() {
-        return consumption;
-    }
-
-    public void setConsumption(float consumption) {
-        this.consumption = consumption;
     }
 
     public int getCpuFreq() {
@@ -69,5 +59,24 @@ public class EnergyInfo {
 
     public void setCpuFreq(int cpuFreq) {
         this.cpuFreq = cpuFreq;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        EnergyInfo that = (EnergyInfo) o;
+
+        return time == that.time && volt == that.volt && cpuFreq == that.cpuFreq && devices.equals(that.devices);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = time;
+        result = 31 * result + volt;
+        result = 31 * result + devices.hashCode();
+        result = 31 * result + cpuFreq;
+        return result;
     }
 }

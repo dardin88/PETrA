@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,7 +15,7 @@ import java.util.regex.Pattern;
  */
 public class BatteryStatsParser {
 
-    public static ArrayList<EnergyInfo> parseFile(String fileName, int traceviewStart, int traceviewLength, String appName) throws IOException, ParseException {
+    public static ArrayList<EnergyInfo> parseFile(String fileName, int traceviewStart, int traceviewLength) throws IOException {
         ArrayList<EnergyInfo> energyInfoArray = new ArrayList<>();
         File file = new File(fileName);
 
@@ -28,19 +27,19 @@ public class BatteryStatsParser {
             while ((line = readAll.readLine()) != null) {
                 Matcher matcher1 = energyRowPattern.matcher(line);
                 int variationTime;
-                String rowAppName;
 
                 if (matcher1.find()) {
-                    rowAppName = matcher1.group(2);
                     variationTime = toMillisec(matcher1.group(1));
                     int realVariationTime = variationTime + traceviewStart;
                     if (realVariationTime < traceviewStart + traceviewLength) {
                         EnergyInfo energyInfo = new EnergyInfo();
                         energyInfo.setTime(realVariationTime);
-                        if (infoCounter > 0) {
-                            energyInfo.setDevices(energyInfoArray.get(infoCounter - 1).getDevices());
-                            energyInfo.setVoltage(energyInfoArray.get(infoCounter - 1).getVoltage());
+
+                        if (!energyInfoArray.isEmpty()) {
+                            energyInfo.setDevices(energyInfoArray.get(infoCounter).getDevices());
+                            energyInfo.setVoltage(energyInfoArray.get(infoCounter).getVoltage());
                         }
+
                         String devices = matcher1.group(2).split(":")[0];
                         String[] devicesArray = devices.split(" ");
                         for (String device : devicesArray) {
@@ -52,14 +51,22 @@ public class BatteryStatsParser {
                                 energyInfo.removeDevice(deviceDeactivated);
                             }
                             if (device.contains("+")) {
-                                energyInfo.addDevice(device.replaceFirst("\\+", ""));
+                                if (!device.replaceFirst("\\+", "").startsWith("top")) {
+                                    energyInfo.addDevice(device.replaceFirst("\\+", ""));
+                                }
                             }
                         }
-                        energyInfoArray.add(energyInfo);
+                        if (energyInfoArray.isEmpty()) {
+                            energyInfoArray.add(energyInfo);
+                        } else {
+                            if (!energyInfo.equals(energyInfoArray.get(infoCounter))) {
+                                energyInfoArray.add(energyInfo);
+                            }
+                        }
                     } else {
                         break;
                     }
-                    infoCounter++;
+                    infoCounter = energyInfoArray.size() - 1;
                 }
             }
         }
@@ -67,7 +74,7 @@ public class BatteryStatsParser {
         return energyInfoArray;
     }
 
-    private static int toMillisec(String time) throws ParseException {
+    private static int toMillisec(String time) {
         int h = 0;
         int m = 0;
         int s = 0;
