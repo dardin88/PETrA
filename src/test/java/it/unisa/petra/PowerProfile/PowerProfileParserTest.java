@@ -7,11 +7,8 @@ import static org.junit.Assert.assertEquals;
 /**
  * @author dardin88
  */
-public class PowerProfileParserTester {
+public class PowerProfileParserTest {
 
-    /**
-     * Test of parseFile method of class PowerProfileParserTester.
-     */
     @Test
     public void testNumberOfEnergyInfo() throws Exception {
         String fileName = "src/test/resources/power_profile_example.xml";

@@ -11,10 +11,6 @@ import static org.junit.Assert.assertEquals;
  */
 public class BatteryStatsParserTest {
 
-    /**
-     * Test of parseFile method of class BatteryStatsParser.
-     *
-     */
     @Test
     public void testNumberOfEnergyInfo() throws Exception {
         String fileName = "src/test/resources/batterystats_example";
