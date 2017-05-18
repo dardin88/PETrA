@@ -4,7 +4,7 @@ package it.unisa.petra.SysTrace;
  *
  * @author Antonio Prota
  */
-public class CpuIdle {
+class CpuIdle {
     private int time;
     private String value;
 
@@ -32,7 +32,7 @@ public class CpuIdle {
     /**
      * @param value the value to set
      */
-    public void setValue(String value) {
+    void setValue(String value) {
         this.value = value;
     }
 }

@@ -1,33 +1,31 @@
 package it.unisa.petra.SysTrace;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.ParseException;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
- *
  * @author Antonio Prota
  * @author Dario Di Nucci
  */
 public class SysTraceParser {
 
-    public static SysTrace main(String fileName, int traceviewStart, int traceviewLength) throws IOException, ParseException, InterruptedException {
+    public static SysTrace parseFile(String fileName, int traceviewStart, int traceviewLength) throws IOException {
         File file = new File(fileName);
         SysTrace systrace = new SysTrace();
         List<CpuFreq> freqList = new ArrayList<>();
         List<CpuIdle> idleList = new ArrayList<>();
         int timeStart = 0;
         int timeFinish;
-        Pattern freqRowPattern = Pattern.compile(".* \\[\\d{3}\\].* (.*): cpu_frequency: state=(\\d*).*");
-        Pattern idleRowPattern = Pattern.compile(".* \\[.*\\] .* (.*): cpu_idle: state=(\\d*).*");
+        Pattern freqRowPattern = Pattern.compile(".* \\[\\d{3}].* (.*): cpu_frequency: state=(\\d*).*");
+        Pattern idleRowPattern = Pattern.compile(".* \\[.*] .* (.*): cpu_idle: state=(\\d*).*");
 
         Document doc = Jsoup.parse(file, "UTF-8", fileName);
         Elements scriptElements = doc.getElementsByClass("trace-data");
@@ -57,20 +55,12 @@ public class SysTraceParser {
                 freq.setTime(timeread);
                 freq.setValue(Integer.parseInt(freqMatcher.group(2)));
                 if (timeread < timeFinish) {
-                    if (timeread < timeStart) {
-                        if (freqList.isEmpty()) {
-                            freqList.add(freq);
-                        } else {
-                            freqList.set(0, freq);
-                        }
-                    } else {
-                        freqList.add(freq);
-                    }
+                    freqList.add(freq);
                 } else if (timeread > timeFinish) {
                     break;
                 }
             }
-            
+
             if (idleMatcher.find()) {
                 CpuIdle idle = new CpuIdle();
                 int timeread = Integer.parseInt(toMillisec(freqMatcher.group(1)));
@@ -94,11 +84,10 @@ public class SysTraceParser {
         systrace.setFrequency(freqList);
         systrace.setIdle(idleList);
         systrace.setSystraceStartTime(timeStart);
-        systrace.setSystraceFinishTime(timeFinish);
         return systrace;
     }
 
-    public static String toMillisec(String time) throws ParseException {
+    private static String toMillisec(String time) {
         int s = 0;
         int dec = 0;
         int totaltime;
