@@ -51,11 +51,12 @@ public class EMSEExperiment {
             int timeBetweenInteractions = 0;
 
             try {
-                powerProfileName = ConfigManager.getPowerProfileFile();
-                platformToolsFolder = new File(ConfigManager.getSDKLocationPath() + "platform-tools/");
-                maxRun = ConfigManager.getRuns();
-                interactions = ConfigManager.getInteractions();
-                timeBetweenInteractions = ConfigManager.getTimeBetweenInteractions();
+                ConfigManager configManager = new ConfigManager("config.properties");
+                powerProfileName = configManager.getPowerProfileFile();
+                platformToolsFolder = new File(configManager.getSDKLocationPath() + "platform-tools/");
+                maxRun = configManager.getRuns();
+                interactions = configManager.getInteractions();
+                timeBetweenInteractions = configManager.getTimeBetweenInteractions();
             } catch (IOException ex) {
                 Logger.getLogger(EMSEExperiment.class.getName()).log(Level.SEVERE, null, ex);
             }

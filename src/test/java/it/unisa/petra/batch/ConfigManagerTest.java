@@ -11,51 +11,61 @@ public class ConfigManagerTest {
 
     @Test
     public void testConfigManager1() throws Exception {
-        assertEquals("/home/dardin88/Desktop/energy_consumption_bad_smell/test_data/power_profile_mako.xml", ConfigManager.getPowerProfileFile());
+        ConfigManager configManager = new ConfigManager("src/test/resources/config.properties");
+        assertEquals("/home/dardin88/Desktop/energy_consumption_bad_smell/test_data/power_profile_mako.xml", configManager.getPowerProfileFile());
     }
 
     @Test
     public void testConfigManager2() throws Exception {
-        assertEquals(10, ConfigManager.getRuns());
+        ConfigManager configManager = new ConfigManager("src/test/resources/config.properties");
+        assertEquals(10, configManager.getRuns());
     }
 
     @Test
     public void testConfigManager3() throws Exception {
-        assertEquals(1500, ConfigManager.getInteractions());
+        ConfigManager configManager = new ConfigManager("src/test/resources/config.properties");
+        assertEquals(1500, configManager.getInteractions());
     }
 
     @Test
     public void testConfigManager4() throws Exception {
-        assertEquals(200, ConfigManager.getTimeBetweenInteractions());
+        ConfigManager configManager = new ConfigManager("src/test/resources/config.properties");
+        assertEquals(200, configManager.getTimeBetweenInteractions());
     }
 
     @Test
     public void testConfigManager5() throws Exception {
-        assertEquals("a2dp.Vol", ConfigManager.getAppName());
+        ConfigManager configManager = new ConfigManager("src/test/resources/config.properties");
+        assertEquals("a2dp.Vol", configManager.getAppName());
     }
 
     @Test
     public void testConfigManager6() throws Exception {
-        assertEquals("/home/dardin88/test_data/a2dp.Vol/", ConfigManager.getOutputLocation());
+        ConfigManager configManager = new ConfigManager("src/test/resources/config.properties");
+        assertEquals("/home/dardin88/test_data/a2dp.Vol/", configManager.getOutputLocation());
     }
 
     @Test
     public void testConfigManager7() throws Exception {
-        assertEquals(5, ConfigManager.getTrials());
+        ConfigManager configManager = new ConfigManager("src/test/resources/config.properties");
+        assertEquals(5, configManager.getTrials());
     }
 
     @Test
     public void testConfigManager8() throws Exception {
-        assertEquals("/home/dardin88/a2dp.Vol.apk", ConfigManager.getApkLocationPath());
+        ConfigManager configManager = new ConfigManager("src/test/resources/config.properties");
+        assertEquals("/home/dardin88/a2dp.Vol.apk", configManager.getApkLocationPath());
     }
 
     @Test
     public void testConfigManager9() throws Exception {
-        assertEquals("/home/dardin88/test_data/a2dp.Vol_scripts/", ConfigManager.getScriptLocationPath());
+        ConfigManager configManager = new ConfigManager("src/test/resources/config.properties");
+        assertEquals("/home/dardin88/test_data/a2dp.Vol_scripts/", configManager.getScriptLocationPath());
     }
 
     @Test
     public void testConfigManager10() throws Exception {
-        assertEquals("/home/dardin88/Android/Sdk/", ConfigManager.getSDKLocationPath());
+        ConfigManager configManager = new ConfigManager("src/test/resources/config.properties");
+        assertEquals("/home/dardin88/Android/Sdk/", configManager.getSDKLocationPath());
     }
 }

@@ -53,9 +53,10 @@ public class SANERExperiment {
                 File toolsFolder = null;
 
                 try {
-                    powerProfileName = ConfigManager.getPowerProfileFile();
-                    platformToolsFolder = new File(ConfigManager.getSDKLocationPath() + "platform-tools/");
-                    toolsFolder = new File(ConfigManager.getSDKLocationPath() + "tools/");
+                    ConfigManager configManager = new ConfigManager("config.properties");
+                    powerProfileName = configManager.getPowerProfileFile();
+                    platformToolsFolder = new File(configManager.getSDKLocationPath() + "platform-tools/");
+                    toolsFolder = new File(configManager.getSDKLocationPath() + "tools/");
                 } catch (IOException ex) {
                     Logger.getLogger(SANERExperiment.class.getName()).log(Level.SEVERE, null, ex);
                 }
