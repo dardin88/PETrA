@@ -248,7 +248,7 @@ class StatsUI extends javax.swing.JFrame {
 
         filterResultsButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/filter.png"))); // NOI18N
         filterResultsButton.setText("Filter Results");
-        filterResultsButton.addActionListener(this::filterResultsButtonActionPerformed);
+        filterResultsButton.addActionListener(evt -> filterResultsButtonActionPerformed());
 
         filterField.setToolTipText("Filter results.");
         filterField.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -292,7 +292,7 @@ class StatsUI extends javax.swing.JFrame {
 
         goBack.setIcon(new javax.swing.ImageIcon(getClass().getResource("/back.png"))); // NOI18N
         goBack.setText("Go back");
-        goBack.addActionListener(this::goBackActionPerformed);
+        goBack.addActionListener(evt -> goBackActionPerformed());
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -333,7 +333,7 @@ class StatsUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void filterResultsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_filterResultsButtonActionPerformed
+    private void filterResultsButtonActionPerformed() {//GEN-FIRST:event_filterResultsButtonActionPerformed
         try {
             updateTable(filterField.getText());
             updateBoxplot(filterField.getText());
@@ -342,7 +342,7 @@ class StatsUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_filterResultsButtonActionPerformed
 
-    private void goBackActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_goBackActionPerformed
+    private void goBackActionPerformed() {//GEN-FIRST:event_goBackActionPerformed
         this.setVisible(false);
         new MainUI().setVisible(true);
     }//GEN-LAST:event_goBackActionPerformed

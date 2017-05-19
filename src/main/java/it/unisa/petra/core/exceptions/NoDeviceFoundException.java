@@ -1,10 +1,9 @@
-package it.unisa.petra.ui;
+package it.unisa.petra.core.exceptions;
 
 /**
- *
  * @author dardin88
  */
-class NoDeviceFoundException extends Exception {
+public class NoDeviceFoundException extends Exception {
 
     public NoDeviceFoundException() {
         super("error: no device/emulator found!");

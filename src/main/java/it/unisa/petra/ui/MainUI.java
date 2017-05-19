@@ -1,8 +1,9 @@
 package it.unisa.petra.ui;
 
-import it.unisa.petra.process.NoDeviceFoundException;
-import it.unisa.petra.process.PETrAProcess;
-import it.unisa.petra.process.PETrAProcessOutput;
+import it.unisa.petra.core.Process;
+import it.unisa.petra.core.ProcessOutput;
+import it.unisa.petra.core.exceptions.NoDeviceFoundException;
+import it.unisa.petra.core.exceptions.NumberOfTrialsExceededException;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -122,7 +123,7 @@ public class MainUI extends javax.swing.JFrame {
 
         jLabel1.setText("App Name");
 
-        appNameField.setToolTipText("Name of the app to analyze (must be the same of the app process).");
+        appNameField.setToolTipText("Name of the app to analyze (must be the same of the app core).");
 
         jLabel3.setText("Apk Location");
 
@@ -143,19 +144,19 @@ public class MainUI extends javax.swing.JFrame {
 
         startProcessButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/play-button.png"))); // NOI18N
         startProcessButton.setText("Start Energy Estimation");
-        startProcessButton.addActionListener(this::startProcessButtonActionPerformed);
+        startProcessButton.addActionListener(evt -> startProcessButtonActionPerformed());
 
         apkLocationButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/folder.png"))); // NOI18N
         apkLocationButton.setText("Open");
-        apkLocationButton.addActionListener(this::apkLocationButtonActionPerformed);
+        apkLocationButton.addActionListener(evt -> apkLocationButtonActionPerformed());
 
         androidSDKFolderButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/folder.png"))); // NOI18N
         androidSDKFolderButton.setText("Open");
-        androidSDKFolderButton.addActionListener(this::androidSDKFolderButtonActionPerformed);
+        androidSDKFolderButton.addActionListener(evt -> androidSDKFolderButtonActionPerformed());
 
         powerprofileButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/folder.png"))); // NOI18N
         powerprofileButton.setText("Open");
-        powerprofileButton.addActionListener(this::powerprofileButtonActionPerformed);
+        powerprofileButton.addActionListener(evt -> powerprofileButtonActionPerformed());
 
         progressBar.setStringPainted(true);
 
@@ -165,14 +166,14 @@ public class MainUI extends javax.swing.JFrame {
         runsSlider.setPaintLabels(true);
         runsSlider.setPaintTicks(true);
         runsSlider.setSnapToTicks(true);
-        runsSlider.setToolTipText("Number of repetitions of the measurement process.");
+        runsSlider.setToolTipText("Number of repetitions of the measurement core.");
         runsSlider.setValue(0);
 
         viewStats.setIcon(new javax.swing.ImageIcon(getClass().getResource("/graph.png"))); // NOI18N
         viewStats.setText("Statistics");
         viewStats.setEnabled(false);
         viewStats.setFocusPainted(false);
-        viewStats.addActionListener(this::viewStatsActionPerformed);
+        viewStats.addActionListener(evt -> viewStatsActionPerformed());
 
         jScrollPane1.setToolTipText("");
 
@@ -238,7 +239,7 @@ public class MainUI extends javax.swing.JFrame {
         scriptLocationButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/folder.png"))); // NOI18N
         scriptLocationButton.setText("Open");
         scriptLocationButton.setToolTipText("The location of the Monkey runner script.");
-        scriptLocationButton.addActionListener(this::scriptLocationButtonActionPerformed);
+        scriptLocationButton.addActionListener(evt -> scriptLocationButtonActionPerformed());
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -352,7 +353,7 @@ public class MainUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void startProcessButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startProcessButtonActionPerformed
+    private void startProcessButtonActionPerformed() {//GEN-FIRST:event_startProcessButtonActionPerformed
         statusLabel.setText(null);
         viewStats.setEnabled(false);
 
@@ -415,7 +416,7 @@ public class MainUI extends javax.swing.JFrame {
         task.execute();
     }//GEN-LAST:event_startProcessButtonActionPerformed
 
-    private void apkLocationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_apkLocationButtonActionPerformed
+    private void apkLocationButtonActionPerformed() {//GEN-FIRST:event_apkLocationButtonActionPerformed
         JFileChooser chooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter("Apk Files", "apk");
         chooser.setFileFilter(filter);
@@ -427,7 +428,7 @@ public class MainUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_apkLocationButtonActionPerformed
 
-    private void androidSDKFolderButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_androidSDKFolderButtonActionPerformed
+    private void androidSDKFolderButtonActionPerformed() {//GEN-FIRST:event_androidSDKFolderButtonActionPerformed
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         chooser.setAcceptAllFileFilterUsed(false);
@@ -440,7 +441,7 @@ public class MainUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_androidSDKFolderButtonActionPerformed
 
-    private void powerprofileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_powerprofileButtonActionPerformed
+    private void powerprofileButtonActionPerformed() {//GEN-FIRST:event_powerprofileButtonActionPerformed
         JFileChooser chooser = new JFileChooser();
         int res = chooser.showOpenDialog(null);
         if (res == JFileChooser.APPROVE_OPTION) {
@@ -450,13 +451,13 @@ public class MainUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_powerprofileButtonActionPerformed
 
-    private void viewStatsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewStatsActionPerformed
+    private void viewStatsActionPerformed() {//GEN-FIRST:event_viewStatsActionPerformed
         this.setVisible(false);
         String outputLocationPath = new File(apkLocationField.getText()).getParent() + File.separator + "test_data" + File.separator + appNameField.getText();
         new StatsUI(outputLocationPath).setVisible(true);
     }//GEN-LAST:event_viewStatsActionPerformed
 
-    private void scriptLocationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_scriptLocationButtonActionPerformed
+    private void scriptLocationButtonActionPerformed() {//GEN-FIRST:event_scriptLocationButtonActionPerformed
         JFileChooser chooser = new JFileChooser();
         int res = chooser.showOpenDialog(null);
         if (res == JFileChooser.APPROVE_OPTION) {
@@ -499,7 +500,7 @@ public class MainUI extends javax.swing.JFrame {
                 androidSDKFolderButton.setEnabled(false);
                 powerprofileButton.setEnabled(false);
                 startProcessButton.setEnabled(false);
-                PETrAProcess process = new PETrAProcess();
+                Process process = new Process();
                 setProgress(0);
                 int progress;
                 int trials = 0;
@@ -507,7 +508,7 @@ public class MainUI extends javax.swing.JFrame {
 
                 File appDataFolder = new File(outputLocationPath);
 
-                if (!appDataFolder.mkdir()) throw new IOException();
+                appDataFolder.mkdirs();
 
                 if (this.scriptLocationPath.isEmpty()) {
                     File seedsFile = new File(outputLocationPath + File.separator + "seeds");
@@ -528,8 +529,11 @@ public class MainUI extends javax.swing.JFrame {
                 }
 
                 for (int run = 1; run <= runs; run++) {
+                    if (trials == 10) {
+                        throw new NumberOfTrialsExceededException();
+                    }
                     try {
-                        PETrAProcessOutput output = process.playRun(run, appName, interactions, timeBetweenInteractions, timeCapturing,
+                        ProcessOutput output = process.playRun(run, appName, interactions, timeBetweenInteractions, timeCapturing,
                                 scriptLocationPath, sdkFolderPath, powerProfilePath, outputLocationPath);
                         if (seedsWriter != null) {
                             seedsWriter.append(output.getSeed()).append("\n");
@@ -549,7 +553,7 @@ public class MainUI extends javax.swing.JFrame {
                 powerprofileButton.setEnabled(true);
                 viewStats.setEnabled(true);
                 process.uninstallApp(appName);
-            } catch (NoDeviceFoundException | IOException ex) {
+            } catch (NoDeviceFoundException | IOException | NumberOfTrialsExceededException ex) {
                 startProcessButton.setEnabled(true);
                 apkLocationButton.setEnabled(true);
                 scriptLocationButton.setEnabled(true);
