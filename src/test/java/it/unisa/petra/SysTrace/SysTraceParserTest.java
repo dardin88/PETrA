@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 public class SysTraceParserTest {
 
     @Test
-    public void testNumberOfEnergyInfo() throws Exception {
+    public void testParser() throws Exception {
         String fileName = "src/test/resources/systrace";
         int traceviewStart = 0;
         int traceviewLength = 10000;

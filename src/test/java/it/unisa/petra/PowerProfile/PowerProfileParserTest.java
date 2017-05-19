@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 public class PowerProfileParserTest {
 
     @Test
-    public void testNumberOfEnergyInfo() throws Exception {
+    public void testParser() throws Exception {
         String fileName = "src/test/resources/power_profile_example.xml";
         PowerProfile powerProfile = PowerProfileParser.parseFile(fileName);
         assertEquals(47.05, powerProfile.getCpuInfo().get(384000), 0.00001);

@@ -12,7 +12,7 @@ import static org.junit.Assert.assertEquals;
 public class BatteryStatsParserTest {
 
     @Test
-    public void testNumberOfEnergyInfo() throws Exception {
+    public void testParser() throws Exception {
         String fileName = "src/test/resources/batterystats_example";
         int traceviewStart = 0;
         int traceviewLength = 10000;
