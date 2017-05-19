@@ -11,7 +11,7 @@ public class SysTraceParserTest {
 
     @Test
     public void testParser() throws Exception {
-        String fileName = "src/test/resources/systrace";
+        String fileName = "src/test/resources/systrace_example";
         int traceviewStart = 0;
         int traceviewLength = 10000;
         SysTrace result = SysTraceParser.parseFile(fileName, traceviewStart, traceviewLength);
