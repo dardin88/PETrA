@@ -3,7 +3,7 @@
 # PETrA: Power Estimation Tool for Android
 
 PETrA is a software able to estimate the energy consumption of method calls in Android apps.
-It is based on some Android tools that are Monkey, Batterystats, Systrace, and dmtracedump.
+It is written in Java and it is based on some Android tools such as Monkey, Batterystats, Systrace, and dmtracedump.
 
 For more information on these tools please take a look to the references.
 
@@ -11,9 +11,7 @@ PETrA is the outcome of the research conducted by the Software Engineering Lab o
 
 ## Requirements
 
-In order to properly work PETrA needs a working Android Development Environment. You can find more information on how install Android SDK here:
-
-https://spring.io/guides/gs/android/
+In order to properly work PETrA needs Android SDK and JRE 8. You can find more information on how install Android SDK [here](https://spring.io/guides/gs/android/).
 
 ## Running PETrA
 
@@ -28,9 +26,7 @@ PETrA has been tested on a LG Nexus 4, but other Android smartphones should work
 
 ## Hiding the status bar
 
-If you would like to hide the status bar to allow Monkey to not lose focus from the app under test please refer to SIMIASQUE.
-
-https://github.com/Orange-OpenSource/simiasque
+If you would like to hide the status bar to allow Monkey to not lose focus from the app under test please refer to [SIMIASQUE](https://github.com/Orange-OpenSource/simiasque).
 
 ## References
 
