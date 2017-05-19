@@ -3,7 +3,6 @@ package it.unisa.petra.experiment;
 import it.unisa.petra.BatteryStats.BatteryStatsParser;
 import it.unisa.petra.BatteryStats.EnergyInfo;
 import it.unisa.petra.ConfigManager;
-import it.unisa.petra.PETrA;
 import it.unisa.petra.PowerProfile.PowerProfile;
 import it.unisa.petra.PowerProfile.PowerProfileParser;
 import it.unisa.petra.SysTrace.CpuFreq;
@@ -35,9 +34,9 @@ public class EMSEExperiment {
                 apkNames.add(line + ".apk");
             }
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(PETrA.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(EMSEExperiment.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(PETrA.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(EMSEExperiment.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         for (int appCounter = 0; appCounter < appNames.size(); appCounter++) {
@@ -84,7 +83,7 @@ public class EMSEExperiment {
                 try {
                     seeds.addAll(Files.readAllLines(oldSeedsFile.toPath()));
                 } catch (IOException ex) {
-                    Logger.getLogger(PETrA.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(EMSEExperiment.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
 
