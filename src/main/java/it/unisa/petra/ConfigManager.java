@@ -16,9 +16,7 @@ public class ConfigManager {
         File jarPath = new File(ConfigManager.class.getProtectionDomain().getCodeSource().getLocation().getPath());
         String propertiesPath = jarPath.getParentFile().getAbsolutePath();
 
-        InputStream inputStream = new FileInputStream(propertiesPath + File.separator + "config.properties");
-
-        return inputStream;
+        return new FileInputStream(propertiesPath + File.separator + "config.properties");
     }
 
     public static String getPlatformToolsFolder() throws IOException {
@@ -73,15 +71,6 @@ public class ConfigManager {
         }
 
         return Integer.parseInt(prop.getProperty("timeBetweenInteractions"));
-    }
-
-    public static boolean getCompleteTrace() throws IOException {
-        Properties prop = new Properties();
-        try (InputStream inputStream = ConfigManager.getPropertiesStream()) {
-            prop.load(inputStream);
-        }
-
-        return Boolean.parseBoolean(prop.getProperty("completeTrace"));
     }
 
     static String getAppName() throws IOException {
