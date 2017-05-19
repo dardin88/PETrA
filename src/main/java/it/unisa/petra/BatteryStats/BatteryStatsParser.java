@@ -30,10 +30,10 @@ public class BatteryStatsParser {
 
                 if (matcher1.find()) {
                     variationTime = toMillisec(matcher1.group(1));
-                    int realVariationTime = variationTime + traceviewStart;
-                    if (realVariationTime < traceviewStart + traceviewLength) {
+                    int realTime = variationTime + traceviewStart;
+                    if (realTime < traceviewStart + traceviewLength) {
                         EnergyInfo energyInfo = new EnergyInfo();
-                        energyInfo.setTime(realVariationTime);
+                        energyInfo.setTime(realTime);
 
                         if (!energyInfoArray.isEmpty()) {
                             energyInfo.setDevices(energyInfoArray.get(infoCounter).getDevices());

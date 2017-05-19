@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
  */
 public class TraceViewParser {
 
-    public static ArrayList<TraceLine> parseFile(String fileName, String appName, String appDataFolder) throws IOException, NumberFormatException {
+    public static TraceviewStructure parseFile(String fileName, String appName) throws IOException, NumberFormatException {
 
         File file = new File(fileName);
 
@@ -27,9 +27,8 @@ public class TraceViewParser {
         Pattern traceViewPattern = Pattern.compile("(\\d*)\\s(\\w{3})\\s*(\\d*)[\\s|-](.*)");
         Pattern processPattern = Pattern.compile("(\\d*)\\smain");
 
-        ArrayList<TraceLine> completeList = new ArrayList<>();
+        ArrayList<TraceLine> tracelines = new ArrayList<>();
         try (BufferedReader readAll = new BufferedReader(new FileReader(file))) {
-            TraceLine caller = new TraceLine();
             boolean firstRow = true;
             int processId = 0;
             while ((readLine = readAll.readLine()) != null) {
@@ -62,19 +61,15 @@ public class TraceViewParser {
                         if (filter) {
                             if (action.equals("ent")) {
                                 TraceLine tl = new TraceLine();
-                                tl.setTraceId(traceID);
                                 tl.setEntrance(actualRowTime);
                                 tl.setSignature(signature);
-                                tl.setCaller(caller);
-                                completeList.add(tl);
-                                caller = tl;
+                                tracelines.add(tl);
                             } else if (action.equals("xit")) {
-                                for (int i = 0; i < completeList.size(); i++) {
-                                    TraceLine tl = completeList.get(i);
-                                    if (tl.getSignature().equals(signature)) {
+                                for (int i = 0; i < tracelines.size(); i++) {
+                                    TraceLine tl = tracelines.get(i);
+                                    if (tl.getSignature().equals(signature) && tl.getExit() == 0) {
                                         tl.setExit(actualRowTime);
-
-                                        completeList.set(i, tl);
+                                        tracelines.set(i, tl);
                                     }
                                 }
                             }
@@ -84,12 +79,9 @@ public class TraceViewParser {
             }
             readAll.close();
         }
-        int lastRowTime = actualRowTime;
-        int timeLength = lastRowTime - firstRowTime;
+        int timeLength = actualRowTime - firstRowTime;
 
-        completeList.get(0).setTimeLength(timeLength);
-        completeList.get(0).setStartTraceviewTime(firstRowTime);
-        return completeList;
+        return new TraceviewStructure(tracelines, firstRowTime, timeLength);
     }
 
 }

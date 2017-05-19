@@ -11,6 +11,7 @@ import it.unisa.petra.SysTrace.SysTrace;
 import it.unisa.petra.SysTrace.SysTraceParser;
 import it.unisa.petra.Traceview.TraceLine;
 import it.unisa.petra.Traceview.TraceViewParser;
+import it.unisa.petra.Traceview.TraceviewStructure;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -168,11 +169,11 @@ public class EMSEExperiment {
                 }
 
                 System.out.println("Elaborating traceview info.");
-                List<TraceLine> traceLines;
                 try {
-                    traceLines = TraceViewParser.parseFile(traceviewFilename, appName, runDataFolderName);
-                    int traceviewLength = traceLines.get(0).setTimeLength();
-                    int traceviewStart = traceLines.get(0).getTraceViewStartingTime();
+                    TraceviewStructure traceviewStructure = TraceViewParser.parseFile(traceviewFilename, appName);
+                    List<TraceLine> traceLines = traceviewStructure.getTraceLines();
+                    int traceviewLength = traceviewStructure.getEndTime();
+                    int traceviewStart = traceviewStructure.getStartTime();
 
                     System.out.println("Elaborating battery stats info.");
                     List<EnergyInfo> energyInfoArray = BatteryStatsParser.parseFile(batteryStatsFilename, traceviewStart, traceviewLength);
