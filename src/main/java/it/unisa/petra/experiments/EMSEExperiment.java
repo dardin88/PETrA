@@ -1,4 +1,4 @@
-package it.unisa.petra.experiment;
+package it.unisa.petra.experiments;
 
 import it.unisa.petra.BatteryStats.BatteryStatsParser;
 import it.unisa.petra.BatteryStats.EnergyInfo;
@@ -11,6 +11,7 @@ import it.unisa.petra.SysTrace.SysTraceParser;
 import it.unisa.petra.Traceview.TraceLine;
 import it.unisa.petra.Traceview.TraceViewParser;
 import it.unisa.petra.Traceview.TraceviewStructure;
+import it.unisa.petra.process.SysTraceRunner;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -33,8 +34,6 @@ public class EMSEExperiment {
                 appNames.add(line);
                 apkNames.add(line + ".apk");
             }
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(EMSEExperiment.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(EMSEExperiment.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -87,10 +86,10 @@ public class EMSEExperiment {
                 }
             }
 
-            EMSEExperiment.executeCommand("adb shell dumpsys battery set usb 0", null, null, true);
+            EMSEExperiment.executeCommand("adb shell dumpsys battery set usb 0", null, null);
 
             System.out.println("Installing app.");
-            EMSEExperiment.executeCommand("adb install " + apkLocation, null, null, true);
+            EMSEExperiment.executeCommand("adb install " + apkLocation, null, null);
 
             int trials = 0;
 
@@ -117,18 +116,18 @@ public class EMSEExperiment {
                 String systraceFilename = runDataFolderName + "systrace";
                 String traceviewFilename = runDataFolderName + "tracedump";
 
-                EMSEExperiment.executeCommand("adb shell pm clear " + appName, null, null, true);
+                EMSEExperiment.executeCommand("adb shell pm clear " + appName, null, null);
 
                 System.out.println("Resetting battery stats.");
-                EMSEExperiment.executeCommand("adb shell dumpsys batterystats --reset", null, null, true);
+                EMSEExperiment.executeCommand("adb shell dumpsys batterystats --reset", null, null);
 
                 System.out.println("Opening app.");
-                EMSEExperiment.executeCommand("adb shell input keyevent 82", null, null, true);
-                EMSEExperiment.executeCommand("adb shell monkey -p " + appName + " 1", null, null, true);
-                EMSEExperiment.executeCommand("adb shell am broadcast -a org.thisisafactory.simiasque.SET_OVERLAY --ez enable true", null, null, true);
+                EMSEExperiment.executeCommand("adb shell input keyevent 82", null, null);
+                EMSEExperiment.executeCommand("adb shell monkey -p " + appName + " 1", null, null);
+                EMSEExperiment.executeCommand("adb shell am broadcast -a org.thisisafactory.simiasque.SET_OVERLAY --ez enable true", null, null);
 
                 System.out.println("Start profiling.");
-                EMSEExperiment.executeCommand("adb shell am profile start " + appName + " ./data/local/tmp/log.trace", null, null, true);
+                EMSEExperiment.executeCommand("adb shell am profile start " + appName + " ./data/local/tmp/log.trace", null, null);
                 Date time1 = new Date();
 
                 System.out.println("Capturing system traces.");
@@ -138,9 +137,9 @@ public class EMSEExperiment {
 
                 System.out.println("Executing random actions.");
 
-                EMSEExperiment.executeCommand("adb kill-server", null, null, true);
-                EMSEExperiment.executeCommand("adb start-server", null, null, true);
-                EMSEExperiment.executeCommand("adb shell monkey -p " + appName + " -s " + seed + " --throttle " + timeBetweenInteractions + " --ignore-crashes --ignore-timeouts --ignore-security-exceptions " + interactions, null, null, true);
+                EMSEExperiment.executeCommand("adb kill-server", null, null);
+                EMSEExperiment.executeCommand("adb start-server", null, null);
+                EMSEExperiment.executeCommand("adb shell monkey -p " + appName + " -s " + seed + " --throttle " + timeBetweenInteractions + " --ignore-crashes --ignore-timeouts --ignore-security-exceptions " + interactions, null, null);
 
                 Date time2 = new Date();
                 long timespent = time2.getTime() - time1.getTime();
@@ -148,14 +147,14 @@ public class EMSEExperiment {
                 timeCapturing = (int) ((timespent + 10000) / 1000);
 
                 System.out.println("Stop profiling.");
-                EMSEExperiment.executeCommand("adb shell am profile stop " + appName, null, null, true);
+                EMSEExperiment.executeCommand("adb shell am profile stop " + appName, null, null);
 
                 System.out.println("Saving battery stats.");
-                EMSEExperiment.executeCommand("adb shell dumpsys batterystats", null, new File(batteryStatsFilename), true);
+                EMSEExperiment.executeCommand("adb shell dumpsys batterystats", null, new File(batteryStatsFilename));
 
                 System.out.println("Saving traceviews.");
-                EMSEExperiment.executeCommand("adb pull ./data/local/tmp/log.trace " + runDataFolderName, null, null, true);
-                EMSEExperiment.executeCommand("./dmtracedump -o " + runDataFolderName + "log.trace", platformToolsFolder, new File(traceviewFilename), true);
+                EMSEExperiment.executeCommand("adb pull ./data/local/tmp/log.trace " + runDataFolderName, null, null);
+                EMSEExperiment.executeCommand("./dmtracedump -o " + runDataFolderName + "log.trace", platformToolsFolder, new File(traceviewFilename));
 
                 systraceThread.join();
 
@@ -183,7 +182,7 @@ public class EMSEExperiment {
                     System.out.println("Aggregating results");
                     try (PrintWriter resultsWriter = new PrintWriter(runDataFolderName + "result.csv", "UTF-8")) {
                         resultsWriter.println("signature, joule, seconds");
-                        energyInfoArray = EMSEExperiment.mergeEnergyInfo(energyInfoArray, cpuInfo, powerProfile);
+                        energyInfoArray = EMSEExperiment.mergeEnergyInfo(energyInfoArray, cpuInfo);
                         for (TraceLine traceLine : traceLines) {
                             List<Double> result = EMSEExperiment.calculateConsumption(traceLine.getEntrance(), traceLine.getExit(), energyInfoArray, powerProfile);
                             resultsWriter.println(traceLine.getSignature() + "," + result.get(0) + "," + result.get(1));
@@ -191,7 +190,7 @@ public class EMSEExperiment {
 
                         resultsWriter.flush();
                     }
-                } catch (IOException | ParseException | IndexOutOfBoundsException | NumberFormatException ex) {
+                } catch (IOException | IndexOutOfBoundsException | NumberFormatException ex) {
                     run--;
                     trials++;
                     if (trials == 10) {
@@ -201,14 +200,14 @@ public class EMSEExperiment {
                     }
                 } finally {
                     System.out.println("Stop app.");
-                    EMSEExperiment.executeCommand("adb shell am broadcast -a org.thisisafactory.simiasque.SET_OVERLAY --ez enable false", null, null, true);
-                    EMSEExperiment.executeCommand("adb shell am force-stop " + appName, null, null, true);
+                    EMSEExperiment.executeCommand("adb shell am broadcast -a org.thisisafactory.simiasque.SET_OVERLAY --ez enable false", null, null);
+                    EMSEExperiment.executeCommand("adb shell am force-stop " + appName, null, null);
 
-                    EMSEExperiment.executeCommand("adb shell pm clear " + appName, null, null, true);
+                    EMSEExperiment.executeCommand("adb shell pm clear " + appName, null, null);
                 }
                 try {
                     if (seedsWriter != null) {
-                        seedsWriter.append(seed + "\n");
+                        seedsWriter.append(seed).append("\n");
                         seedsWriter.flush();
                     }
                 } catch (IOException ex) {
@@ -224,15 +223,15 @@ public class EMSEExperiment {
                 Logger.getLogger(EMSEExperiment.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-            EMSEExperiment.executeCommand("adb shell dumpsys battery reset", null, null, true);
+            EMSEExperiment.executeCommand("adb shell dumpsys battery reset", null, null);
 
             System.out.println("Uninstalling app.");
-            EMSEExperiment.executeCommand("adb shell pm uninstall " + appName, null, null, true);
+            EMSEExperiment.executeCommand("adb shell pm uninstall " + appName, null, null);
         }
 
     }
 
-    private static void executeCommand(String command, File directoryFolder, File outputFile, boolean waitfor) {
+    private static void executeCommand(String command, File directoryFolder, File outputFile) {
         try {
             List<String> listCommands = new ArrayList<>();
 
@@ -247,17 +246,15 @@ public class EMSEExperiment {
                 pb.redirectOutput(outputFile);
             }
             Process commandProcess = pb.start();
-            if (waitfor == true) {
-                commandProcess.waitFor();
-                Thread.sleep(3000);
-            }
+            commandProcess.waitFor();
+            Thread.sleep(3000);
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(EMSEExperiment.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public static List<EnergyInfo> mergeEnergyInfo(List<EnergyInfo> energyInfoArray, SysTrace cpuInfo, PowerProfile powerProfile) throws IOException, ParseException {
+    private static List<EnergyInfo> mergeEnergyInfo(List<EnergyInfo> energyInfoArray, SysTrace cpuInfo) {
         for (EnergyInfo energyInfo : energyInfoArray) {
             int fixedEnergyInfoTime = cpuInfo.getSystraceStartTime() + energyInfo.getTime();
             for (CpuFreq freq : cpuInfo.getFrequency()) {
@@ -269,15 +266,15 @@ public class EMSEExperiment {
         return energyInfoArray;
     }
 
-    public static List calculateConsumption(int timeEnter, int timeExit, List<EnergyInfo> energyInfoArray, PowerProfile powerProfile) throws IOException, ParseException {
+    private static List calculateConsumption(int timeEnter, int timeExit, List<EnergyInfo> energyInfoArray, PowerProfile powerProfile) {
 
         double joul = 0;
         double totalSeconds = 0;
 
-        for (int i = 0; i < energyInfoArray.size(); i++) {
-            int cpuFrequency = energyInfoArray.get(i).getCpuFreq();
+        for (EnergyInfo anEnergyInfoArray : energyInfoArray) {
+            int cpuFrequency = anEnergyInfoArray.getCpuFreq();
             double ampere = powerProfile.getCpuInfo().get(cpuFrequency) / 1000;
-            for (String deviceString : energyInfoArray.get(i).getDevices()) {
+            for (String deviceString : anEnergyInfoArray.getDevices()) {
                 if (deviceString.contains("wifi")) {
                     ampere += powerProfile.getDevices().get("wifi.on") / 1000;
                 } else if (deviceString.contains("screen")) {
@@ -286,11 +283,11 @@ public class EMSEExperiment {
                     ampere += powerProfile.getDevices().get("gps.on") / 1000;
                 }
             }
-            double watt = ampere * energyInfoArray.get(i).getVoltage() / 1000;
+            double watt = ampere * anEnergyInfoArray.getVoltage() / 1000;
             double microseconds = 0;
-            if (timeEnter >= energyInfoArray.get(i).getTime()) {
-                if (timeEnter > energyInfoArray.get(i).getTime()) {
-                    microseconds = timeExit - energyInfoArray.get(i).getTime();
+            if (timeEnter >= anEnergyInfoArray.getTime()) {
+                if (timeEnter > anEnergyInfoArray.getTime()) {
+                    microseconds = timeExit - anEnergyInfoArray.getTime();
                 } else {
                     microseconds = timeExit - timeEnter;
                 }

@@ -10,7 +10,6 @@ import it.unisa.petra.SysTrace.SysTraceParser;
 import it.unisa.petra.Traceview.TraceLine;
 import it.unisa.petra.Traceview.TraceViewParser;
 import it.unisa.petra.Traceview.TraceviewStructure;
-import it.unisa.petra.experiment.SysTraceRunner;
 
 import java.io.*;
 import java.util.*;

@@ -1,4 +1,4 @@
-package it.unisa.petra.experiment;
+package it.unisa.petra.experiments;
 
 import it.unisa.petra.BatteryStats.BatteryStatsParser;
 import it.unisa.petra.BatteryStats.EnergyInfo;
@@ -11,6 +11,7 @@ import it.unisa.petra.SysTrace.SysTraceParser;
 import it.unisa.petra.Traceview.TraceLine;
 import it.unisa.petra.Traceview.TraceViewParser;
 import it.unisa.petra.Traceview.TraceviewStructure;
+import it.unisa.petra.process.SysTraceRunner;
 
 import java.io.*;
 import java.text.ParseException;
@@ -34,8 +35,6 @@ public class SANERExperiment {
                 appNames.add(line);
                 apkNames.add(line + ".apk");
             }
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(SANERExperiment.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(SANERExperiment.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -68,33 +67,32 @@ public class SANERExperiment {
 
                 appDataFolder.mkdirs();
 
-                SANERExperiment.executeCommand("adb kill-server", null, null, true);
-                SANERExperiment.executeCommand("adb start-server", null, null, true);
+                SANERExperiment.executeCommand("adb kill-server", null, null);
+                SANERExperiment.executeCommand("adb start-server", null, null);
 
-                SANERExperiment.executeCommand("adb shell dumpsys battery set usb 0", null, null, true);
+                SANERExperiment.executeCommand("adb shell dumpsys battery set usb 0", null, null);
 
                 System.out.println("Installing app.");
-                SANERExperiment.executeCommand("adb install " + apkLocation, null, null, true);
+                SANERExperiment.executeCommand("adb install " + apkLocation, null, null);
 
-                String runDataFolderName = outputLocation;
-                File runDataFolder = new File(runDataFolderName);
+                File runDataFolder = new File(outputLocation);
                 runDataFolder.mkdirs();
 
-                String batteryStatsFilename = runDataFolderName + "batterystats";
-                String systraceFilename = runDataFolderName + "systrace";
-                String traceviewFilename = runDataFolderName + "tracedump";
+                String batteryStatsFilename = outputLocation + "batterystats";
+                String systraceFilename = outputLocation + "systrace";
+                String traceviewFilename = outputLocation + "tracedump";
 
-                SANERExperiment.executeCommand("adb shell pm clear " + filter, null, null, true);
+                SANERExperiment.executeCommand("adb shell pm clear " + filter, null, null);
 
                 System.out.println("Resetting battery stats.");
-                SANERExperiment.executeCommand("adb shell dumpsys batterystats --reset", null, null, true);
+                SANERExperiment.executeCommand("adb shell dumpsys batterystats --reset", null, null);
 
                 System.out.println("Opening app.");
-                SANERExperiment.executeCommand("adb shell input keyevent 82", null, null, true);
-                SANERExperiment.executeCommand("adb shell monkey -p " + filter + " 1", null, null, true);
+                SANERExperiment.executeCommand("adb shell input keyevent 82", null, null);
+                SANERExperiment.executeCommand("adb shell monkey -p " + filter + " 1", null, null);
 
                 System.out.println("Start profiling.");
-                SANERExperiment.executeCommand("adb shell am profile start " + filter + " ./data/local/tmp/log.trace", null, null, true);
+                SANERExperiment.executeCommand("adb shell am profile start " + filter + " ./data/local/tmp/log.trace", null, null);
 
                 System.out.println("Capturing system traces.");
                 SysTraceRunner sysTraceRunner = new SysTraceRunner(timeCapturing, systraceFilename, platformToolsFolder);
@@ -102,17 +100,17 @@ public class SANERExperiment {
                 systraceThread.start();
 
                 System.out.println("Executing test.");
-                SANERExperiment.executeCommand(toolsFolder + "/monkeyrunner " + toolsFolder + "monkey_playback.py " + testLocation, null, null, true);
+                SANERExperiment.executeCommand(toolsFolder + "/monkeyrunner " + toolsFolder + "monkey_playback.py " + testLocation, null, null);
 
                 System.out.println("Stop profiling.");
-                SANERExperiment.executeCommand("adb shell am profile stop " + filter, null, null, true);
+                SANERExperiment.executeCommand("adb shell am profile stop " + filter, null, null);
 
                 System.out.println("Saving battery stats.");
-                SANERExperiment.executeCommand("adb shell dumpsys batterystats", null, new File(batteryStatsFilename), true);
+                SANERExperiment.executeCommand("adb shell dumpsys batterystats", null, new File(batteryStatsFilename));
 
                 System.out.println("Saving traceviews.");
-                SANERExperiment.executeCommand("adb pull ./data/local/tmp/log.trace " + runDataFolderName, null, null, true);
-                SANERExperiment.executeCommand("./dmtracedump -o " + runDataFolderName + "log.trace", platformToolsFolder, new File(traceviewFilename), true);
+                SANERExperiment.executeCommand("adb pull ./data/local/tmp/log.trace " + outputLocation, null, null);
+                SANERExperiment.executeCommand("./dmtracedump -o " + outputLocation + "log.trace", platformToolsFolder, new File(traceviewFilename));
 
                 systraceThread.join();
 
@@ -138,37 +136,37 @@ public class SANERExperiment {
                     SysTrace cpuInfo = SysTraceParser.parseFile(systraceFilename, traceviewStart, traceviewLength);
 
                     System.out.println("Aggregating results");
-                    PrintWriter resultsWriter = new PrintWriter(runDataFolderName + "result.csv", "UTF-8");
+                    PrintWriter resultsWriter = new PrintWriter(outputLocation + "result.csv", "UTF-8");
                     resultsWriter.println("signature, joule, seconds");
-                    energyInfoArray = SANERExperiment.mergeEnergyInfo(energyInfoArray, cpuInfo, powerProfile);
+                    energyInfoArray = SANERExperiment.mergeEnergyInfo(energyInfoArray, cpuInfo);
                     for (TraceLine traceLine : traceLines) {
                         List<Double> result = SANERExperiment.calculateConsumption(traceLine.getEntrance(), traceLine.getExit(), energyInfoArray, powerProfile);
                         resultsWriter.println(traceLine.getSignature() + "," + result.get(0) + "," + result.get(1));
                     }
 
                     System.out.println("Stop app.");
-                    SANERExperiment.executeCommand("adb shell am force-stop " + filter, null, null, true);
+                    SANERExperiment.executeCommand("adb shell am force-stop " + filter, null, null);
 
-                    SANERExperiment.executeCommand("adb shell pm clear " + filter, null, null, true);
+                    SANERExperiment.executeCommand("adb shell pm clear " + filter, null, null);
 
                     resultsWriter.flush();
-                } catch (IOException | ParseException | IndexOutOfBoundsException ex) {
+                } catch (IOException | IndexOutOfBoundsException ex) {
                     continue;
                 }
 
                 toRepeat = false;
 
-                SANERExperiment.executeCommand("adb shell dumpsys battery reset", null, null, true);
+                SANERExperiment.executeCommand("adb shell dumpsys battery reset", null, null);
 
                 System.out.println("Uninstalling app.");
-                SANERExperiment.executeCommand("adb shell pm uninstall " + filter, null, null, true);
+                SANERExperiment.executeCommand("adb shell pm uninstall " + filter, null, null);
             }
             return;
         }
 
     }
 
-    private static void executeCommand(String command, File directoryFolder, File outputFile, boolean waitfor) {
+    private static void executeCommand(String command, File directoryFolder, File outputFile) {
         try {
             List<String> listCommands = new ArrayList<>();
 
@@ -183,16 +181,14 @@ public class SANERExperiment {
                 pb.redirectOutput(outputFile);
             }
             Process commandProcess = pb.start();
-            if (waitfor == true) {
-                commandProcess.waitFor();
-                Thread.sleep(3000);
-            }
+            commandProcess.waitFor();
+            Thread.sleep(3000);
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(SANERExperiment.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public static List<EnergyInfo> mergeEnergyInfo(List<EnergyInfo> energyInfoArray, SysTrace cpuInfo, PowerProfile powerProfile) throws IOException, ParseException {
+    private static List<EnergyInfo> mergeEnergyInfo(List<EnergyInfo> energyInfoArray, SysTrace cpuInfo) {
         for (EnergyInfo energyInfo : energyInfoArray) {
             int fixedEnergyInfoTime = cpuInfo.getSystraceStartTime() + energyInfo.getTime();
             for (CpuFreq freq : cpuInfo.getFrequency()) {
@@ -204,15 +200,15 @@ public class SANERExperiment {
         return energyInfoArray;
     }
 
-    public static List calculateConsumption(int timeEnter, int timeExit, List<EnergyInfo> energyInfoArray, PowerProfile powerProfile) throws IOException, ParseException {
+    private static List calculateConsumption(int timeEnter, int timeExit, List<EnergyInfo> energyInfoArray, PowerProfile powerProfile) {
 
         double joul = 0;
         double totalSeconds = 0;
 
-        for (int i = 0; i < energyInfoArray.size(); i++) {
-            int cpuFrequency = energyInfoArray.get(i).getCpuFreq();
+        for (EnergyInfo anEnergyInfoArray : energyInfoArray) {
+            int cpuFrequency = anEnergyInfoArray.getCpuFreq();
             double ampere = powerProfile.getCpuInfo().get(cpuFrequency) / 1000;
-            for (String deviceString : energyInfoArray.get(i).getDevices()) {
+            for (String deviceString : anEnergyInfoArray.getDevices()) {
                 if (deviceString.contains("wifi")) {
                     ampere += powerProfile.getDevices().get("wifi.on") / 1000;
                 } else if (deviceString.contains("screen")) {
@@ -221,11 +217,11 @@ public class SANERExperiment {
                     ampere += powerProfile.getDevices().get("gps.on") / 1000;
                 }
             }
-            double watt = ampere * energyInfoArray.get(i).getVoltage() / 1000;
+            double watt = ampere * anEnergyInfoArray.getVoltage() / 1000;
             double microseconds = 0;
-            if (timeEnter >= energyInfoArray.get(i).getTime()) {
-                if (timeEnter > energyInfoArray.get(i).getTime()) {
-                    microseconds = timeExit - energyInfoArray.get(i).getTime();
+            if (timeEnter >= anEnergyInfoArray.getTime()) {
+                if (timeEnter > anEnergyInfoArray.getTime()) {
+                    microseconds = timeExit - anEnergyInfoArray.getTime();
                 } else {
                     microseconds = timeExit - timeEnter;
                 }
