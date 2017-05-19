@@ -46,10 +46,10 @@ public class SANERExperiment {
 
             while (toRepeat) {
 
-                String appName = appNames.get(appCounter);
+                String filter = appNames.get(appCounter);
                 String apkLocation = apkNames.get(appCounter);
-                String outputLocation = "/home/dardin88/Desktop/energy_consumption_bad_smell/PETrA_evaluation/prop_test_data/" + appName + "/";
-                String testLocation = "/home/dardin88/Desktop/energy_consumption_bad_smell/PETrA_evaluation/test-scripts/" + appName + ".txt";
+                String outputLocation = "/home/dardin88/Desktop/energy_consumption_bad_smell/PETrA_evaluation/prop_test_data/" + filter + "/";
+                String testLocation = "/home/dardin88/Desktop/energy_consumption_bad_smell/PETrA_evaluation/test-scripts/" + filter + ".txt";
                 String powerProfileName = null;
                 File platformToolsFolder = null;
                 String toolsFolder = null;
@@ -84,17 +84,17 @@ public class SANERExperiment {
                 String systraceFilename = runDataFolderName + "systrace";
                 String traceviewFilename = runDataFolderName + "tracedump";
 
-                SANERExperiment.executeCommand("adb shell pm clear " + appName, null, null, true);
+                SANERExperiment.executeCommand("adb shell pm clear " + filter, null, null, true);
 
                 System.out.println("Resetting battery stats.");
                 SANERExperiment.executeCommand("adb shell dumpsys batterystats --reset", null, null, true);
 
                 System.out.println("Opening app.");
                 SANERExperiment.executeCommand("adb shell input keyevent 82", null, null, true);
-                SANERExperiment.executeCommand("adb shell monkey -p " + appName + " 1", null, null, true);
+                SANERExperiment.executeCommand("adb shell monkey -p " + filter + " 1", null, null, true);
 
                 System.out.println("Start profiling.");
-                SANERExperiment.executeCommand("adb shell am profile start " + appName + " ./data/local/tmp/log.trace", null, null, true);
+                SANERExperiment.executeCommand("adb shell am profile start " + filter + " ./data/local/tmp/log.trace", null, null, true);
 
                 System.out.println("Capturing system traces.");
                 SysTraceRunner sysTraceRunner = new SysTraceRunner(timeCapturing, systraceFilename, platformToolsFolder);
@@ -105,7 +105,7 @@ public class SANERExperiment {
                 SANERExperiment.executeCommand(toolsFolder + "/monkeyrunner " + toolsFolder + "monkey_playback.py " + testLocation, null, null, true);
 
                 System.out.println("Stop profiling.");
-                SANERExperiment.executeCommand("adb shell am profile stop " + appName, null, null, true);
+                SANERExperiment.executeCommand("adb shell am profile stop " + filter, null, null, true);
 
                 System.out.println("Saving battery stats.");
                 SANERExperiment.executeCommand("adb shell dumpsys batterystats", null, new File(batteryStatsFilename), true);
@@ -126,7 +126,7 @@ public class SANERExperiment {
 
                 System.out.println("Elaborating traceview info.");
                 try {
-                    TraceviewStructure traceviewStructure = TraceViewParser.parseFile(traceviewFilename, appName);
+                    TraceviewStructure traceviewStructure = TraceViewParser.parseFile(traceviewFilename, filter);
                     List<TraceLine> traceLines = traceviewStructure.getTraceLines();
                     int traceviewLength = traceviewStructure.getEndTime();
                     int traceviewStart = traceviewStructure.getStartTime();
@@ -147,9 +147,9 @@ public class SANERExperiment {
                     }
 
                     System.out.println("Stop app.");
-                    SANERExperiment.executeCommand("adb shell am force-stop " + appName, null, null, true);
+                    SANERExperiment.executeCommand("adb shell am force-stop " + filter, null, null, true);
 
-                    SANERExperiment.executeCommand("adb shell pm clear " + appName, null, null, true);
+                    SANERExperiment.executeCommand("adb shell pm clear " + filter, null, null, true);
 
                     resultsWriter.flush();
                 } catch (IOException | ParseException | IndexOutOfBoundsException ex) {
@@ -161,7 +161,7 @@ public class SANERExperiment {
                 SANERExperiment.executeCommand("adb shell dumpsys battery reset", null, null, true);
 
                 System.out.println("Uninstalling app.");
-                SANERExperiment.executeCommand("adb shell pm uninstall " + appName, null, null, true);
+                SANERExperiment.executeCommand("adb shell pm uninstall " + filter, null, null, true);
             }
             return;
         }

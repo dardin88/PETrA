@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
  */
 public class TraceViewParser {
 
-    public static TraceviewStructure parseFile(String fileName, String appName) throws IOException, NumberFormatException {
+    public static TraceviewStructure parseFile(String fileName, String filter) throws IOException, NumberFormatException {
 
         File file = new File(fileName);
 
@@ -53,12 +53,12 @@ public class TraceViewParser {
 
                         String signature = matcher2.group(4);
 
-                        boolean filter = false;
+                        boolean toFilter = false;
                         if (traceID == processId) {
-                            filter = signature.contains(appName);
+                            toFilter = signature.contains(filter);
                         }
 
-                        if (filter) {
+                        if (toFilter) {
                             if (action.equals("ent")) {
                                 TraceLine tl = new TraceLine();
                                 tl.setEntrance(actualRowTime);
