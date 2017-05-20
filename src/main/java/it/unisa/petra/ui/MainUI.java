@@ -46,10 +46,7 @@ public class MainUI extends javax.swing.JFrame {
         this.setLocation(x, y);
     }
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
+    public static void run() {
         try {
             OUTER:
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {

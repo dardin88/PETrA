@@ -75,7 +75,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>it.unisa.petra.ui.MainUI</mainClass>
+                            <mainClass>it.unisa.petra.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
