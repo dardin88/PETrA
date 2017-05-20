@@ -16,10 +16,10 @@ public class TraceViewParserTest {
         TraceviewStructure result = TraceViewParser.parseFile(fileName, appName);
         TraceLine firstTraceLine = result.getTraceLines().get(0);
         assertEquals("ch.smalltech.battery.core.components.BatteryView$1.handleMessage (Landroid/os/Message;)V\tBatteryView.java", firstTraceLine.getSignature());
-        assertEquals(7, firstTraceLine.getEntrance());
-        assertEquals(7, firstTraceLine.getExit());
+        assertEquals(7080, firstTraceLine.getEntrance());
+        assertEquals(7294, firstTraceLine.getExit());
         assertEquals(0, result.getStartTime());
-        assertEquals(12964, result.getEndTime());
+        assertEquals(12963925, result.getEndTime());
     }
 
 }

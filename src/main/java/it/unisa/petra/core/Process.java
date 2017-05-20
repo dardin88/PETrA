@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 public class Process {
 
     public void installApp(String apkLocation) throws NoDeviceFoundException {
+        this.executeCommand("adb shell dumpsys battery set ac 0", null);
         this.executeCommand("adb shell dumpsys battery set usb 0", null);
 
         System.out.println("Installing app.");
@@ -47,12 +48,11 @@ public class Process {
         if (scriptLocationPath.isEmpty()) {
             System.out.println(runString + "seed: " + seed);
         }
-        String runDataFolderName = outputLocation + File.separator + "run_" + run + File.separator;
+        String runDataFolderName = outputLocation + "run_" + run + File.separator;
         File runDataFolder = new File(runDataFolderName);
 
-        if (!runDataFolder.mkdirs()) {
-            throw new IOException();
-        }
+        runDataFolder.mkdirs();
+
 
         String batteryStatsFilename = runDataFolderName + "batterystats";
         String systraceFilename = runDataFolderName + "systrace";
@@ -79,7 +79,7 @@ public class Process {
 
         if (scriptLocationPath.isEmpty()) {
             System.out.println(runString + "executing random actions.");
-        }else{
+        } else {
             System.out.println(runString + "running monkeyrunner script.");
         }
         this.executeCommand("adb kill-server", null);
@@ -153,7 +153,7 @@ public class Process {
 
     private List<EnergyInfo> mergeEnergyInfo(List<EnergyInfo> energyInfoArray, SysTrace cpuInfo) {
         for (EnergyInfo energyInfo : energyInfoArray) {
-            int fixedEnergyInfoTime = cpuInfo.getSystraceStartTime() + energyInfo.getTime();
+            int fixedEnergyInfoTime = cpuInfo.getSystraceStartTime() + energyInfo.getTime() * 1000; //systrace time are in nanoseconds
             for (CpuFreq freq : cpuInfo.getFrequency()) {
                 if (freq.getTime() <= fixedEnergyInfoTime) {
                     energyInfo.setCpuFreq(freq.getValue());
@@ -165,7 +165,7 @@ public class Process {
 
     private List calculateConsumption(int timeEnter, int timeExit, List<EnergyInfo> energyInfoArray, PowerProfile powerProfile) {
 
-        double joul = 0;
+        double joule = 0;
         double totalSeconds = 0;
 
         for (EnergyInfo energyInfo : energyInfoArray) {
@@ -189,13 +189,13 @@ public class Process {
                     microseconds = timeExit - timeEnter;
                 }
             }
-            double seconds = microseconds / 1000000;
+            double seconds = microseconds / 1000000000;
             totalSeconds += seconds;
-            joul += watt * seconds;
+            joule += watt * seconds;
         }
 
         ArrayList<Double> result = new ArrayList<>();
-        result.add(joul);
+        result.add(joule);
         result.add(totalSeconds);
         return result;
     }

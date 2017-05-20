@@ -43,8 +43,7 @@ public class TraceViewParser {
                     if (matcher2.find()) {
                         int traceID = Integer.parseInt(matcher2.group(1));
                         String action = matcher2.group(2);
-                        int usecs = Integer.parseInt(matcher2.group(3));
-                        actualRowTime = (int) Math.round(usecs * 0.001); //convert the time from microseconds to milliseconds
+                        actualRowTime = Integer.parseInt(matcher2.group(3));
 
                         if (firstRow) {
                             firstRowTime = actualRowTime;
