@@ -70,13 +70,4 @@ public class EnergyInfo {
 
         return time == that.time && volt == that.volt && cpuFreq == that.cpuFreq && devices.equals(that.devices);
     }
-
-    @Override
-    public int hashCode() {
-        int result = time;
-        result = 31 * result + volt;
-        result = 31 * result + devices.hashCode();
-        result = 31 * result + cpuFreq;
-        return result;
-    }
 }
