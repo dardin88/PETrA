@@ -34,10 +34,8 @@ public class Process {
     }
 
     public ProcessOutput playRun(int run, String appName, int interactions, int timeBetweenInteractions,
-                                 int timeCapturing, String scriptLocationPath, String sdkFolderPath, String powerProfilePath, String outputLocation)
+                                 int timeCapturing, String scriptLocationPath, String sdkFolderPath, String powerProfileFile, String outputLocation)
             throws InterruptedException, IOException, NoDeviceFoundException {
-
-        String runString = "Run " + run + ": ";
 
         File platformToolsFolder = new File(sdkFolderPath + File.separator + "platform-tools");
         File toolsFolder = new File(sdkFolderPath + File.separator + "tools");
@@ -46,13 +44,12 @@ public class Process {
         String seed = random.nextInt() + "";
 
         if (scriptLocationPath.isEmpty()) {
-            System.out.println(runString + "seed: " + seed);
+            System.out.println("Run" + run + ": seed: " + seed);
         }
         String runDataFolderName = outputLocation + "run_" + run + File.separator;
         File runDataFolder = new File(runDataFolderName);
 
         runDataFolder.mkdirs();
-
 
         String batteryStatsFilename = runDataFolderName + "batterystats";
         String systraceFilename = runDataFolderName + "systrace";
@@ -60,27 +57,27 @@ public class Process {
 
         this.executeCommand("adb shell pm clear " + appName, null);
 
-        System.out.println(runString + "resetting battery stats.");
+        System.out.println("Run" + run + ": resetting battery stats.");
         this.executeCommand("adb shell dumpsys batterystats --reset", null);
 
-        System.out.println(runString + "opening app.");
+        System.out.println("Run" + run + ": opening app.");
         this.executeCommand("adb shell input keyevent 82", null);
         this.executeCommand("adb shell monkey -p " + appName + " 1", null);
         this.executeCommand("adb shell am broadcast -a org.thisisafactory.simiasque.SET_OVERLAY --ez enable true", null);
 
-        System.out.println(runString + "start profiling.");
+        System.out.println("Run" + run + ": start profiling.");
         this.executeCommand("adb shell am profile start " + appName + " ./data/local/tmp/log.trace", null);
         Date time1 = new Date();
 
-        System.out.println(runString + "capturing system traces.");
+        System.out.println("Run" + run + ": capturing system traces.");
         SysTraceRunner sysTraceRunner = new SysTraceRunner(timeCapturing, systraceFilename, platformToolsFolder);
         Thread systraceThread = new Thread(sysTraceRunner);
         systraceThread.start();
 
         if (scriptLocationPath.isEmpty()) {
-            System.out.println(runString + "executing random actions.");
+            System.out.println("Run" + run + ": executing random actions.");
         } else {
-            System.out.println(runString + "running monkeyrunner script.");
+            System.out.println("Run" + run + ": running monkeyrunner script.");
         }
         this.executeCommand("adb kill-server", null);
         this.executeCommand("adb start-server", null);
@@ -95,51 +92,34 @@ public class Process {
 
         timeCapturing = (int) ((timespent + 10000) / 1000);
 
-        System.out.println(runString + "stop profiling.");
+        System.out.println("Run" + run + ": stop profiling.");
         this.executeCommand("adb shell am profile stop " + appName, null);
 
-        System.out.println(runString + "saving battery stats.");
+        System.out.println("Run" + run + ": saving battery stats.");
         this.executeCommand("adb shell dumpsys batterystats", new File(batteryStatsFilename));
 
-        System.out.println(runString + "saving traceviews.");
+        System.out.println("Run" + run + ": saving traceviews.");
         this.executeCommand("adb pull ./data/local/tmp/log.trace " + runDataFolderName, null);
         this.executeCommand(platformToolsFolder + "/dmtracedump -o " + runDataFolderName + "log.trace", new File(traceviewFilename));
 
         systraceThread.join();
 
-        System.out.println(runString + "loading power profile.");
-        PowerProfile powerProfile = null;
         try {
-            powerProfile = PowerProfileParser.parseFile(powerProfilePath);
-        } catch (IOException ex) {
-            Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            System.out.println("Run" + run + ": aggregating results.");
 
-        System.out.println(runString + "elaborating traceview info.");
-        try {
-            TraceviewStructure traceviewStructure = TraceViewParser.parseFile(traceviewFilename, appName);
-            List<TraceLine> traceLines = traceviewStructure.getTraceLines();
-            int traceviewLength = traceviewStructure.getEndTime();
-            int traceviewStart = traceviewStructure.getStartTime();
-
-            System.out.println(runString + "elaborating battery stats info.");
-            List<EnergyInfo> energyInfoArray = BatteryStatsParser.parseFile(batteryStatsFilename, traceviewStart, traceviewLength);
-
-            System.out.println(runString + "elaborating sys trace stats info.");
-            SysTrace cpuInfo = SysTraceParser.parseFile(systraceFilename, traceviewStart, traceviewLength);
-
-            System.out.println(runString + "aggregating results.");
+            List<TraceLine> traceLinesWiConsumptions = parseAndAggregateResults(traceviewFilename, batteryStatsFilename,
+                    systraceFilename, powerProfileFile, appName, run);
 
             PrintWriter resultsWriter = new PrintWriter(runDataFolderName + "result.csv", "UTF-8");
             resultsWriter.println("signature, joule, seconds");
-            energyInfoArray = this.mergeEnergyInfo(energyInfoArray, cpuInfo);
-            for (TraceLine traceLine : traceLines) {
-                List result = this.calculateConsumption(traceLine.getEntrance(), traceLine.getExit(), energyInfoArray, powerProfile);
-                resultsWriter.println(traceLine.getSignature() + "," + result.get(0) + "," + result.get(1));
+
+            for (TraceLine traceLine : traceLinesWiConsumptions) {
+                resultsWriter.println(traceLine.getSignature() + "," + traceLine.getConsumption() + "," + traceLine.getTimeLength());
             }
+
             resultsWriter.flush();
         } finally {
-            System.out.println(runString + "stop app.");
+            System.out.println("Run" + run + ": stop app.");
             this.executeCommand("adb shell am broadcast -a org.thisisafactory.simiasque.SET_OVERLAY --ez enable false", null);
             this.executeCommand("adb shell am force-stop " + appName, null);
             this.executeCommand("adb shell pm clear " + appName, null);
@@ -147,8 +127,36 @@ public class Process {
 
         this.executeCommand("adb shell dumpsys battery reset", null);
 
-        System.out.println(runString + "complete.");
+        System.out.println("Run" + run + ": complete.");
         return new ProcessOutput(timeCapturing, seed);
+    }
+
+    List<TraceLine> parseAndAggregateResults(String traceviewFilename, String batteryStatsFilename, String systraceFilename,
+                                             String powerProfileFile, String appName, int run) throws IOException {
+        List<TraceLine> traceLinesWConsumption = new ArrayList();
+
+        System.out.println("Run" + run + ": loading power profile.");
+        PowerProfile powerProfile = PowerProfileParser.parseFile(powerProfileFile);
+
+        System.out.println("Run" + run + ": elaborating traceview info.");
+        TraceviewStructure traceviewStructure = TraceViewParser.parseFile(traceviewFilename, appName);
+        List<TraceLine> traceLines = traceviewStructure.getTraceLines();
+        int traceviewLength = traceviewStructure.getEndTime();
+        int traceviewStart = traceviewStructure.getStartTime();
+
+        System.out.println("Run" + run + ": elaborating battery stats info.");
+        List<EnergyInfo> energyInfoArray = BatteryStatsParser.parseFile(batteryStatsFilename, traceviewStart, traceviewLength);
+
+        System.out.println("Run" + run + ": elaborating sys trace stats info.");
+        SysTrace cpuInfo = SysTraceParser.parseFile(systraceFilename, traceviewStart, traceviewLength);
+
+        System.out.println("Run" + run + ": aggregating results.");
+        energyInfoArray = this.mergeEnergyInfo(energyInfoArray, cpuInfo);
+        for (TraceLine traceLine : traceLines) {
+            traceLinesWConsumption.add(this.calculateConsumption(traceLine, energyInfoArray, powerProfile));
+        }
+
+        return traceLinesWConsumption;
     }
 
     private List<EnergyInfo> mergeEnergyInfo(List<EnergyInfo> energyInfoArray, SysTrace cpuInfo) {
@@ -163,7 +171,7 @@ public class Process {
         return energyInfoArray;
     }
 
-    private List calculateConsumption(int timeEnter, int timeExit, List<EnergyInfo> energyInfoArray, PowerProfile powerProfile) {
+    private TraceLine calculateConsumption(TraceLine traceLine, List<EnergyInfo> energyInfoArray, PowerProfile powerProfile) {
 
         double joule = 0;
         double totalSeconds = 0;
@@ -182,11 +190,11 @@ public class Process {
             }
             double watt = ampere * energyInfo.getVoltage() / 1000;
             double microseconds = 0;
-            if (timeEnter >= energyInfo.getTime()) {
-                if (timeEnter > energyInfo.getTime()) {
-                    microseconds = timeExit - energyInfo.getTime();
+            if (traceLine.getEntrance() >= energyInfo.getTime()) {
+                if (traceLine.getEntrance() > energyInfo.getTime()) {
+                    microseconds = traceLine.getExit() - energyInfo.getTime();
                 } else {
-                    microseconds = timeExit - timeEnter;
+                    microseconds = traceLine.getExit() - traceLine.getEntrance();
                 }
             }
             double seconds = microseconds / 1000000000;
@@ -194,10 +202,10 @@ public class Process {
             joule += watt * seconds;
         }
 
-        ArrayList<Double> result = new ArrayList<>();
-        result.add(joule);
-        result.add(totalSeconds);
-        return result;
+        traceLine.setTimeLength(totalSeconds);
+        traceLine.setConsumption(joule);
+
+        return traceLine;
     }
 
     private void executeCommand(String command, File outputFile) throws NoDeviceFoundException {
