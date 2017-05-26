@@ -2,9 +2,7 @@ package it.unisa.petra.batch;
 
 import it.unisa.petra.core.Process;
 import it.unisa.petra.core.ProcessOutput;
-import it.unisa.petra.core.exceptions.ApkNotFoundException;
-import it.unisa.petra.core.exceptions.NoDeviceFoundException;
-import it.unisa.petra.core.exceptions.NumberOfTrialsExceededException;
+import it.unisa.petra.core.exceptions.*;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -37,7 +35,7 @@ public class Terminal {
             }
             File apkFile = new File(configManager.getApkLocationPath());
             if (apkFile.exists()) {
-                process.installApp(configManager.getApkLocationPath());
+                process.installApp(configManager.getApkLocationPath(), configManager.getSDKLocationPath());
             } else {
                 throw new ApkNotFoundException();
             }
@@ -66,8 +64,8 @@ public class Terminal {
                     trials++;
                 }
             }
-            process.uninstallApp(configManager.getAppName());
-        } catch (ApkNotFoundException | NoDeviceFoundException | IOException | InterruptedException | NumberOfTrialsExceededException ex) {
+            process.uninstallApp(configManager.getAppName(), configManager.getSDKLocationPath());
+        } catch (ApkNotFoundException | NoDeviceFoundException | IOException | InterruptedException | NumberOfTrialsExceededException | ADBNotFoundException | MonkeyPlaybackNotFoundException ex) {
             Logger.getLogger(Terminal.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

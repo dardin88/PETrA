@@ -2,6 +2,8 @@ package it.unisa.petra.ui;
 
 import it.unisa.petra.core.Process;
 import it.unisa.petra.core.ProcessOutput;
+import it.unisa.petra.core.exceptions.ADBNotFoundException;
+import it.unisa.petra.core.exceptions.MonkeyPlaybackNotFoundException;
 import it.unisa.petra.core.exceptions.NoDeviceFoundException;
 import it.unisa.petra.core.exceptions.NumberOfTrialsExceededException;
 
@@ -472,19 +474,19 @@ public class MainUI extends javax.swing.JFrame {
         private final int timeBetweenInteractions;
         private final String scriptLocationPath;
         private final int runs;
-        private final String sdkFolderPath;
+        private final String sdkLocationPath;
         private final String powerProfilePath;
         private final String outputLocationPath;
 
         Task(String appName, String apkLocationPath, int interactions, int timeBetweenInteractions, String scriptLocationPath,
-             int runs, String sdkFolderPath, String powerProfilePath, String outputLocationPath) {
+             int runs, String sdkLocationPath, String powerProfilePath, String outputLocationPath) {
             this.appName = appName;
             this.apkLocationPath = apkLocationPath;
             this.interactions = interactions;
             this.timeBetweenInteractions = timeBetweenInteractions;
             this.scriptLocationPath = scriptLocationPath;
             this.runs = runs;
-            this.sdkFolderPath = sdkFolderPath;
+            this.sdkLocationPath = sdkLocationPath;
             this.powerProfilePath = powerProfilePath;
             this.outputLocationPath = outputLocationPath;
         }
@@ -511,7 +513,7 @@ public class MainUI extends javax.swing.JFrame {
                     File seedsFile = new File(outputLocationPath + File.separator + "seeds");
                     seedsWriter = new BufferedWriter(new FileWriter(seedsFile, true));
                 }
-                process.installApp(apkLocationPath);
+                process.installApp(apkLocationPath, sdkLocationPath);
 
                 int timeCapturing = (interactions * timeBetweenInteractions) / 1000;
 
@@ -531,7 +533,7 @@ public class MainUI extends javax.swing.JFrame {
                     }
                     try {
                         ProcessOutput output = process.playRun(run, appName, interactions, timeBetweenInteractions, timeCapturing,
-                                scriptLocationPath, sdkFolderPath, powerProfilePath, outputLocationPath);
+                                scriptLocationPath, sdkLocationPath, powerProfilePath, outputLocationPath);
                         if (seedsWriter != null) {
                             seedsWriter.append(output.getSeed()).append("\n");
                         }
@@ -549,8 +551,8 @@ public class MainUI extends javax.swing.JFrame {
                 androidSDKFolderButton.setEnabled(true);
                 powerprofileButton.setEnabled(true);
                 viewStats.setEnabled(true);
-                process.uninstallApp(appName);
-            } catch (NoDeviceFoundException | IOException | NumberOfTrialsExceededException ex) {
+                process.uninstallApp(appName, sdkLocationPath);
+            } catch (NoDeviceFoundException | IOException | NumberOfTrialsExceededException | ADBNotFoundException | MonkeyPlaybackNotFoundException ex) {
                 startProcessButton.setEnabled(true);
                 apkLocationButton.setEnabled(true);
                 scriptLocationButton.setEnabled(true);

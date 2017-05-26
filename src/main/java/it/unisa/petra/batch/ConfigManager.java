@@ -10,7 +10,7 @@ import java.util.Properties;
  */
 class ConfigManager {
 
-    private String propertiesPath;
+    private final String propertiesPath;
 
     ConfigManager(String propertiesPath) {
         this.propertiesPath = propertiesPath;

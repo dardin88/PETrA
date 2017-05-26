@@ -2,6 +2,8 @@ package it.unisa.petra.core;
 
 import it.unisa.petra.core.batterystats.BatteryStatsParser;
 import it.unisa.petra.core.batterystats.EnergyInfo;
+import it.unisa.petra.core.exceptions.ADBNotFoundException;
+import it.unisa.petra.core.exceptions.MonkeyPlaybackNotFoundException;
 import it.unisa.petra.core.exceptions.NoDeviceFoundException;
 import it.unisa.petra.core.powerprofile.PowerProfile;
 import it.unisa.petra.core.powerprofile.PowerProfileParser;
@@ -20,7 +22,10 @@ import java.util.logging.Logger;
 
 public class Process {
 
-    public void installApp(String apkLocation) throws NoDeviceFoundException {
+    public void installApp(String apkLocation, String sdkFolderPath) throws NoDeviceFoundException, ADBNotFoundException {
+
+        this.checkADBExists(sdkFolderPath);
+
         this.executeCommand("adb shell dumpsys battery set ac 0", null);
         this.executeCommand("adb shell dumpsys battery set usb 0", null);
 
@@ -28,14 +33,19 @@ public class Process {
         this.executeCommand("adb install " + apkLocation, null);
     }
 
-    public void uninstallApp(String appName) throws NoDeviceFoundException {
+    public void uninstallApp(String appName, String sdkFolderPath) throws NoDeviceFoundException, ADBNotFoundException {
+
+        this.checkADBExists(sdkFolderPath);
+
         System.out.println("Uninstalling app.");
         this.executeCommand("adb shell pm uninstall " + appName, null);
     }
 
     public ProcessOutput playRun(int run, String appName, int interactions, int timeBetweenInteractions,
                                  int timeCapturing, String scriptLocationPath, String sdkFolderPath, String powerProfileFile, String outputLocation)
-            throws InterruptedException, IOException, NoDeviceFoundException {
+            throws InterruptedException, IOException, NoDeviceFoundException, ADBNotFoundException, MonkeyPlaybackNotFoundException {
+
+        this.checkADBExists(sdkFolderPath);
 
         File platformToolsFolder = new File(sdkFolderPath + File.separator + "platform-tools");
         File toolsFolder = new File(sdkFolderPath + File.separator + "tools");
@@ -74,16 +84,15 @@ public class Process {
         Thread systraceThread = new Thread(sysTraceRunner);
         systraceThread.start();
 
-        if (scriptLocationPath.isEmpty()) {
-            System.out.println("Run" + run + ": executing random actions.");
-        } else {
-            System.out.println("Run" + run + ": running monkeyrunner script.");
-        }
         this.executeCommand("adb kill-server", null);
         this.executeCommand("adb start-server", null);
-        if (interactions > 0) {
+
+        if (scriptLocationPath.isEmpty() && interactions > 0) {
+            System.out.println("Run" + run + ": executing random actions.");
             this.executeCommand("adb shell monkey -p " + appName + " -s " + seed + " --throttle " + timeBetweenInteractions + " --ignore-crashes --ignore-timeouts --ignore-security-exceptions " + interactions, null);
         } else {
+            System.out.println("Run" + run + ": running monkeyrunner script.");
+            checkMonkeyPlaybackExists(sdkFolderPath);
             this.executeCommand(toolsFolder + "/bin/monkeyrunner " + toolsFolder + "monkey_playback.py " + scriptLocationPath, null);
         }
 
@@ -237,5 +246,22 @@ public class Process {
             Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+
+    private void checkADBExists(String sdkFolderPath) throws ADBNotFoundException {
+        String adbPath = sdkFolderPath + "platform-tools/adb";
+        File adbFile = new File(adbPath);
+        if (!adbFile.exists()) {
+            throw new ADBNotFoundException();
+        }
+    }
+
+    private void checkMonkeyPlaybackExists(String sdkFolderPath) throws MonkeyPlaybackNotFoundException {
+        String monkeyPlabackPath = sdkFolderPath + "tools/monkey_playback.py";
+        File monkeyPlaybackFile = new File(monkeyPlabackPath);
+        if (!monkeyPlaybackFile.exists()) {
+            throw new MonkeyPlaybackNotFoundException();
+        }
+    }
+
 
 }
