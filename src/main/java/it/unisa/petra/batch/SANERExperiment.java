@@ -207,7 +207,7 @@ public class SANERExperiment {
 
         for (EnergyInfo anEnergyInfoArray : energyInfoArray) {
             int cpuFrequency = anEnergyInfoArray.getCpuFreq();
-            double ampere = powerProfile.getCpuInfo().get(cpuFrequency) / 1000;
+            double ampere = powerProfile.getCpuConsumptionByFrequency(0, cpuFrequency) / 1000;
             for (String deviceString : anEnergyInfoArray.getDevices()) {
                 if (deviceString.contains("wifi")) {
                     ampere += powerProfile.getDevices().get("wifi.on") / 1000;

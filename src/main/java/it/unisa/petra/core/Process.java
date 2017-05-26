@@ -54,7 +54,7 @@ public class Process {
         String seed = random.nextInt() + "";
 
         if (scriptLocationPath.isEmpty()) {
-            System.out.println("Run" + run + ": seed: " + seed);
+            System.out.println("Run " + run + ": seed: " + seed);
         }
         String runDataFolderName = outputLocation + "run_" + run + File.separator;
         File runDataFolder = new File(runDataFolderName);
@@ -67,19 +67,19 @@ public class Process {
 
         this.executeCommand("adb shell pm clear " + appName, null);
 
-        System.out.println("Run" + run + ": resetting battery stats.");
+        System.out.println("Run " + run + ": resetting battery stats.");
         this.executeCommand("adb shell dumpsys batterystats --reset", null);
 
-        System.out.println("Run" + run + ": opening app.");
+        System.out.println("Run " + run + ": opening app.");
         this.executeCommand("adb shell input keyevent 82", null);
         this.executeCommand("adb shell monkey -p " + appName + " 1", null);
         this.executeCommand("adb shell am broadcast -a org.thisisafactory.simiasque.SET_OVERLAY --ez enable true", null);
 
-        System.out.println("Run" + run + ": start profiling.");
+        System.out.println("Run " + run + ": start profiling.");
         this.executeCommand("adb shell am profile start " + appName + " ./data/local/tmp/log.trace", null);
         Date time1 = new Date();
 
-        System.out.println("Run" + run + ": capturing system traces.");
+        System.out.println("Run " + run + ": capturing system traces.");
         SysTraceRunner sysTraceRunner = new SysTraceRunner(timeCapturing, systraceFilename, platformToolsFolder);
         Thread systraceThread = new Thread(sysTraceRunner);
         systraceThread.start();
@@ -88,10 +88,10 @@ public class Process {
         this.executeCommand("adb start-server", null);
 
         if (scriptLocationPath.isEmpty() && interactions > 0) {
-            System.out.println("Run" + run + ": executing random actions.");
+            System.out.println("Run " + run + ": executing random actions.");
             this.executeCommand("adb shell monkey -p " + appName + " -s " + seed + " --throttle " + timeBetweenInteractions + " --ignore-crashes --ignore-timeouts --ignore-security-exceptions " + interactions, null);
         } else {
-            System.out.println("Run" + run + ": running monkeyrunner script.");
+            System.out.println("Run " + run + ": running monkeyrunner script.");
             checkMonkeyPlaybackExists(sdkFolderPath);
             this.executeCommand(toolsFolder + "/bin/monkeyrunner " + toolsFolder + "monkey_playback.py " + scriptLocationPath, null);
         }
@@ -101,20 +101,20 @@ public class Process {
 
         timeCapturing = (int) ((timespent + 10000) / 1000);
 
-        System.out.println("Run" + run + ": stop profiling.");
+        System.out.println("Run " + run + ": stop profiling.");
         this.executeCommand("adb shell am profile stop " + appName, null);
 
-        System.out.println("Run" + run + ": saving battery stats.");
+        System.out.println("Run " + run + ": saving battery stats.");
         this.executeCommand("adb shell dumpsys batterystats", new File(batteryStatsFilename));
 
-        System.out.println("Run" + run + ": saving traceviews.");
+        System.out.println("Run " + run + ": saving traceviews.");
         this.executeCommand("adb pull ./data/local/tmp/log.trace " + runDataFolderName, null);
         this.executeCommand(platformToolsFolder + "/dmtracedump -o " + runDataFolderName + "log.trace", new File(traceviewFilename));
 
         systraceThread.join();
 
         try {
-            System.out.println("Run" + run + ": aggregating results.");
+            System.out.println("Run " + run + ": aggregating results.");
 
             List<TraceLine> traceLinesWiConsumptions = parseAndAggregateResults(traceviewFilename, batteryStatsFilename,
                     systraceFilename, powerProfileFile, appName, run);
@@ -128,7 +128,7 @@ public class Process {
 
             resultsWriter.flush();
         } finally {
-            System.out.println("Run" + run + ": stop app.");
+            System.out.println("Run " + run + ": stop app.");
             this.executeCommand("adb shell am broadcast -a org.thisisafactory.simiasque.SET_OVERLAY --ez enable false", null);
             this.executeCommand("adb shell am force-stop " + appName, null);
             this.executeCommand("adb shell pm clear " + appName, null);
@@ -136,7 +136,7 @@ public class Process {
 
         this.executeCommand("adb shell dumpsys battery reset", null);
 
-        System.out.println("Run" + run + ": complete.");
+        System.out.println("Run " + run + ": complete.");
         return new ProcessOutput(timeCapturing, seed);
     }
 
@@ -144,22 +144,22 @@ public class Process {
                                              String powerProfileFile, String appName, int run) throws IOException {
         List<TraceLine> traceLinesWConsumption = new ArrayList();
 
-        System.out.println("Run" + run + ": loading power profile.");
+        System.out.println("Run " + run + ": loading power profile.");
         PowerProfile powerProfile = PowerProfileParser.parseFile(powerProfileFile);
 
-        System.out.println("Run" + run + ": elaborating traceview info.");
+        System.out.println("Run " + run + ": elaborating traceview info.");
         TraceviewStructure traceviewStructure = TraceViewParser.parseFile(traceviewFilename, appName);
         List<TraceLine> traceLines = traceviewStructure.getTraceLines();
         int traceviewLength = traceviewStructure.getEndTime();
         int traceviewStart = traceviewStructure.getStartTime();
 
-        System.out.println("Run" + run + ": elaborating battery stats info.");
+        System.out.println("Run " + run + ": elaborating battery stats info.");
         List<EnergyInfo> energyInfoArray = BatteryStatsParser.parseFile(batteryStatsFilename, traceviewStart, traceviewLength);
 
-        System.out.println("Run" + run + ": elaborating sys trace stats info.");
+        System.out.println("Run " + run + ": elaborating sys trace stats info.");
         SysTrace cpuInfo = SysTraceParser.parseFile(systraceFilename, traceviewStart, traceviewLength);
 
-        System.out.println("Run" + run + ": aggregating results.");
+        System.out.println("Run " + run + ": aggregating results.");
         energyInfoArray = this.mergeEnergyInfo(energyInfoArray, cpuInfo);
         for (TraceLine traceLine : traceLines) {
             traceLinesWConsumption.add(this.calculateConsumption(traceLine, energyInfoArray, powerProfile));
@@ -187,7 +187,7 @@ public class Process {
 
         for (EnergyInfo energyInfo : energyInfoArray) {
             int cpuFrequency = energyInfo.getCpuFreq();
-            double ampere = powerProfile.getCpuInfo().get(cpuFrequency) / 1000;
+            double ampere = powerProfile.getCpuConsumptionByFrequency(0, cpuFrequency) / 1000;
             for (String deviceString : energyInfo.getDevices()) {
                 if (deviceString.contains("wifi")) {
                     ampere += powerProfile.getDevices().get("wifi.on") / 1000;
