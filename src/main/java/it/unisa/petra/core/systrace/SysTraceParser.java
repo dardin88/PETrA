@@ -24,7 +24,7 @@ public class SysTraceParser {
         List<CpuIdle> idleList = new ArrayList<>();
         int timeStart = 0;
         int timeFinish;
-        Pattern freqRowPattern = Pattern.compile(".* \\[\\d{3}].* (.*): cpu_frequency: state=(\\d*).*");
+        Pattern freqRowPattern = Pattern.compile(".* \\[\\d{3}].* (.*): cpu_frequency: state=(\\d*) cpu_id=(\\d)");
         Pattern idleRowPattern = Pattern.compile(".* \\[.*] .* (.*): cpu_idle: state=(\\d*).*");
 
         Document doc = Jsoup.parse(file, "UTF-8", fileName);
@@ -54,6 +54,7 @@ public class SysTraceParser {
                 int timeread = Integer.parseInt(toMillisec(freqMatcher.group(1)));
                 freq.setTime(timeread);
                 freq.setValue(Integer.parseInt(freqMatcher.group(2)));
+                freq.setCpuId(Integer.parseInt(freqMatcher.group(3)));
                 if (timeread < timeFinish) {
                     freqList.add(freq);
                 } else if (timeread > timeFinish) {

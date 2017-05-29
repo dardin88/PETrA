@@ -4,8 +4,17 @@ package it.unisa.petra.core.systrace;
  * @author Antonio Prota
  */
 public class CpuFreq {
+    private int cpuId;
     private int time;
     private int value;
+
+    public int getCpuId() {
+        return cpuId;
+    }
+
+    void setCpuId(int cpuId) {
+        this.cpuId = cpuId;
+    }
 
     /**
      * @return the time
