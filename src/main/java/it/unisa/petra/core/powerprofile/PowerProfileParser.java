@@ -51,9 +51,10 @@ public class PowerProfileParser {
                 devices.put(e.getAttribute("name"), Double.parseDouble(e.getTextContent()));
             }
 
-            NodeList cpuRadioInfoList = doc.getElementsByTagName("array");
-            for (int i = 0; i < cpuRadioInfoList.getLength(); i++) {
-                Element e = (Element) cpuRadioInfoList.item(i);
+            NodeList nodeList = doc.getElementsByTagName("array");
+
+            for (int i = 0; i < nodeList.getLength(); i++) {
+                Element e = (Element) nodeList.item(i);
                 Matcher cpuClustersCoreMatcher = cpuClustustersCore.matcher(e.getAttribute("name"));
                 if (cpuClustersCoreMatcher.find()) {
                     for (int j = 0; j < e.getElementsByTagName("value").getLength(); j++) {

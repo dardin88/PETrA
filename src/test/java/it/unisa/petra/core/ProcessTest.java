@@ -26,7 +26,7 @@ public class ProcessTest {
         List<TraceLine> traceLines = process.parseAndAggregateResults(traceviewFilename, batteryStatsFilename, systrace_example, powerProfileFile, appName, 1);
 
         assertEquals(traceLines.get(0).getTimeLength(), 0.000011101, 0.000000001);
-        assertEquals(traceLines.get(0).getConsumption(), 0.000026059, 0.000000001);
+        assertEquals(traceLines.get(0).getConsumption(), 0.000004047, 0.000000001);
     }
 
 }

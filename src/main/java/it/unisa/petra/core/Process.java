@@ -193,25 +193,60 @@ public class Process {
         double joule = 0;
         double totalSeconds = 0;
 
+        int numberOfCores = powerProfile.computeNumberOfCores();
+
+        boolean[] previouslyIdle = new boolean[numberOfCores];
+
         for (EnergyInfo energyInfo : energyInfoArray) {
 
             double ampere = 0;
 
             List<Integer> cpuFrequencies = energyInfo.getCpuFrequencies();
 
-            for (int cpuFrequency : cpuFrequencies) {
-                ampere += powerProfile.getCpuConsumptionByFrequency(0, cpuFrequency) / 1000;
+            for (int i = 0; i < numberOfCores; i++) {
+                int coreFrequency = cpuFrequencies.get(i);
+                int coreCluster = powerProfile.getClusterByCore(i);
+                ampere += powerProfile.getCpuConsumptionByFrequency(coreCluster, coreFrequency) / 1000;
+                if (coreFrequency != 0) {
+                    if (previouslyIdle[i]) {
+                        ampere += powerProfile.getDevices().get("cpu.awake") / 1000;
+                    }
+                } else {
+                    previouslyIdle[i] = true;
+                }
             }
 
             for (String deviceString : energyInfo.getDevices()) {
                 if (deviceString.contains("wifi")) {
                     ampere += powerProfile.getDevices().get("wifi.on") / 1000;
+                } else if (deviceString.contains("wifi.scanning")) {
+                    ampere += powerProfile.getDevices().get("wifi.scan") / 1000;
+                } else if (deviceString.contains("wifi.running")) {
+                    ampere += powerProfile.getDevices().get("wifi.active") / 1000;
+                } else if (deviceString.contains("phone.scanning")) {
+                    ampere += powerProfile.getDevices().get("radio.scan") / 1000;
+                } else if (deviceString.contains("phone.running")) {
+                    ampere += powerProfile.getDevices().get("radio.active") / 1000;
+                } else if (deviceString.contains("bluetooth")) {
+                    ampere += powerProfile.getDevices().get("bluetooth.on") / 1000;
+                } else if (deviceString.contains("bluetooth.running")) {
+                    ampere += powerProfile.getDevices().get("bluetooth.active") / 1000;
                 } else if (deviceString.contains("screen")) {
                     ampere += powerProfile.getDevices().get("screen.on") / 1000;
                 } else if (deviceString.contains("gps")) {
                     ampere += powerProfile.getDevices().get("gps.on") / 1000;
                 }
             }
+
+            int phoneSignalStrength = energyInfo.getPhoneSignalStrength();
+
+            if (powerProfile.getRadioInfo().size() == phoneSignalStrength - 1) {
+                ampere += powerProfile.getRadioInfo().get(phoneSignalStrength - 1) / 1000;
+            } else {
+                ampere += powerProfile.getRadioInfo().get(powerProfile.getRadioInfo().size() - 1) / 1000;
+            }
+
+
             double watt = ampere * energyInfo.getVoltage() / 1000;
             double microseconds = 0;
             if (traceLine.getEntrance() >= energyInfo.getTime()) {

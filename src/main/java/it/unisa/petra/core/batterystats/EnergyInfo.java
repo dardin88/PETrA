@@ -12,6 +12,7 @@ public class EnergyInfo {
     private int volt;
     private List devices;
     private List cpuFrequencies;
+    private int phoneSignalStrength;
 
     EnergyInfo() {
         this.cpuFrequencies = new ArrayList();
@@ -62,6 +63,14 @@ public class EnergyInfo {
         this.cpuFrequencies = cpuFrequencies;
     }
 
+    public int getPhoneSignalStrength() {
+        return phoneSignalStrength;
+    }
+
+    void setPhoneSignalStrength(int phoneSignalStrength) {
+        this.phoneSignalStrength = phoneSignalStrength;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -69,6 +78,7 @@ public class EnergyInfo {
 
         EnergyInfo that = (EnergyInfo) o;
 
-        return time == that.time && volt == that.volt && cpuFrequencies.equals(that.cpuFrequencies) && devices.equals(that.devices);
+        return time == that.time && volt == that.volt && cpuFrequencies.equals(that.cpuFrequencies) &&
+                devices.equals(that.devices) && phoneSignalStrength == that.phoneSignalStrength;
     }
 }

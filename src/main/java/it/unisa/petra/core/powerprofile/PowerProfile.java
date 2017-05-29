@@ -25,7 +25,7 @@ public class PowerProfile {
         return cpuInfo.get(cluster).getConsumption(frequency);
     }
 
-    int getClusterByCore(int core) {
+    public int getClusterByCore(int core) {
 
         int lowerLimit = 0;
         int upperLimit = cpuInfo.get(0).getNumCores();
@@ -45,6 +45,10 @@ public class PowerProfile {
 
     void setCpuInfo(List<CpuClusterInfo> cpuInfo) {
         this.cpuInfo = cpuInfo;
+    }
+
+    public List<Double> getRadioInfo() {
+        return radioInfo;
     }
 
     void setRadioInfo(List<Double> radioInfo) {

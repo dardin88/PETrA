@@ -23,7 +23,10 @@ public class BatteryStatsParser {
 
         String line;
         try (BufferedReader readAll = new BufferedReader(new FileReader(file))) {
+
             Pattern energyRowPattern = Pattern.compile("\\s*(\\d|.\\d*m*\\d*s*\\d*ms*)\\s.\\d.\\s\\d{3}\\s(.*)");
+            Pattern phoneSignalPattern = Pattern.compile("phone_signal_strength=(\\d)");
+
             while ((line = readAll.readLine()) != null) {
                 Matcher matcher1 = energyRowPattern.matcher(line);
                 int variationTime;
@@ -38,6 +41,7 @@ public class BatteryStatsParser {
                         if (!energyInfoArray.isEmpty()) {
                             energyInfo.setDevices(energyInfoArray.get(infoCounter).getDevices());
                             energyInfo.setVoltage(energyInfoArray.get(infoCounter).getVoltage());
+                            energyInfo.setPhoneSignalStrength(energyInfoArray.get(infoCounter).getPhoneSignalStrength());
                         }
 
                         String devices = matcher1.group(2).split(":")[0];
@@ -54,6 +58,10 @@ public class BatteryStatsParser {
                                 if (!device.replaceFirst("\\+", "").startsWith("top")) {
                                     energyInfo.addDevice(device.replaceFirst("\\+", ""));
                                 }
+                            }
+                            Matcher phoneSignalMatcher = phoneSignalPattern.matcher(device);
+                            if (phoneSignalMatcher.find()) {
+                                energyInfo.setPhoneSignalStrength(Integer.parseInt(phoneSignalMatcher.group(1)));
                             }
                         }
                         if (energyInfoArray.isEmpty()) {
