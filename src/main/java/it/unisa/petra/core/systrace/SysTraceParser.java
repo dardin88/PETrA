@@ -20,7 +20,7 @@ public class SysTraceParser {
     public static SysTrace parseFile(String fileName, int traceviewStart, int traceviewLength) throws IOException {
         File file = new File(fileName);
         SysTrace systrace = new SysTrace();
-        List<CpuFreq> freqList = new ArrayList<>();
+        List<CpuFrequency> freqList = new ArrayList<>();
         List<CpuIdle> idleList = new ArrayList<>();
         int timeStart = 0;
         int timeFinish;
@@ -50,7 +50,7 @@ public class SysTraceParser {
             Matcher idleMatcher = idleRowPattern.matcher(line);
 
             if (freqMatcher.find()) {
-                CpuFreq freq = new CpuFreq();
+                CpuFrequency freq = new CpuFrequency();
                 int timeread = Integer.parseInt(toMillisec(freqMatcher.group(1)));
                 freq.setTime(timeread);
                 freq.setValue(Integer.parseInt(freqMatcher.group(2)));

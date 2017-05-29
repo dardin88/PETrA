@@ -9,15 +9,15 @@ import java.util.List;
  */
 public class SysTrace {
 
-    private List<CpuFreq> freq = new ArrayList<>();
+    private List<CpuFrequency> freq = new ArrayList<>();
     private List<CpuIdle> idle = new ArrayList<>();
     private int systraceStartEntrance;
 
-    public List<CpuFreq> getFrequency() {
+    public List<CpuFrequency> getFrequency() {
         return freq;
     }
 
-    void setFrequency(List<CpuFreq> freq) {
+    void setFrequency(List<CpuFrequency> freq) {
         this.freq = freq;
     }
 

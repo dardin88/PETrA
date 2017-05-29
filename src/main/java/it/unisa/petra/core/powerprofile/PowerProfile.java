@@ -54,4 +54,14 @@ public class PowerProfile {
     void setRadioInfo(List<Double> radioInfo) {
         this.radioInfo = radioInfo;
     }
+
+    public int computeNumberOfCores() {
+        int numberOfCores = 0;
+
+        for (CpuClusterInfo cpuClusterInfo : cpuInfo) {
+            numberOfCores += cpuClusterInfo.getNumCores();
+        }
+
+        return numberOfCores;
+    }
 }

@@ -3,7 +3,7 @@ package it.unisa.petra.core.systrace;
 /**
  * @author Antonio Prota
  */
-public class CpuFreq {
+public class CpuFrequency {
     private int cpuId;
     private int time;
     private int value;

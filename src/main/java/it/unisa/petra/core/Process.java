@@ -7,7 +7,7 @@ import it.unisa.petra.core.exceptions.MonkeyPlaybackNotFoundException;
 import it.unisa.petra.core.exceptions.NoDeviceFoundException;
 import it.unisa.petra.core.powerprofile.PowerProfile;
 import it.unisa.petra.core.powerprofile.PowerProfileParser;
-import it.unisa.petra.core.systrace.CpuFreq;
+import it.unisa.petra.core.systrace.CpuFrequency;
 import it.unisa.petra.core.systrace.SysTrace;
 import it.unisa.petra.core.systrace.SysTraceParser;
 import it.unisa.petra.core.systrace.SysTraceRunner;
@@ -160,7 +160,7 @@ public class Process {
         SysTrace cpuInfo = SysTraceParser.parseFile(systraceFilename, traceviewStart, traceviewLength);
 
         System.out.println("Run " + run + ": aggregating results.");
-        energyInfoArray = this.mergeEnergyInfo(energyInfoArray, cpuInfo);
+        energyInfoArray = this.mergeEnergyInfo(energyInfoArray, cpuInfo, powerProfile.computeNumberOfCores());
         for (TraceLine traceLine : traceLines) {
             traceLinesWConsumption.add(this.calculateConsumption(traceLine, energyInfoArray, powerProfile));
         }
@@ -168,12 +168,17 @@ public class Process {
         return traceLinesWConsumption;
     }
 
-    private List<EnergyInfo> mergeEnergyInfo(List<EnergyInfo> energyInfoArray, SysTrace cpuInfo) {
+    private List<EnergyInfo> mergeEnergyInfo(List<EnergyInfo> energyInfoArray, SysTrace cpuInfo, int numberOfCores) {
+
+        List<Integer> cpuFrequencies = new ArrayList<>(numberOfCores);
+
         for (EnergyInfo energyInfo : energyInfoArray) {
             int fixedEnergyInfoTime = cpuInfo.getSystraceStartTime() + energyInfo.getTime() * 1000; //systrace time are in nanoseconds
-            for (CpuFreq freq : cpuInfo.getFrequency()) {
-                if (freq.getTime() <= fixedEnergyInfoTime) {
-                    energyInfo.setCpuFreq(freq.getValue());
+            for (CpuFrequency frequency : cpuInfo.getFrequency()) {
+                if (frequency.getTime() <= fixedEnergyInfoTime) {
+                    int cpuId = frequency.getCpuId();
+                    cpuFrequencies.set(cpuId, frequency.getValue());
+                    energyInfo.setCpuFrequencies(cpuFrequencies);
                 }
             }
         }
@@ -186,8 +191,15 @@ public class Process {
         double totalSeconds = 0;
 
         for (EnergyInfo energyInfo : energyInfoArray) {
-            int cpuFrequency = energyInfo.getCpuFreq();
-            double ampere = powerProfile.getCpuConsumptionByFrequency(0, cpuFrequency) / 1000;
+
+            double ampere = 0;
+
+            List<Integer> cpuFrequencies = energyInfo.getCpuFrequencies();
+
+            for (int cpuFrequency : cpuFrequencies) {
+                ampere += powerProfile.getCpuConsumptionByFrequency(0, cpuFrequency) / 1000;
+            }
+
             for (String deviceString : energyInfo.getDevices()) {
                 if (deviceString.contains("wifi")) {
                     ampere += powerProfile.getDevices().get("wifi.on") / 1000;

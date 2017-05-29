@@ -11,7 +11,7 @@ public class EnergyInfo {
     private int time;
     private int volt;
     private List devices;
-    private int cpuFreq;
+    private List cpuFrequencies;
 
     EnergyInfo() {
         this.devices = new ArrayList<>();
@@ -53,12 +53,12 @@ public class EnergyInfo {
         }
     }
 
-    public int getCpuFreq() {
-        return cpuFreq;
+    public List getCpuFrequencies() {
+        return cpuFrequencies;
     }
 
-    public void setCpuFreq(int cpuFreq) {
-        this.cpuFreq = cpuFreq;
+    public void setCpuFrequencies(List cpuFrequencies) {
+        this.cpuFrequencies = cpuFrequencies;
     }
 
     @Override
@@ -68,6 +68,6 @@ public class EnergyInfo {
 
         EnergyInfo that = (EnergyInfo) o;
 
-        return time == that.time && volt == that.volt && cpuFreq == that.cpuFreq && devices.equals(that.devices);
+        return time == that.time && volt == that.volt && cpuFrequencies.containsAll(that.cpuFrequencies) && devices.equals(that.devices);
     }
 }

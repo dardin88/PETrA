@@ -4,7 +4,7 @@ import it.unisa.petra.core.batterystats.BatteryStatsParser;
 import it.unisa.petra.core.batterystats.EnergyInfo;
 import it.unisa.petra.core.powerprofile.PowerProfile;
 import it.unisa.petra.core.powerprofile.PowerProfileParser;
-import it.unisa.petra.core.systrace.CpuFreq;
+import it.unisa.petra.core.systrace.CpuFrequency;
 import it.unisa.petra.core.systrace.SysTrace;
 import it.unisa.petra.core.systrace.SysTraceParser;
 import it.unisa.petra.core.systrace.SysTraceRunner;
@@ -182,7 +182,7 @@ public class EMSEExperiment {
                     System.out.println("Aggregating results");
                     try (PrintWriter resultsWriter = new PrintWriter(runDataFolderName + "result.csv", "UTF-8")) {
                         resultsWriter.println("signature, joule, seconds");
-                        energyInfoArray = EMSEExperiment.mergeEnergyInfo(energyInfoArray, cpuInfo);
+                        energyInfoArray = EMSEExperiment.mergeEnergyInfo(energyInfoArray, cpuInfo, powerProfile.computeNumberOfCores());
                         for (TraceLine traceLine : traceLines) {
                             List<Double> result = EMSEExperiment.calculateConsumption(traceLine.getEntrance(), traceLine.getExit(), energyInfoArray, powerProfile);
                             resultsWriter.println(traceLine.getSignature() + "," + result.get(0) + "," + result.get(1));
@@ -254,12 +254,17 @@ public class EMSEExperiment {
         }
     }
 
-    private static List<EnergyInfo> mergeEnergyInfo(List<EnergyInfo> energyInfoArray, SysTrace cpuInfo) {
+    private static List<EnergyInfo> mergeEnergyInfo(List<EnergyInfo> energyInfoArray, SysTrace cpuInfo, int numberOfCores) {
+
+        List<Integer> cpuFrequencies = new ArrayList<>(numberOfCores);
+
         for (EnergyInfo energyInfo : energyInfoArray) {
             int fixedEnergyInfoTime = cpuInfo.getSystraceStartTime() + energyInfo.getTime();
-            for (CpuFreq freq : cpuInfo.getFrequency()) {
+            for (CpuFrequency freq : cpuInfo.getFrequency()) {
                 if (freq.getTime() <= fixedEnergyInfoTime) {
-                    energyInfo.setCpuFreq(freq.getValue());
+                    int cpuId = freq.getCpuId();
+                    cpuFrequencies.set(cpuId, freq.getValue());
+                    energyInfo.setCpuFrequencies(cpuFrequencies);
                 }
             }
         }
@@ -268,13 +273,20 @@ public class EMSEExperiment {
 
     private static List calculateConsumption(int timeEnter, int timeExit, List<EnergyInfo> energyInfoArray, PowerProfile powerProfile) {
 
-        double joul = 0;
+        double joule = 0;
         double totalSeconds = 0;
 
-        for (EnergyInfo anEnergyInfoArray : energyInfoArray) {
-            int cpuFrequency = anEnergyInfoArray.getCpuFreq();
-            double ampere = powerProfile.getCpuConsumptionByFrequency(0, cpuFrequency) / 1000;
-            for (String deviceString : anEnergyInfoArray.getDevices()) {
+        for (EnergyInfo energyInfo : energyInfoArray) {
+
+            double ampere = 0;
+
+            List<Integer> cpuFrequencies = energyInfo.getCpuFrequencies();
+
+            for (int cpuFrequency : cpuFrequencies) {
+                ampere += powerProfile.getCpuConsumptionByFrequency(0, cpuFrequency) / 1000;
+            }
+
+            for (String deviceString : energyInfo.getDevices()) {
                 if (deviceString.contains("wifi")) {
                     ampere += powerProfile.getDevices().get("wifi.on") / 1000;
                 } else if (deviceString.contains("screen")) {
@@ -283,22 +295,22 @@ public class EMSEExperiment {
                     ampere += powerProfile.getDevices().get("gps.on") / 1000;
                 }
             }
-            double watt = ampere * anEnergyInfoArray.getVoltage() / 1000;
+            double watt = ampere * energyInfo.getVoltage() / 1000;
             double microseconds = 0;
-            if (timeEnter >= anEnergyInfoArray.getTime()) {
-                if (timeEnter > anEnergyInfoArray.getTime()) {
-                    microseconds = timeExit - anEnergyInfoArray.getTime();
+            if (timeEnter >= energyInfo.getTime()) {
+                if (timeEnter > energyInfo.getTime()) {
+                    microseconds = timeExit - energyInfo.getTime();
                 } else {
                     microseconds = timeExit - timeEnter;
                 }
             }
             double seconds = microseconds / 1000000;
             totalSeconds += seconds;
-            joul += watt * seconds;
+            joule += watt * seconds;
         }
 
         ArrayList<Double> result = new ArrayList<>();
-        result.add(joul);
+        result.add(joule);
         result.add(totalSeconds);
         return result;
     }
