@@ -6,7 +6,7 @@ import it.unisa.petra.ui.MainUI;
 /**
  * @author dardin88
  */
-public class Main {
+class Main {
 
     public static void main(String[] args) {
         switch (args.length) {

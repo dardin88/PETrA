@@ -8,7 +8,7 @@ public class CpuFrequency {
     private int time;
     private int value;
 
-    public int getCpuId() {
+    public int getCore() {
         return cpuId;
     }
 
@@ -42,5 +42,15 @@ public class CpuFrequency {
      */
     void setValue(int value) {
         this.value = value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CpuFrequency that = (CpuFrequency) o;
+
+        return getCore() == that.getCore() && getValue() == that.getValue();
     }
 }

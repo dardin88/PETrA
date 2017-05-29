@@ -47,10 +47,6 @@ public class PowerProfile {
         this.cpuInfo = cpuInfo;
     }
 
-    public List<Double> getRadioInfo() {
-        return radioInfo;
-    }
-
     void setRadioInfo(List<Double> radioInfo) {
         this.radioInfo = radioInfo;
     }

@@ -1,5 +1,6 @@
 package it.unisa.petra.batch;
 
+import it.unisa.petra.core.SysTraceRunner;
 import it.unisa.petra.core.batterystats.BatteryStatsParser;
 import it.unisa.petra.core.batterystats.EnergyInfo;
 import it.unisa.petra.core.powerprofile.PowerProfile;
@@ -7,7 +8,6 @@ import it.unisa.petra.core.powerprofile.PowerProfileParser;
 import it.unisa.petra.core.systrace.CpuFrequency;
 import it.unisa.petra.core.systrace.SysTrace;
 import it.unisa.petra.core.systrace.SysTraceParser;
-import it.unisa.petra.core.systrace.SysTraceRunner;
 import it.unisa.petra.core.traceview.TraceLine;
 import it.unisa.petra.core.traceview.TraceViewParser;
 import it.unisa.petra.core.traceview.TraceviewStructure;
@@ -194,9 +194,9 @@ public class SANERExperiment {
 
         for (EnergyInfo energyInfo : energyInfoArray) {
             int fixedEnergyInfoTime = cpuInfo.getSystraceStartTime() + energyInfo.getTime();
-            for (CpuFrequency freq : cpuInfo.getFrequency()) {
+            for (CpuFrequency freq : cpuInfo.getFrequencies()) {
                 if (freq.getTime() <= fixedEnergyInfoTime) {
-                    int cpuId = freq.getCpuId();
+                    int cpuId = freq.getCore();
                     cpuFrequencies.set(cpuId, freq.getValue());
                     energyInfo.setCpuFrequencies(cpuFrequencies);
                 }

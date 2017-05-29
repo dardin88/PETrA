@@ -1,4 +1,4 @@
-package it.unisa.petra.core.systrace;
+package it.unisa.petra.core;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +32,7 @@ public class SysTraceRunner implements Runnable {
             listCommands.addAll(Arrays.asList(arrayExplodedCommands));
             ProcessBuilder pb = new ProcessBuilder(listCommands);
             pb.inheritIO();
-            Process commandProcess = pb.start();
+            java.lang.Process commandProcess = pb.start();
             commandProcess.waitFor();
             Thread.sleep(3000);
         } catch (IOException | InterruptedException ex) {

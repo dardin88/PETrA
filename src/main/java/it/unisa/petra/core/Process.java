@@ -10,7 +10,6 @@ import it.unisa.petra.core.powerprofile.PowerProfileParser;
 import it.unisa.petra.core.systrace.CpuFrequency;
 import it.unisa.petra.core.systrace.SysTrace;
 import it.unisa.petra.core.systrace.SysTraceParser;
-import it.unisa.petra.core.systrace.SysTraceRunner;
 import it.unisa.petra.core.traceview.TraceLine;
 import it.unisa.petra.core.traceview.TraceViewParser;
 import it.unisa.petra.core.traceview.TraceviewStructure;
@@ -174,10 +173,14 @@ public class Process {
 
         for (EnergyInfo energyInfo : energyInfoArray) {
             int fixedEnergyInfoTime = cpuInfo.getSystraceStartTime() + energyInfo.getTime() * 1000; //systrace time are in nanoseconds
-            for (CpuFrequency frequency : cpuInfo.getFrequency()) {
+            for (CpuFrequency frequency : cpuInfo.getFrequencies()) {
                 if (frequency.getTime() <= fixedEnergyInfoTime) {
-                    int cpuId = frequency.getCpuId();
-                    cpuFrequencies.set(cpuId, frequency.getValue());
+                    int cpuId = frequency.getCore();
+                    if (cpuFrequencies.size() < cpuId + 1) {
+                        cpuFrequencies.add(frequency.getValue());
+                    } else {
+                        cpuFrequencies.set(cpuId, frequency.getValue());
+                    }
                     energyInfo.setCpuFrequencies(cpuFrequencies);
                 }
             }

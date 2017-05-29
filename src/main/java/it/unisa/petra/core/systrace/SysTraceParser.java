@@ -7,6 +7,7 @@ import org.jsoup.select.Elements;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,73 +18,81 @@ import java.util.regex.Pattern;
  */
 public class SysTraceParser {
 
+    private static ArrayList<CpuFrequency> frequencyList;
+
     public static SysTrace parseFile(String fileName, int traceviewStart, int traceviewLength) throws IOException {
         File file = new File(fileName);
         SysTrace systrace = new SysTrace();
-        List<CpuFrequency> freqList = new ArrayList<>();
-        List<CpuIdle> idleList = new ArrayList<>();
+        frequencyList = new ArrayList<>();
+        boolean firstLine = true;
         int timeStart = 0;
-        int timeFinish;
+        int timeFinish = 0;
+        int timeread = 0;
         Pattern freqRowPattern = Pattern.compile(".* \\[\\d{3}].* (.*): cpu_frequency: state=(\\d*) cpu_id=(\\d)");
-        Pattern idleRowPattern = Pattern.compile(".* \\[.*] .* (.*): cpu_idle: state=(\\d*).*");
+        Pattern idleRowPattern = Pattern.compile(".* \\[.*] .* (.*): cpu_idle: state=\\d* cpu_id=(\\d)");
 
         Document doc = Jsoup.parse(file, "UTF-8", fileName);
         Elements scriptElements = doc.getElementsByClass("trace-data");
         String sysTraceText = scriptElements.get(0).dataNodes().get(0).getWholeData();
 
-        for (String line : sysTraceText.split("\n")) {
-            freqList = new ArrayList<>();
-            idleList = new ArrayList<>();
-            timeStart = 0;
-            Matcher freqMatcher = freqRowPattern.matcher(line);
-            if (freqMatcher.find()) {
-                String time = toMillisec(freqMatcher.group(1));
-                timeStart = Integer.parseInt(time);
-                break;
-            }
-        }
-        timeStart = timeStart + traceviewStart;
-        timeFinish = timeStart + traceviewLength;
 
         for (String line : sysTraceText.split("\n")) {
+
+            CpuFrequency frequency = new CpuFrequency();
+
             Matcher freqMatcher = freqRowPattern.matcher(line);
             Matcher idleMatcher = idleRowPattern.matcher(line);
 
+            boolean lineFound = false;
+
             if (freqMatcher.find()) {
-                CpuFrequency freq = new CpuFrequency();
-                int timeread = Integer.parseInt(toMillisec(freqMatcher.group(1)));
-                freq.setTime(timeread);
-                freq.setValue(Integer.parseInt(freqMatcher.group(2)));
-                freq.setCpuId(Integer.parseInt(freqMatcher.group(3)));
-                if (timeread < timeFinish) {
-                    freqList.add(freq);
-                } else if (timeread > timeFinish) {
-                    break;
+
+                if (firstLine) {
+                    String time = toMillisec(freqMatcher.group(1));
+                    timeStart = Integer.parseInt(time) + traceviewStart;
+                    timeFinish = Integer.parseInt(time) + traceviewLength;
+                    firstLine = false;
                 }
+
+                timeread = Integer.parseInt(toMillisec(freqMatcher.group(1)));
+                frequency.setTime(timeread);
+                frequency.setValue(Integer.parseInt(freqMatcher.group(2)));
+                frequency.setCpuId(Integer.parseInt(freqMatcher.group(3)));
+                lineFound = true;
             }
 
             if (idleMatcher.find()) {
-                CpuIdle idle = new CpuIdle();
-                int timeread = Integer.parseInt(toMillisec(freqMatcher.group(1)));
-                idle.setTime(timeread);
-                idle.setValue(freqMatcher.group(2));
-                if (timeread < timeFinish) {
-                    if (timeread < timeStart) {
-                        if (freqList.isEmpty()) {
-                            idleList.add(idle);
-                        } else {
-                            idleList.set(0, idle);
-                        }
-                    } else {
-                        idleList.add(idle);
-                    }
-                } else if (timeread > timeFinish) {
-                    break;
+
+                if (firstLine) {
+                    String time = toMillisec(idleMatcher.group(1));
+                    timeStart = Integer.parseInt(time) + traceviewStart;
+                    timeFinish = Integer.parseInt(time) + traceviewLength;
+                    firstLine = false;
                 }
+
+                timeread = Integer.parseInt(toMillisec(idleMatcher.group(1)));
+                frequency.setTime(timeread);
+                frequency.setValue(0);
+                frequency.setCpuId(Integer.parseInt(idleMatcher.group(2)));
+                lineFound = true;
             }
+
+            if (lineFound && timeread < timeFinish) {
+
+                if (frequencyList.isEmpty()) {
+                    frequencyList.add(frequency);
+                } else {
+                    int lastCoreFrequncy = SysTraceParser.getLastCoreValue(frequency.getCore());
+                    if (frequency.getValue() != lastCoreFrequncy) {
+                        frequencyList.add(frequency);
+                    }
+                }
+            } else if (timeread > timeFinish) {
+                break;
+            }
+
         }
-        systrace.setFrequency(freqList);
-        systrace.setIdle(idleList);
+        systrace.setFrequencies(frequencyList);
         systrace.setSystraceStartTime(timeStart);
         return systrace;
     }
@@ -103,5 +112,17 @@ public class SysTraceParser {
         }
         totaltime = s + dec;
         return Integer.toString(totaltime);
+    }
+
+    private static int getLastCoreValue(int core) {
+        List<CpuFrequency> shallowListCopy = (List<CpuFrequency>) frequencyList.clone();
+        Collections.reverse(shallowListCopy);
+
+        for (CpuFrequency frequency : shallowListCopy) {
+            if (frequency.getCore() == core) {
+                return frequency.getValue();
+            }
+        }
+        return 0;
     }
 }
