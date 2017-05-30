@@ -1,5 +1,7 @@
 package it.unisa.petra.core;
 
+import it.unisa.petra.core.powerprofile.PowerProfile;
+import it.unisa.petra.core.powerprofile.PowerProfileParser;
 import it.unisa.petra.core.traceview.TraceLine;
 import org.junit.Test;
 
@@ -23,7 +25,9 @@ public class ProcessTest {
 
         Process process = new Process();
 
-        List<TraceLine> traceLines = process.parseAndAggregateResults(traceviewFilename, batteryStatsFilename, systrace_example, powerProfileFile, appName, 1);
+        PowerProfile powerProfile = PowerProfileParser.parseFile(powerProfileFile);
+
+        List<TraceLine> traceLines = process.parseAndAggregateResults(traceviewFilename, batteryStatsFilename, systrace_example, powerProfile, appName, 1);
 
         assertEquals(traceLines.get(0).getTimeLength(), 0.000011101, 0.000000001);
         assertEquals(traceLines.get(0).getConsumption(), 0.000004047, 0.000000001);
