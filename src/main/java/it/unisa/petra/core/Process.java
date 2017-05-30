@@ -114,8 +114,17 @@ public class Process {
         try {
             System.out.println("Run " + run + ": aggregating results.");
 
+            if (powerProfileFile.isEmpty()) {
+                System.out.println("Run " + run + ": extracting power profile.");
+                this.extractPowerProfile(outputLocation);
+                powerProfileFile = outputLocation + "power_profile.xml";
+            }
+
+            System.out.println("Run " + run + ": parsing power profile.");
+            PowerProfile powerProfile = PowerProfileParser.parseFile(powerProfileFile);
+
             List<TraceLine> traceLinesWiConsumptions = parseAndAggregateResults(traceviewFilename, batteryStatsFilename,
-                    systraceFilename, powerProfileFile, appName, run);
+                    systraceFilename, powerProfile, appName, run);
 
             PrintWriter resultsWriter = new PrintWriter(runDataFolderName + "result.csv", "UTF-8");
             resultsWriter.println("signature, joule, seconds");
@@ -138,12 +147,16 @@ public class Process {
         return new ProcessOutput(timeCapturing, seed);
     }
 
-    List<TraceLine> parseAndAggregateResults(String traceviewFilename, String batteryStatsFilename, String systraceFilename,
-                                             String powerProfileFile, String appName, int run) throws IOException {
-        List<TraceLine> traceLinesWConsumption = new ArrayList();
+    private void extractPowerProfile(String outputLocation) throws NoDeviceFoundException {
+        this.executeCommand("adb pull /system/framework/framework-res.apk", null);
+        this.executeCommand("java -jar src/main/resources/apktool_2.0.3.jar if framework-res.apk", null);
+        this.executeCommand("java -jar src/main/resources/apktool_2.0.3.jar d framework-res.apk", null);
+        this.executeCommand("mv framework-res/res/xml/power_profile.xml " + outputLocation, null);
+    }
 
-        System.out.println("Run " + run + ": loading power profile.");
-        PowerProfile powerProfile = PowerProfileParser.parseFile(powerProfileFile);
+    List<TraceLine> parseAndAggregateResults(String traceviewFilename, String batteryStatsFilename, String systraceFilename,
+                                             PowerProfile powerProfile, String appName, int run) throws IOException {
+        List<TraceLine> traceLinesWConsumption = new ArrayList();
 
         System.out.println("Run " + run + ": elaborating traceview info.");
         TraceviewStructure traceviewStructure = TraceViewParser.parseFile(traceviewFilename, appName);
