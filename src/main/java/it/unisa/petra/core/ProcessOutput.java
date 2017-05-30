@@ -7,9 +7,9 @@ package it.unisa.petra.core;
 public class ProcessOutput {
 
     private final int runTime;
-    private final String seed;
+    private final int seed;
 
-    ProcessOutput(int runTime, String seed) {
+    ProcessOutput(int runTime, int seed) {
         this.runTime = runTime;
         this.seed = seed;
     }
@@ -18,7 +18,7 @@ public class ProcessOutput {
         return runTime;
     }
 
-    public String getSeed() {
+    public int getSeed() {
         return seed;
     }
 

@@ -2,7 +2,10 @@ package it.unisa.petra.batch;
 
 import it.unisa.petra.core.Process;
 import it.unisa.petra.core.ProcessOutput;
-import it.unisa.petra.core.exceptions.*;
+import it.unisa.petra.core.exceptions.ADBNotFoundException;
+import it.unisa.petra.core.exceptions.ApkNotFoundException;
+import it.unisa.petra.core.exceptions.NoDeviceFoundException;
+import it.unisa.petra.core.exceptions.NumberOfTrialsExceededException;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -56,7 +59,7 @@ public class Terminal {
                             configManager.getTimeBetweenInteractions(), timeCapturing, configManager.getScriptLocationPath(),
                             configManager.getSDKLocationPath(), configManager.getPowerProfileFile(), configManager.getOutputLocation());
                     if (seedsWriter != null) {
-                        seedsWriter.append(output.getSeed()).append("\n");
+                        seedsWriter.append(String.valueOf(output.getSeed())).append("\n");
                     }
                     timeCapturing = output.getTimeCapturing();
                 } catch (InterruptedException | IOException ex) {
@@ -65,7 +68,7 @@ public class Terminal {
                 }
             }
             process.uninstallApp(configManager.getAppName(), configManager.getSDKLocationPath());
-        } catch (ApkNotFoundException | NoDeviceFoundException | IOException | InterruptedException | NumberOfTrialsExceededException | ADBNotFoundException | MonkeyPlaybackNotFoundException ex) {
+        } catch (ApkNotFoundException | NoDeviceFoundException | IOException | InterruptedException | NumberOfTrialsExceededException | ADBNotFoundException ex) {
             Logger.getLogger(Terminal.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

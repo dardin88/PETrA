@@ -49,14 +49,14 @@ public class SANERExperiment {
                 String outputLocation = "/home/dardin88/Desktop/energy_consumption_bad_smell/PETrA_evaluation/prop_test_data/" + filter + "/";
                 String testLocation = "/home/dardin88/Desktop/energy_consumption_bad_smell/PETrA_evaluation/test-scripts/" + filter + ".txt";
                 String powerProfileName = null;
-                File platformToolsFolder = null;
-                File toolsFolder = null;
+                String platformToolsFolder = null;
+                String toolsFolder = null;
 
                 try {
                     ConfigManager configManager = new ConfigManager("config.properties");
                     powerProfileName = configManager.getPowerProfileFile();
-                    platformToolsFolder = new File(configManager.getSDKLocationPath() + "platform-tools/");
-                    toolsFolder = new File(configManager.getSDKLocationPath() + "tools/");
+                    platformToolsFolder = configManager.getSDKLocationPath() + "platform-tools/";
+                    toolsFolder = configManager.getSDKLocationPath() + "tools/";
                 } catch (IOException ex) {
                     Logger.getLogger(SANERExperiment.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -110,7 +110,7 @@ public class SANERExperiment {
 
                 System.out.println("Saving traceviews.");
                 SANERExperiment.executeCommand("adb pull ./data/local/tmp/log.trace " + outputLocation, null, null);
-                SANERExperiment.executeCommand("./dmtracedump -o " + outputLocation + "log.trace", platformToolsFolder, new File(traceviewFilename));
+                SANERExperiment.executeCommand("./dmtracedump -o " + outputLocation + "log.trace", new File(platformToolsFolder), new File(traceviewFilename));
 
                 systraceThread.join();
 

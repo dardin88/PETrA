@@ -3,7 +3,6 @@ package it.unisa.petra.core;
 import it.unisa.petra.core.batterystats.BatteryStatsParser;
 import it.unisa.petra.core.batterystats.EnergyInfo;
 import it.unisa.petra.core.exceptions.ADBNotFoundException;
-import it.unisa.petra.core.exceptions.MonkeyPlaybackNotFoundException;
 import it.unisa.petra.core.exceptions.NoDeviceFoundException;
 import it.unisa.petra.core.powerprofile.PowerProfile;
 import it.unisa.petra.core.powerprofile.PowerProfileParser;
@@ -42,15 +41,15 @@ public class Process {
 
     public ProcessOutput playRun(int run, String appName, int interactions, int timeBetweenInteractions,
                                  int timeCapturing, String scriptLocationPath, String sdkFolderPath, String powerProfileFile, String outputLocation)
-            throws InterruptedException, IOException, NoDeviceFoundException, ADBNotFoundException, MonkeyPlaybackNotFoundException {
+            throws InterruptedException, IOException, NoDeviceFoundException, ADBNotFoundException {
 
         this.checkADBExists(sdkFolderPath);
 
-        File platformToolsFolder = new File(sdkFolderPath + File.separator + "platform-tools");
-        File toolsFolder = new File(sdkFolderPath + File.separator + "tools");
+        String platformToolsFolder = sdkFolderPath + File.separator + "platform-tools";
+        String toolsFolder = sdkFolderPath + File.separator + "tools";
 
         Random random = new Random();
-        String seed = random.nextInt() + "";
+        int seed = random.nextInt();
 
         if (scriptLocationPath.isEmpty()) {
             System.out.println("Run " + run + ": seed: " + seed);
@@ -64,50 +63,24 @@ public class Process {
         String systraceFilename = runDataFolderName + "systrace";
         String traceviewFilename = runDataFolderName + "tracedump";
 
-        this.executeCommand("adb shell pm clear " + appName, null);
+        this.resetApp(appName, run);
 
-        System.out.println("Run " + run + ": resetting battery stats.");
-        this.executeCommand("adb shell dumpsys batterystats --reset", null);
-
-        System.out.println("Run " + run + ": opening app.");
-        this.executeCommand("adb shell input keyevent 82", null);
-        this.executeCommand("adb shell monkey -p " + appName + " 1", null);
-        this.executeCommand("adb shell am broadcast -a org.thisisafactory.simiasque.SET_OVERLAY --ez enable true", null);
-
-        System.out.println("Run " + run + ": start profiling.");
-        this.executeCommand("adb shell am profile start " + appName + " ./data/local/tmp/log.trace", null);
         Date time1 = new Date();
-
-        System.out.println("Run " + run + ": capturing system traces.");
-        SysTraceRunner sysTraceRunner = new SysTraceRunner(timeCapturing, systraceFilename, platformToolsFolder);
+        SysTraceRunner sysTraceRunner = this.startProfiling(appName, run, timeCapturing, systraceFilename, platformToolsFolder);
         Thread systraceThread = new Thread(sysTraceRunner);
         systraceThread.start();
 
-        this.executeCommand("adb kill-server", null);
-        this.executeCommand("adb start-server", null);
+//        this.executeCommand("adb kill-server", null);
+//        this.executeCommand("adb start-server", null);
 
-        if (scriptLocationPath.isEmpty() && interactions > 0) {
-            System.out.println("Run " + run + ": executing random actions.");
-            this.executeCommand("adb shell monkey -p " + appName + " -s " + seed + " --throttle " + timeBetweenInteractions + " --ignore-crashes --ignore-timeouts --ignore-security-exceptions " + interactions, null);
-        } else {
-            System.out.println("Run " + run + ": running monkeyrunner script.");
-            this.executeCommand(toolsFolder + "/bin/monkeyrunner " + "src/main/resources/monkey_playback.py " + scriptLocationPath, null);
-        }
+        this.executeActions(appName, run, scriptLocationPath, toolsFolder, interactions, timeBetweenInteractions, seed);
 
         Date time2 = new Date();
         long timespent = time2.getTime() - time1.getTime();
 
         timeCapturing = (int) ((timespent + 10000) / 1000);
 
-        System.out.println("Run " + run + ": stop profiling.");
-        this.executeCommand("adb shell am profile stop " + appName, null);
-
-        System.out.println("Run " + run + ": saving battery stats.");
-        this.executeCommand("adb shell dumpsys batterystats", new File(batteryStatsFilename));
-
-        System.out.println("Run " + run + ": saving traceviews.");
-        this.executeCommand("adb pull ./data/local/tmp/log.trace " + runDataFolderName, null);
-        this.executeCommand(platformToolsFolder + "/dmtracedump -o " + runDataFolderName + "log.trace", new File(traceviewFilename));
+        this.extractInfo(appName, run, batteryStatsFilename, runDataFolderName, platformToolsFolder, traceviewFilename);
 
         systraceThread.join();
 
@@ -135,10 +108,7 @@ public class Process {
 
             resultsWriter.flush();
         } finally {
-            System.out.println("Run " + run + ": stop app.");
-            this.executeCommand("adb shell am broadcast -a org.thisisafactory.simiasque.SET_OVERLAY --ez enable false", null);
-            this.executeCommand("adb shell am force-stop " + appName, null);
-            this.executeCommand("adb shell pm clear " + appName, null);
+            this.stopApp(appName, run);
         }
 
         this.executeCommand("adb shell dumpsys battery reset", null);
@@ -152,6 +122,45 @@ public class Process {
         this.executeCommand("java -jar src/main/resources/apktool_2.0.3.jar if framework-res.apk", null);
         this.executeCommand("java -jar src/main/resources/apktool_2.0.3.jar d framework-res.apk", null);
         this.executeCommand("mv framework-res/res/xml/power_profile.xml " + outputLocation, null);
+    }
+
+    private void resetApp(String appName, int run) throws NoDeviceFoundException {
+        System.out.println("Run " + run + ": resetting app and batteristats.");
+        this.executeCommand("adb shell pm clear " + appName, null);
+        this.executeCommand("adb shell dumpsys batterystats --reset", null);
+    }
+
+    private SysTraceRunner startProfiling(String appName, int run, int timeCapturing, String systraceFilename,
+                                          String platformToolsFolder) throws NoDeviceFoundException {
+        System.out.println("Run " + run + ": start profiling.");
+        this.executeCommand("adb shell am profile start " + appName + " ./data/local/tmp/log.trace", null);
+
+        System.out.println("Run " + run + ": capturing system traces.");
+        return new SysTraceRunner(timeCapturing, systraceFilename, platformToolsFolder);
+    }
+
+    private void executeActions(String appName, int run, String scriptLocationPath, String toolsFolder, int interactions,
+                                int timeBetweenInteractions, int seed) throws NoDeviceFoundException {
+        if (scriptLocationPath.isEmpty() && interactions > 0) {
+            System.out.println("Run " + run + ": executing random actions.");
+            this.executeCommand("adb shell monkey -p " + appName + " -s " + seed + " --throttle " + timeBetweenInteractions + " --ignore-crashes --ignore-timeouts --ignore-security-exceptions " + interactions, null);
+        } else {
+            System.out.println("Run " + run + ": running monkeyrunner script.");
+            this.executeCommand(toolsFolder + "/bin/monkeyrunner " + "src/main/resources/monkey_playback.py " + scriptLocationPath, null);
+        }
+    }
+
+    private void extractInfo(String appName, int run, String batteryStatsFilename, String runDataFolderName, String platformToolsFolder, String traceviewFilename) throws NoDeviceFoundException {
+        System.out.println("Run " + run + ": stop profiling.");
+        this.executeCommand("adb shell am profile stop " + appName, null);
+
+        System.out.println("Run " + run + ": saving battery stats.");
+        this.executeCommand("adb shell dumpsys batterystats", new File(batteryStatsFilename));
+
+        System.out.println("Run " + run + ": saving traceviews.");
+        this.executeCommand("adb pull ./data/local/tmp/log.trace " + runDataFolderName, null);
+        this.executeCommand(platformToolsFolder + "/dmtracedump -o " + runDataFolderName + "log.trace", new File(traceviewFilename));
+
     }
 
     List<TraceLine> parseAndAggregateResults(String traceviewFilename, String batteryStatsFilename, String systraceFilename,
@@ -277,6 +286,13 @@ public class Process {
         traceLine.setConsumption(joule);
 
         return traceLine;
+    }
+
+    private void stopApp(String appName, int run) throws NoDeviceFoundException {
+        System.out.println("Run " + run + ": stop app.");
+        this.executeCommand("adb shell am broadcast -a org.thisisafactory.simiasque.SET_OVERLAY --ez enable false", null);
+        this.executeCommand("adb shell am force-stop " + appName, null);
+        this.executeCommand("adb shell pm clear " + appName, null);
     }
 
     private void executeCommand(String command, File outputFile) throws NoDeviceFoundException {

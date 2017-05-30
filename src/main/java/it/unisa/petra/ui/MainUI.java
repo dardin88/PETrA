@@ -3,7 +3,6 @@ package it.unisa.petra.ui;
 import it.unisa.petra.core.Process;
 import it.unisa.petra.core.ProcessOutput;
 import it.unisa.petra.core.exceptions.ADBNotFoundException;
-import it.unisa.petra.core.exceptions.MonkeyPlaybackNotFoundException;
 import it.unisa.petra.core.exceptions.NoDeviceFoundException;
 import it.unisa.petra.core.exceptions.NumberOfTrialsExceededException;
 
@@ -535,7 +534,7 @@ public class MainUI extends javax.swing.JFrame {
                         ProcessOutput output = process.playRun(run, appName, interactions, timeBetweenInteractions, timeCapturing,
                                 scriptLocationPath, sdkLocationPath, powerProfilePath, outputLocationPath);
                         if (seedsWriter != null) {
-                            seedsWriter.append(output.getSeed()).append("\n");
+                            seedsWriter.append(String.valueOf(output.getSeed())).append("\n");
                         }
                         timeCapturing = output.getTimeCapturing();
                         progress = (100 * run / runs);
@@ -552,7 +551,7 @@ public class MainUI extends javax.swing.JFrame {
                 powerprofileButton.setEnabled(true);
                 viewStats.setEnabled(true);
                 process.uninstallApp(appName, sdkLocationPath);
-            } catch (NoDeviceFoundException | IOException | NumberOfTrialsExceededException | ADBNotFoundException | MonkeyPlaybackNotFoundException ex) {
+            } catch (NoDeviceFoundException | IOException | NumberOfTrialsExceededException | ADBNotFoundException ex) {
                 startProcessButton.setEnabled(true);
                 apkLocationButton.setEnabled(true);
                 scriptLocationButton.setEnabled(true);

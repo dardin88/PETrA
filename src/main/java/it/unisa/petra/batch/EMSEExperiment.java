@@ -45,7 +45,7 @@ public class EMSEExperiment {
             String apkLocation = "/home/dardin88/Desktop/energy_consumption_bad_smell/icse_experiment/member_ignoring_method_apks/" + apkName;
             String oldSeedsLocation = "/home/dardin88/Desktop/energy_consumption_bad_smell/icse_experiment/test_data/" + appName + "/seeds";
             String powerProfileName = null;
-            File platformToolsFolder = null;
+            String platformToolsFolder = null;
             int maxRun = 0;
             int interactions = 0;
             int timeBetweenInteractions = 0;
@@ -53,7 +53,7 @@ public class EMSEExperiment {
             try {
                 ConfigManager configManager = new ConfigManager("config.properties");
                 powerProfileName = configManager.getPowerProfileFile();
-                platformToolsFolder = new File(configManager.getSDKLocationPath() + "platform-tools/");
+                platformToolsFolder = configManager.getSDKLocationPath() + "platform-tools/";
                 maxRun = configManager.getRuns();
                 interactions = configManager.getInteractions();
                 timeBetweenInteractions = configManager.getTimeBetweenInteractions();
@@ -154,7 +154,7 @@ public class EMSEExperiment {
 
                 System.out.println("Saving traceviews.");
                 EMSEExperiment.executeCommand("adb pull ./data/local/tmp/log.trace " + runDataFolderName, null, null);
-                EMSEExperiment.executeCommand("./dmtracedump -o " + runDataFolderName + "log.trace", platformToolsFolder, new File(traceviewFilename));
+                EMSEExperiment.executeCommand("./dmtracedump -o " + runDataFolderName + "log.trace", new File(platformToolsFolder), new File(traceviewFilename));
 
                 systraceThread.join();
 

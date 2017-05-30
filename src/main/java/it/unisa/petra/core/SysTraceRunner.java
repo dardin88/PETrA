@@ -1,6 +1,5 @@
 package it.unisa.petra.core;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,9 +15,9 @@ public class SysTraceRunner implements Runnable {
 
     private final int timeCapturing;
     private final String systraceFilename;
-    private final File platformToolsFolder;
+    private final String platformToolsFolder;
 
-    public SysTraceRunner(int timeCapturing, String systraceFilename, File platformToolsFolder) {
+    public SysTraceRunner(int timeCapturing, String systraceFilename, String platformToolsFolder) {
         this.timeCapturing = timeCapturing;
         this.systraceFilename = systraceFilename;
         this.platformToolsFolder = platformToolsFolder;
