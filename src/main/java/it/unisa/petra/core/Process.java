@@ -91,7 +91,6 @@ public class Process {
             this.executeCommand("adb shell monkey -p " + appName + " -s " + seed + " --throttle " + timeBetweenInteractions + " --ignore-crashes --ignore-timeouts --ignore-security-exceptions " + interactions, null);
         } else {
             System.out.println("Run " + run + ": running monkeyrunner script.");
-            checkMonkeyPlaybackExists(sdkFolderPath);
             this.executeCommand(toolsFolder + "/bin/monkeyrunner " + "src/main/resources/monkey_playback.py " + scriptLocationPath, null);
         }
 
@@ -304,14 +303,5 @@ public class Process {
             throw new ADBNotFoundException();
         }
     }
-
-    private void checkMonkeyPlaybackExists(String sdkFolderPath) throws MonkeyPlaybackNotFoundException {
-        String monkeyPlabackPath = sdkFolderPath + "tools/monkey_playback.py";
-        File monkeyPlaybackFile = new File(monkeyPlabackPath);
-        if (!monkeyPlaybackFile.exists()) {
-            throw new MonkeyPlaybackNotFoundException();
-        }
-    }
-
 
 }
