@@ -92,7 +92,7 @@ public class Process {
         } else {
             System.out.println("Run " + run + ": running monkeyrunner script.");
             checkMonkeyPlaybackExists(sdkFolderPath);
-            this.executeCommand(toolsFolder + "/bin/monkeyrunner " + toolsFolder + "monkey_playback.py " + scriptLocationPath, null);
+            this.executeCommand(toolsFolder + "/bin/monkeyrunner " + "src/main/resources/monkey_playback.py " + scriptLocationPath, null);
         }
 
         Date time2 = new Date();
