@@ -44,6 +44,7 @@ public class EMSEExperiment {
             String outputLocation = "/home/dardin88/Desktop/energy_consumption_bad_smell/icse_experiment/member_ignoring_method_test_data/" + appName + "/";
             String apkLocation = "/home/dardin88/Desktop/energy_consumption_bad_smell/icse_experiment/member_ignoring_method_apks/" + apkName;
             String oldSeedsLocation = "/home/dardin88/Desktop/energy_consumption_bad_smell/icse_experiment/test_data/" + appName + "/seeds";
+            String sdkLocationPath = System.getenv("ANDROID_HOME");
             String powerProfileName = null;
             String platformToolsFolder = null;
             int maxRun = 0;
@@ -53,7 +54,7 @@ public class EMSEExperiment {
             try {
                 ConfigManager configManager = new ConfigManager("config.properties");
                 powerProfileName = configManager.getPowerProfileFile();
-                platformToolsFolder = configManager.getSDKLocationPath() + "platform-tools/";
+                platformToolsFolder = sdkLocationPath + "platform-tools/";
                 maxRun = configManager.getRuns();
                 interactions = configManager.getInteractions();
                 timeBetweenInteractions = configManager.getTimeBetweenInteractions();

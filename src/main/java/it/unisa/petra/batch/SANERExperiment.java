@@ -48,6 +48,7 @@ public class SANERExperiment {
                 String apkLocation = apkNames.get(appCounter);
                 String outputLocation = "/home/dardin88/Desktop/energy_consumption_bad_smell/PETrA_evaluation/prop_test_data/" + filter + "/";
                 String testLocation = "/home/dardin88/Desktop/energy_consumption_bad_smell/PETrA_evaluation/test-scripts/" + filter + ".txt";
+                String sdkLocationPath = System.getenv("ANDROID_HOME");
                 String powerProfileName = null;
                 String platformToolsFolder = null;
                 String toolsFolder = null;
@@ -55,8 +56,8 @@ public class SANERExperiment {
                 try {
                     ConfigManager configManager = new ConfigManager("config.properties");
                     powerProfileName = configManager.getPowerProfileFile();
-                    platformToolsFolder = configManager.getSDKLocationPath() + "platform-tools/";
-                    toolsFolder = configManager.getSDKLocationPath() + "tools/";
+                    platformToolsFolder = sdkLocationPath + "platform-tools/";
+                    toolsFolder = sdkLocationPath + "tools/";
                 } catch (IOException ex) {
                     Logger.getLogger(SANERExperiment.class.getName()).log(Level.SEVERE, null, ex);
                 }

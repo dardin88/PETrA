@@ -62,10 +62,4 @@ public class ConfigManagerTest {
         ConfigManager configManager = new ConfigManager("src/test/resources/config.properties");
         assertEquals("/home/dardin88/test_data/a2dp.Vol_scripts/", configManager.getScriptLocationPath());
     }
-
-    @Test
-    public void testConfigManager10() throws Exception {
-        ConfigManager configManager = new ConfigManager("src/test/resources/config.properties");
-        assertEquals("/home/dardin88/Android/Sdk/", configManager.getSDKLocationPath());
-    }
 }

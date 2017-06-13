@@ -25,6 +25,8 @@ public class Terminal {
             int trials = 0;
             BufferedWriter seedsWriter = null;
 
+            String sdkLocationPath = System.getenv("ANDROID_HOME");
+
             ConfigManager configManager = new ConfigManager(configFileLocation);
 
             File appDataFolder = new File(configManager.getOutputLocation());
@@ -38,7 +40,7 @@ public class Terminal {
             }
             File apkFile = new File(configManager.getApkLocationPath());
             if (apkFile.exists()) {
-                process.installApp(configManager.getApkLocationPath(), configManager.getSDKLocationPath());
+                process.installApp(configManager.getApkLocationPath(), sdkLocationPath);
             } else {
                 throw new ApkNotFoundException();
             }
@@ -57,7 +59,7 @@ public class Terminal {
                     }
                     ProcessOutput output = process.playRun(run, configManager.getAppName(), configManager.getInteractions(),
                             configManager.getTimeBetweenInteractions(), timeCapturing, configManager.getScriptLocationPath(),
-                            configManager.getSDKLocationPath(), configManager.getPowerProfileFile(), configManager.getOutputLocation());
+                            sdkLocationPath, configManager.getPowerProfileFile(), configManager.getOutputLocation());
                     if (seedsWriter != null) {
                         seedsWriter.append(String.valueOf(output.getSeed())).append("\n");
                     }
@@ -67,7 +69,7 @@ public class Terminal {
                     trials++;
                 }
             }
-            process.uninstallApp(configManager.getAppName(), configManager.getSDKLocationPath());
+            process.uninstallApp(configManager.getAppName(), sdkLocationPath);
         } catch (ApkNotFoundException | NoDeviceFoundException | IOException | InterruptedException | NumberOfTrialsExceededException | ADBNotFoundException ex) {
             Logger.getLogger(Terminal.class.getName()).log(Level.SEVERE, null, ex);
         }
