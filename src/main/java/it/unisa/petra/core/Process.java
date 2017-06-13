@@ -54,7 +54,7 @@ public class Process {
         if (scriptLocationPath.isEmpty()) {
             System.out.println("Run " + run + ": seed: " + seed);
         }
-        String runDataFolderName = outputLocation + "run_" + run + File.separator;
+        String runDataFolderName = outputLocation + "/run_" + run + File.separator;
         File runDataFolder = new File(runDataFolderName);
 
         runDataFolder.mkdirs();
@@ -64,6 +64,7 @@ public class Process {
         String traceviewFilename = runDataFolderName + "tracedump";
 
         this.resetApp(appName, run);
+        this.startApp(appName);
 
         Date time1 = new Date();
         SysTraceRunner sysTraceRunner = this.startProfiling(appName, run, timeCapturing, systraceFilename, platformToolsFolder);
@@ -132,7 +133,7 @@ public class Process {
 
     private SysTraceRunner startProfiling(String appName, int run, int timeCapturing, String systraceFilename,
                                           String platformToolsFolder) throws NoDeviceFoundException {
-        System.out.println("Run " + run + ": start profiling.");
+        System.out.println("Run " + run + ": starting profiling.");
         this.executeCommand("adb shell am profile start " + appName + " ./data/local/tmp/log.trace", null);
 
         System.out.println("Run " + run + ": capturing system traces.");
@@ -288,6 +289,14 @@ public class Process {
         return traceLine;
     }
 
+    private void startApp(String appName) throws NoDeviceFoundException {
+        System.out.println("Starting app.");
+        this.executeCommand("adb shell input keyevent 82", null);
+        this.executeCommand("adb shell monkey -p " + appName + " 1", null);
+        this.executeCommand("adb shell am broadcast -a org.thisisafactory.simiasque.SET_OVERLAY --ez enable true", null);
+
+    }
+
     private void stopApp(String appName, int run) throws NoDeviceFoundException {
         System.out.println("Run " + run + ": stop app.");
         this.executeCommand("adb shell am broadcast -a org.thisisafactory.simiasque.SET_OVERLAY --ez enable false", null);
@@ -326,7 +335,7 @@ public class Process {
     }
 
     private void checkADBExists(String sdkFolderPath) throws ADBNotFoundException {
-        String adbPath = sdkFolderPath + "platform-tools/adb";
+        String adbPath = sdkFolderPath + "/platform-tools/adb";
         File adbFile = new File(adbPath);
         if (!adbFile.exists()) {
             throw new ADBNotFoundException();
