@@ -72,9 +72,6 @@ public class Process {
         Thread systraceThread = new Thread(sysTraceRunner);
         systraceThread.start();
 
-//        this.executeCommand("adb kill-server", null);
-//        this.executeCommand("adb start-server", null);
-
         this.executeActions(appName, run, scriptLocationPath, toolsFolder, interactions, timeBetweenInteractions, seed);
 
         Date time2 = new Date();
@@ -182,7 +179,7 @@ public class Process {
         SysTrace cpuInfo = SysTraceParser.parseFile(systraceFilename, traceviewStart, traceviewLength);
 
         System.out.println("Run " + run + ": aggregating results.");
-        energyInfoArray = this.mergeEnergyInfo(energyInfoArray, cpuInfo, powerProfile.computeNumberOfCores());
+        energyInfoArray = this.mergeEnergyInfo(energyInfoArray, cpuInfo, cpuInfo.getNumberOfCpu());
         for (TraceLine traceLine : traceLines) {
             traceLinesWConsumption.add(this.calculateConsumption(traceLine, energyInfoArray, powerProfile));
         }
@@ -190,23 +187,22 @@ public class Process {
         return traceLinesWConsumption;
     }
 
-    private List<EnergyInfo> mergeEnergyInfo(List<EnergyInfo> energyInfoArray, SysTrace cpuInfo, int numberOfCores) {
+    private List<EnergyInfo> mergeEnergyInfo(List<EnergyInfo> energyInfoArray, SysTrace cpuInfo, int numOfCore) {
 
-        List<Integer> cpuFrequencies = new ArrayList<>(numberOfCores);
+        List<Integer> cpuFrequencies = new ArrayList<>();
+
+        for (int i = 0; i < numOfCore; i++) {
+            cpuFrequencies.add(0);
+        }
 
         for (EnergyInfo energyInfo : energyInfoArray) {
             int fixedEnergyInfoTime = cpuInfo.getSystraceStartTime() + energyInfo.getTime() * 1000; //systrace time are in nanoseconds
             for (CpuFrequency frequency : cpuInfo.getFrequencies()) {
                 if (frequency.getTime() <= fixedEnergyInfoTime) {
-                    int cpuId = frequency.getCore();
-                    if (cpuFrequencies.size() < cpuId + 1) {
-                        cpuFrequencies.add(frequency.getValue());
-                    } else {
-                        cpuFrequencies.set(cpuId, frequency.getValue());
-                    }
-                    energyInfo.setCpuFrequencies(cpuFrequencies);
+                    cpuFrequencies.set(frequency.getCore(), frequency.getValue());
                 }
             }
+            energyInfo.setCpuFrequencies(cpuFrequencies);
         }
         return energyInfoArray;
     }
@@ -216,7 +212,7 @@ public class Process {
         double joule = 0;
         double totalSeconds = 0;
 
-        int numberOfCores = powerProfile.computeNumberOfCores();
+        int numberOfCores = energyInfoArray.get(0).getCpuFrequencies().size();
 
         boolean[] previouslyIdle = new boolean[numberOfCores];
 
@@ -299,7 +295,7 @@ public class Process {
     }
 
     private void stopApp(String appName, int run) throws NoDeviceFoundException {
-        System.out.println("Run " + run + ": stop app.");
+        System.out.println("Run " + run + ": stopping app.");
         this.executeCommand("adb shell am broadcast -a org.thisisafactory.simiasque.SET_OVERLAY --ez enable false", null);
         this.executeCommand("adb shell am force-stop " + appName, null);
         this.executeCommand("adb shell pm clear " + appName, null);

@@ -14,7 +14,6 @@ class CpuClusterInfo {
     private int numCores;
 
     CpuClusterInfo() {
-        this.numCores = 1;
         frequencies = new ArrayList<>();
         consumptions = new ArrayList<>();
         info = new HashMap<>();
@@ -38,6 +37,10 @@ class CpuClusterInfo {
 
     void addConsumption(Double consumption) {
         this.consumptions.add(consumption);
+    }
+
+    void setIdleConsumption(double idleConsumption) {
+        this.info.put(0, idleConsumption);
     }
 
     void mergeFrequenciesAndConsumptions() {

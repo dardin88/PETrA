@@ -57,7 +57,11 @@ public class SysTraceParser {
                 timeread = Integer.parseInt(toMillisec(freqMatcher.group(1)));
                 frequency.setTime(timeread);
                 frequency.setValue(Integer.parseInt(freqMatcher.group(2)));
-                frequency.setCpuId(Integer.parseInt(freqMatcher.group(3)));
+                int cpuId = Integer.parseInt(freqMatcher.group(3));
+                frequency.setCpuId(cpuId);
+                if (cpuId + 1 > systrace.getNumberOfCpu()) {
+                    systrace.setNumberOfCpu(cpuId + 1);
+                }
                 lineFound = true;
             }
 
@@ -73,7 +77,11 @@ public class SysTraceParser {
                 timeread = Integer.parseInt(toMillisec(idleMatcher.group(1)));
                 frequency.setTime(timeread);
                 frequency.setValue(0);
-                frequency.setCpuId(Integer.parseInt(idleMatcher.group(2)));
+                int cpuId = Integer.parseInt(idleMatcher.group(2));
+                frequency.setCpuId(cpuId);
+                if (cpuId + 1 > systrace.getNumberOfCpu()) {
+                    systrace.setNumberOfCpu(cpuId + 1);
+                }
                 lineFound = true;
             }
 
@@ -82,8 +90,8 @@ public class SysTraceParser {
                 if (frequencyList.isEmpty()) {
                     frequencyList.add(frequency);
                 } else {
-                    int lastCoreFrequncy = SysTraceParser.getLastCoreValue(frequency.getCore());
-                    if (frequency.getValue() != lastCoreFrequncy) {
+                    int lastCoreFrequency = SysTraceParser.getLastCoreValue(frequency.getCore());
+                    if (frequency.getValue() != lastCoreFrequency) {
                         frequencyList.add(frequency);
                     }
                 }

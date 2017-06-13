@@ -30,6 +30,10 @@ public class PowerProfile {
         int lowerLimit = 0;
         int upperLimit = cpuInfo.get(0).getNumCores();
 
+        if (upperLimit == 0) {
+            return 0;
+        }
+
         for (int i = 0; i < cpuInfo.size(); i++) {
             if (core >= lowerLimit && core < upperLimit) {
                 return i;
@@ -53,15 +57,5 @@ public class PowerProfile {
 
     void setRadioInfo(List<Double> radioInfo) {
         this.radioInfo = radioInfo;
-    }
-
-    public int computeNumberOfCores() {
-        int numberOfCores = 0;
-
-        for (CpuClusterInfo cpuClusterInfo : cpuInfo) {
-            numberOfCores += cpuClusterInfo.getNumCores();
-        }
-
-        return numberOfCores;
     }
 }

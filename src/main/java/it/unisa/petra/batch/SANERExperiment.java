@@ -139,7 +139,7 @@ public class SANERExperiment {
                     System.out.println("Aggregating results");
                     PrintWriter resultsWriter = new PrintWriter(outputLocation + "result.csv", "UTF-8");
                     resultsWriter.println("signature, joule, seconds");
-                    energyInfoArray = SANERExperiment.mergeEnergyInfo(energyInfoArray, cpuInfo, powerProfile.computeNumberOfCores());
+                    energyInfoArray = SANERExperiment.mergeEnergyInfo(energyInfoArray, cpuInfo, cpuInfo.getNumberOfCpu());
                     for (TraceLine traceLine : traceLines) {
                         List<Double> result = SANERExperiment.calculateConsumption(traceLine.getEntrance(), traceLine.getExit(), energyInfoArray, powerProfile);
                         resultsWriter.println(traceLine.getSignature() + "," + result.get(0) + "," + result.get(1));
@@ -189,19 +189,22 @@ public class SANERExperiment {
         }
     }
 
-    private static List<EnergyInfo> mergeEnergyInfo(List<EnergyInfo> energyInfoArray, SysTrace cpuInfo, int numberOfCores) {
+    private static List<EnergyInfo> mergeEnergyInfo(List<EnergyInfo> energyInfoArray, SysTrace cpuInfo, int numOfCore) {
 
-        List<Integer> cpuFrequencies = new ArrayList<>(numberOfCores);
+        List<Integer> cpuFrequencies = new ArrayList<>();
+
+        for (int i = 0; i < numOfCore; i++) {
+            cpuFrequencies.add(0);
+        }
 
         for (EnergyInfo energyInfo : energyInfoArray) {
-            int fixedEnergyInfoTime = cpuInfo.getSystraceStartTime() + energyInfo.getTime();
-            for (CpuFrequency freq : cpuInfo.getFrequencies()) {
-                if (freq.getTime() <= fixedEnergyInfoTime) {
-                    int cpuId = freq.getCore();
-                    cpuFrequencies.set(cpuId, freq.getValue());
-                    energyInfo.setCpuFrequencies(cpuFrequencies);
+            int fixedEnergyInfoTime = cpuInfo.getSystraceStartTime() + energyInfo.getTime() * 1000; //systrace time are in nanoseconds
+            for (CpuFrequency frequency : cpuInfo.getFrequencies()) {
+                if (frequency.getTime() <= fixedEnergyInfoTime) {
+                    cpuFrequencies.set(frequency.getCore(), frequency.getValue());
                 }
             }
+            energyInfo.setCpuFrequencies(cpuFrequencies);
         }
         return energyInfoArray;
     }

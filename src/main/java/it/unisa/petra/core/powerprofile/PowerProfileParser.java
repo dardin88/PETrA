@@ -100,6 +100,7 @@ public class PowerProfileParser {
             }
 
             for (CpuClusterInfo aCpuInfo : cpuInfo) {
+                aCpuInfo.setIdleConsumption(devices.get("cpu.idle"));
                 aCpuInfo.mergeFrequenciesAndConsumptions();
             }
 
