@@ -20,9 +20,9 @@ import java.util.logging.Logger;
 
 public class Process {
 
-    public void installApp(String apkLocation, String sdkFolderPath) throws NoDeviceFoundException, ADBNotFoundException {
+    public void installApp(String apkLocation) throws NoDeviceFoundException, ADBNotFoundException {
 
-        this.checkADBExists(sdkFolderPath);
+        this.checkADBExists(System.getenv("ANDROID_HOME"));
 
         this.executeCommand("adb shell dumpsys battery set ac 0", null);
         this.executeCommand("adb shell dumpsys battery set usb 0", null);
@@ -31,18 +31,19 @@ public class Process {
         this.executeCommand("adb install " + apkLocation, null);
     }
 
-    public void uninstallApp(String appName, String sdkFolderPath) throws NoDeviceFoundException, ADBNotFoundException {
+    public void uninstallApp(String appName) throws NoDeviceFoundException, ADBNotFoundException {
 
-        this.checkADBExists(sdkFolderPath);
+        this.checkADBExists(System.getenv("ANDROID_HOME"));
 
         System.out.println("Uninstalling app.");
         this.executeCommand("adb shell pm uninstall " + appName, null);
     }
 
     public ProcessOutput playRun(int run, String appName, int interactions, int timeBetweenInteractions,
-                                 int timeCapturing, String scriptLocationPath, String sdkFolderPath, String powerProfileFile, String outputLocation)
+                                 int timeCapturing, String scriptLocationPath, String powerProfileFile, String outputLocation)
             throws InterruptedException, IOException, NoDeviceFoundException, ADBNotFoundException {
 
+        String sdkFolderPath = System.getenv("ANDROID_HOME");
         this.checkADBExists(sdkFolderPath);
 
         String platformToolsFolder = sdkFolderPath + File.separator + "platform-tools";

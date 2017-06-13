@@ -20,12 +20,10 @@ import java.util.logging.Logger;
 public class MainUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton androidSDKFolderButton;
     private javax.swing.JButton apkLocationButton;
     private javax.swing.JTextField apkLocationField;
     private javax.swing.JTextField appNameField;
     private javax.swing.JSlider monkeyInteractionsSlider;
-    private javax.swing.JTextField platformFolder;
     private javax.swing.JButton powerprofileButton;
     private javax.swing.JTextField powerprofileFile;
     private javax.swing.JProgressBar progressBar;
@@ -91,13 +89,10 @@ public class MainUI extends javax.swing.JFrame {
         javax.swing.JLabel jLabel3 = new javax.swing.JLabel();
         apkLocationField = new javax.swing.JTextField();
         javax.swing.JLabel jLabel4 = new javax.swing.JLabel();
-        javax.swing.JLabel jLabel7 = new javax.swing.JLabel();
-        platformFolder = new javax.swing.JTextField();
         javax.swing.JLabel jLabel9 = new javax.swing.JLabel();
         powerprofileFile = new javax.swing.JTextField();
         startProcessButton = new javax.swing.JButton();
         apkLocationButton = new javax.swing.JButton();
-        androidSDKFolderButton = new javax.swing.JButton();
         powerprofileButton = new javax.swing.JButton();
         progressBar = new javax.swing.JProgressBar();
         runsSlider = new javax.swing.JSlider();
@@ -130,11 +125,6 @@ public class MainUI extends javax.swing.JFrame {
 
         jLabel4.setText("Runs");
 
-        jLabel7.setText("Android SDK folder");
-
-        platformFolder.setEditable(false);
-        platformFolder.setToolTipText("Path of the Android SDK Platform Tools folder.");
-
         jLabel9.setText("Power Profile File");
 
         powerprofileFile.setEditable(false);
@@ -147,10 +137,6 @@ public class MainUI extends javax.swing.JFrame {
         apkLocationButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/folder.png"))); // NOI18N
         apkLocationButton.setText("Open");
         apkLocationButton.addActionListener(evt -> apkLocationButtonActionPerformed());
-
-        androidSDKFolderButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/folder.png"))); // NOI18N
-        androidSDKFolderButton.setText("Open");
-        androidSDKFolderButton.addActionListener(evt -> androidSDKFolderButtonActionPerformed());
 
         powerprofileButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/folder.png"))); // NOI18N
         powerprofileButton.setText("Open");
@@ -283,17 +269,14 @@ public class MainUI extends javax.swing.JFrame {
                                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                                         .addComponent(jLabel4)
-                                                        .addComponent(jLabel7)
                                                         .addComponent(jLabel9))
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                                         .addGroup(layout.createSequentialGroup()
                                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                                        .addComponent(platformFolder, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 526, Short.MAX_VALUE)
-                                                                        .addComponent(powerprofileFile))
+                                                                        .addComponent(powerprofileFile, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 526, Short.MAX_VALUE))
                                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                                        .addComponent(androidSDKFolderButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                                                         .addComponent(powerprofileButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                                                         .addComponent(runsSlider, javax.swing.GroupLayout.DEFAULT_SIZE, 606, Short.MAX_VALUE))))
                                 .addContainerGap())
@@ -327,11 +310,6 @@ public class MainUI extends javax.swing.JFrame {
                                                 .addComponent(jLabel4)))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(jLabel7)
-                                        .addComponent(platformFolder, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(androidSDKFolderButton))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(jLabel9)
                                         .addComponent(powerprofileFile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addComponent(powerprofileButton))
@@ -361,7 +339,6 @@ public class MainUI extends javax.swing.JFrame {
         int interactions = monkeyInteractionsSlider.getValue();
         int timeBetweenInteractions = timeInteractionsSlider.getValue();
         String scriptLocationPath = this.scriptLocationField.getText();
-        String sdkFolderPath = platformFolder.getText();
         String powerProfilePath = powerprofileFile.getText();
 
         String outputLocationPath = new File(apkLocationPath).getParent() + File.separator + "test_data" + File.separator + appName;
@@ -388,11 +365,6 @@ public class MainUI extends javax.swing.JFrame {
             valid = false;
         }
 
-        if (sdkFolderPath.isEmpty()) {
-            System.out.println("Please select the Android SDK Platform Tools folder.");
-            valid = false;
-        }
-
         if (powerProfilePath.isEmpty()) {
             System.out.println("Please select an Android Power Profile file.");
             valid = false;
@@ -405,7 +377,7 @@ public class MainUI extends javax.swing.JFrame {
         progressBar.setValue(0);
 
         Task task = new Task(appName, apkLocationPath, interactions, timeBetweenInteractions,
-                scriptLocationPath, runs, sdkFolderPath, powerProfilePath, outputLocationPath);
+                scriptLocationPath, runs, powerProfilePath, outputLocationPath);
         task.addPropertyChangeListener((PropertyChangeEvent evt1) -> {
             if ("progress".equals(evt1.getPropertyName())) {
                 progressBar.setValue((Integer) evt1.getNewValue());
@@ -425,19 +397,6 @@ public class MainUI extends javax.swing.JFrame {
             apkLocationField.setText(filename);
         }
     }//GEN-LAST:event_apkLocationButtonActionPerformed
-
-    private void androidSDKFolderButtonActionPerformed() {//GEN-FIRST:event_androidSDKFolderButtonActionPerformed
-        JFileChooser chooser = new JFileChooser();
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        chooser.setAcceptAllFileFilterUsed(false);
-
-        int res = chooser.showOpenDialog(null);
-        if (res == JFileChooser.APPROVE_OPTION) {
-            File f = chooser.getSelectedFile();
-            String filename = f.getAbsolutePath();
-            platformFolder.setText(filename);
-        }
-    }//GEN-LAST:event_androidSDKFolderButtonActionPerformed
 
     private void powerprofileButtonActionPerformed() {//GEN-FIRST:event_powerprofileButtonActionPerformed
         JFileChooser chooser = new JFileChooser();
@@ -473,19 +432,17 @@ public class MainUI extends javax.swing.JFrame {
         private final int timeBetweenInteractions;
         private final String scriptLocationPath;
         private final int runs;
-        private final String sdkLocationPath;
         private final String powerProfilePath;
         private final String outputLocationPath;
 
         Task(String appName, String apkLocationPath, int interactions, int timeBetweenInteractions, String scriptLocationPath,
-             int runs, String sdkLocationPath, String powerProfilePath, String outputLocationPath) {
+             int runs, String powerProfilePath, String outputLocationPath) {
             this.appName = appName;
             this.apkLocationPath = apkLocationPath;
             this.interactions = interactions;
             this.timeBetweenInteractions = timeBetweenInteractions;
             this.scriptLocationPath = scriptLocationPath;
             this.runs = runs;
-            this.sdkLocationPath = sdkLocationPath;
             this.powerProfilePath = powerProfilePath;
             this.outputLocationPath = outputLocationPath;
         }
@@ -495,7 +452,6 @@ public class MainUI extends javax.swing.JFrame {
             try {
                 apkLocationButton.setEnabled(false);
                 scriptLocationButton.setEnabled(false);
-                androidSDKFolderButton.setEnabled(false);
                 powerprofileButton.setEnabled(false);
                 startProcessButton.setEnabled(false);
                 Process process = new Process();
@@ -512,7 +468,7 @@ public class MainUI extends javax.swing.JFrame {
                     File seedsFile = new File(outputLocationPath + File.separator + "seeds");
                     seedsWriter = new BufferedWriter(new FileWriter(seedsFile, true));
                 }
-                process.installApp(apkLocationPath, sdkLocationPath);
+                process.installApp(apkLocationPath);
 
                 int timeCapturing = (interactions * timeBetweenInteractions) / 1000;
 
@@ -532,7 +488,7 @@ public class MainUI extends javax.swing.JFrame {
                     }
                     try {
                         ProcessOutput output = process.playRun(run, appName, interactions, timeBetweenInteractions, timeCapturing,
-                                scriptLocationPath, sdkLocationPath, powerProfilePath, outputLocationPath);
+                                scriptLocationPath, powerProfilePath, outputLocationPath);
                         if (seedsWriter != null) {
                             seedsWriter.append(String.valueOf(output.getSeed())).append("\n");
                         }
@@ -547,15 +503,13 @@ public class MainUI extends javax.swing.JFrame {
                 startProcessButton.setEnabled(true);
                 apkLocationButton.setEnabled(true);
                 scriptLocationButton.setEnabled(true);
-                androidSDKFolderButton.setEnabled(true);
                 powerprofileButton.setEnabled(true);
                 viewStats.setEnabled(true);
-                process.uninstallApp(appName, sdkLocationPath);
+                process.uninstallApp(appName);
             } catch (NoDeviceFoundException | IOException | NumberOfTrialsExceededException | ADBNotFoundException ex) {
                 startProcessButton.setEnabled(true);
                 apkLocationButton.setEnabled(true);
                 scriptLocationButton.setEnabled(true);
-                androidSDKFolderButton.setEnabled(true);
                 powerprofileButton.setEnabled(true);
                 viewStats.setEnabled(false);
                 Logger.getLogger(MainUI.class.getName()).log(Level.SEVERE, null, ex);

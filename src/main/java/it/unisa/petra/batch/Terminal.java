@@ -40,7 +40,7 @@ public class Terminal {
             }
             File apkFile = new File(configManager.getApkLocationPath());
             if (apkFile.exists()) {
-                process.installApp(configManager.getApkLocationPath(), sdkLocationPath);
+                process.installApp(configManager.getApkLocationPath());
             } else {
                 throw new ApkNotFoundException();
             }
@@ -59,7 +59,7 @@ public class Terminal {
                     }
                     ProcessOutput output = process.playRun(run, configManager.getAppName(), configManager.getInteractions(),
                             configManager.getTimeBetweenInteractions(), timeCapturing, configManager.getScriptLocationPath(),
-                            sdkLocationPath, configManager.getPowerProfileFile(), configManager.getOutputLocation());
+                            configManager.getPowerProfileFile(), configManager.getOutputLocation());
                     if (seedsWriter != null) {
                         seedsWriter.append(String.valueOf(output.getSeed())).append("\n");
                     }
@@ -69,7 +69,7 @@ public class Terminal {
                     trials++;
                 }
             }
-            process.uninstallApp(configManager.getAppName(), sdkLocationPath);
+            process.uninstallApp(configManager.getAppName());
         } catch (ApkNotFoundException | NoDeviceFoundException | IOException | InterruptedException | NumberOfTrialsExceededException | ADBNotFoundException ex) {
             Logger.getLogger(Terminal.class.getName()).log(Level.SEVERE, null, ex);
         }
