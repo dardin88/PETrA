@@ -142,7 +142,10 @@ public class Process {
             this.executeCommand("adb shell monkey -p " + appName + " -s " + seed + " --throttle " + timeBetweenInteractions + " --ignore-crashes --ignore-timeouts --ignore-security-exceptions " + interactions, null);
         } else {
             System.out.println("Run " + run + ": running monkeyrunner script.");
-            this.executeCommand(toolsFolder + "/bin/monkeyrunner " + "src/main/resources/monkey_playback.py " + scriptLocationPath, null);
+            String jarDirectory = System.getProperty("user.dir");
+            this.executeCommand("jar xf " + jarDirectory + "/PETrA-1.0-jar-with-dependencies.jar " + jarDirectory + "/monkey_playback.py", null);
+            this.executeCommand(toolsFolder + "/bin/monkeyrunner " + jarDirectory + "/monkey_playback.py " + scriptLocationPath, null);
+            this.executeCommand("rm -rf " + jarDirectory + "/monkey_playback.py", null);
         }
     }
 
