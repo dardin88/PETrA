@@ -35,7 +35,6 @@ public class SysTraceParser {
         Elements scriptElements = doc.getElementsByClass("trace-data");
         String sysTraceText = scriptElements.get(0).dataNodes().get(0).getWholeData();
 
-
         for (String line : sysTraceText.split("\n")) {
 
             CpuFrequency frequency = new CpuFrequency();

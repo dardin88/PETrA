@@ -83,32 +83,29 @@ public class Process {
 
         systraceThread.join();
 
-        try {
-            System.out.println("Run " + run + ": aggregating results.");
+        System.out.println("Run " + run + ": aggregating results.");
 
-            if (powerProfileFile.isEmpty()) {
-                System.out.println("Run " + run + ": extracting power profile.");
-                this.extractPowerProfile(outputLocation);
-                powerProfileFile = outputLocation + "power_profile.xml";
-            }
-
-            System.out.println("Run " + run + ": parsing power profile.");
-            PowerProfile powerProfile = PowerProfileParser.parseFile(powerProfileFile);
-
-            List<TraceLine> traceLinesWiConsumptions = parseAndAggregateResults(traceviewFilename, batteryStatsFilename,
-                    systraceFilename, powerProfile, appName, run);
-
-            PrintWriter resultsWriter = new PrintWriter(runDataFolderName + "result.csv", "UTF-8");
-            resultsWriter.println("signature, joule, seconds");
-
-            for (TraceLine traceLine : traceLinesWiConsumptions) {
-                resultsWriter.println(traceLine.getSignature() + "," + traceLine.getConsumption() + "," + traceLine.getTimeLength());
-            }
-
-            resultsWriter.flush();
-        } finally {
-            this.stopApp(appName, run);
+        if (powerProfileFile.isEmpty()) {
+            System.out.println("Run " + run + ": extracting power profile.");
+            this.extractPowerProfile(outputLocation);
+            powerProfileFile = outputLocation + "power_profile.xml";
         }
+
+        System.out.println("Run " + run + ": parsing power profile.");
+        PowerProfile powerProfile = PowerProfileParser.parseFile(powerProfileFile);
+
+        List<TraceLine> traceLinesWiConsumptions = parseAndAggregateResults(traceviewFilename, batteryStatsFilename,
+                systraceFilename, powerProfile, appName, run);
+
+        PrintWriter resultsWriter = new PrintWriter(runDataFolderName + "result.csv", "UTF-8");
+        resultsWriter.println("signature, joule, seconds");
+
+        for (TraceLine traceLine : traceLinesWiConsumptions) {
+            resultsWriter.println(traceLine.getSignature() + "," + traceLine.getConsumption() + "," + traceLine.getTimeLength());
+        }
+
+        resultsWriter.flush();
+        this.stopApp(appName, run);
 
         this.executeCommand("adb shell dumpsys battery reset", null);
 
@@ -175,7 +172,7 @@ public class Process {
         System.out.println("Run " + run + ": elaborating battery stats info.");
         List<EnergyInfo> energyInfoArray = BatteryStatsParser.parseFile(batteryStatsFilename, traceviewStart, traceviewLength);
 
-        System.out.println("Run " + run + ": elaborating sys trace stats info.");
+        System.out.println("Run " + run + ": elaborating systrace stats info.");
         SysTrace cpuInfo = SysTraceParser.parseFile(systraceFilename, traceviewStart, traceviewLength);
 
         System.out.println("Run " + run + ": aggregating results.");
@@ -324,7 +321,6 @@ public class Process {
                 }
 
                 commandProcess.waitFor();
-                Thread.sleep(3000);
             }
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
