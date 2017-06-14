@@ -12,6 +12,8 @@ import it.unisa.petra.core.exceptions.NumberOfTrialsExceededException;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.io.*;
 import java.util.logging.Level;
@@ -60,8 +62,26 @@ public class MainUI extends JDialog {
         setModal(true);
 
         apkLocationButton.addActionListener(evt -> apkLocationButtonActionPerformed());
+        apkLocationField.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                apkLocationButtonActionPerformed();
+            }
+        });
         powerProfileFileButton.addActionListener(evt -> powerProfileFileButtonActionPerformed());
+        powerProfileFileField.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                powerProfileFileButtonActionPerformed();
+            }
+        });
         scriptLocationButton.addActionListener(evt -> scriptLocationButtonActionPerformed());
+        scriptLocationField.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                scriptLocationButtonActionPerformed();
+            }
+        });
         startEstimationButton.addActionListener(evt -> startEstimationButtonActionPerformed());
         statisticsButton.addActionListener(evt -> statisticsButtonActionPerformed());
         statusAreaScroll.setViewportView(statusArea);
@@ -252,6 +272,8 @@ public class MainUI extends JDialog {
         powerProfileFileLabel.setText("Power Profile File");
         panel2.add(powerProfileFileLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         powerProfileFileField = new JTextField();
+        powerProfileFileField.setEditable(false);
+        powerProfileFileField.setEnabled(true);
         powerProfileFileField.setToolTipText("Device power profile (see https://source.android.com/devices/tech/power/).");
         panel2.add(powerProfileFileField, new GridConstraints(1, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         apkLocationLabel = new JLabel();
@@ -294,6 +316,7 @@ public class MainUI extends JDialog {
         scriptLocationLabel.setText("Script Location");
         panel3.add(scriptLocationLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         scriptLocationField = new JTextField();
+        scriptLocationField.setEditable(false);
         scriptLocationField.setToolTipText("The location of the Monkeyrunner script.");
         panel3.add(scriptLocationField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(400, -1), null, 0, false));
         scriptLocationButton = new JButton();
