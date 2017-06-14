@@ -100,4 +100,13 @@ class ConfigManager {
 
         return prop.getProperty("scriptLocationPath");
     }
+
+    String getScriptTime() throws IOException {
+        Properties prop = new Properties();
+        try (InputStream inputStream = this.getPropertiesStream()) {
+            prop.load(inputStream);
+        }
+
+        return prop.getProperty("scriptTime");
+    }
 }

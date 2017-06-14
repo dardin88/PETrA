@@ -216,7 +216,7 @@
           </component>
           <component id="63404" class="javax.swing.JTextField" binding="scriptLocationField">
             <constraints>
-              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="8" use-parent-layout="false">
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="400" height="-1"/>
               </grid>
             </constraints>
@@ -233,6 +233,20 @@
               <text value="Open"/>
               <toolTipText value="Select monkeyrunner script."/>
             </properties>
+          </component>
+          <component id="d073a" class="javax.swing.JLabel" binding="scriptTimeField">
+            <constraints>
+              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Time needed for executing the script"/>
+            </properties>
+          </component>
+          <component id="8ef33" class="javax.swing.JSpinner" binding="scriptTimeSpinner">
+            <constraints>
+              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties/>
           </component>
         </children>
       </grid>

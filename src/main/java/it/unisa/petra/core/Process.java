@@ -137,12 +137,13 @@ public class Process {
 
     private void executeActions(String appName, int run, String scriptLocationPath, String toolsFolder, int interactions,
                                 int timeBetweenInteractions, int seed) throws NoDeviceFoundException {
-        if (scriptLocationPath.isEmpty() && interactions > 0) {
+        if (scriptLocationPath.isEmpty()) {
             System.out.println("Run " + run + ": executing random actions.");
             this.executeCommand("adb shell monkey -p " + appName + " -s " + seed + " --throttle " + timeBetweenInteractions + " --ignore-crashes --ignore-timeouts --ignore-security-exceptions " + interactions, null);
         } else {
             System.out.println("Run " + run + ": running monkeyrunner script.");
-            String jarDirectory = System.getProperty("user.dir");
+            String jarDirectory = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath()).getParentFile().getPath();
+            System.out.println(jarDirectory);
             this.executeCommand("jar xf " + jarDirectory + "/PETrA-1.0-jar-with-dependencies.jar " + jarDirectory + "/monkey_playback.py", null);
             this.executeCommand(toolsFolder + "/bin/monkeyrunner " + jarDirectory + "/monkey_playback.py " + scriptLocationPath, null);
             this.executeCommand("rm -rf " + jarDirectory + "/monkey_playback.py", null);

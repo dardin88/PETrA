@@ -25,8 +25,6 @@ public class Terminal {
             int trials = 0;
             BufferedWriter seedsWriter = null;
 
-            String sdkLocationPath = System.getenv("ANDROID_HOME");
-
             ConfigManager configManager = new ConfigManager(configFileLocation);
 
             File appDataFolder = new File(configManager.getOutputLocation());
@@ -47,10 +45,12 @@ public class Terminal {
             int timeCapturing = (configManager.getInteractions() * configManager.getTimeBetweenInteractions()) / 1000;
 
             if (timeCapturing <= 0) {
-                timeCapturing = 1;
+                timeCapturing = 100;
             }
 
-            Thread.sleep(5000);
+            if (!configManager.getScriptLocationPath().isEmpty()) {
+                timeCapturing = Integer.parseInt(configManager.getScriptTime());
+            }
 
             for (int run = 1; run <= configManager.getRuns(); run++) {
                 try {
@@ -70,7 +70,7 @@ public class Terminal {
                 }
             }
             process.uninstallApp(configManager.getAppName());
-        } catch (ApkNotFoundException | NoDeviceFoundException | IOException | InterruptedException | NumberOfTrialsExceededException | ADBNotFoundException ex) {
+        } catch (ApkNotFoundException | NoDeviceFoundException | IOException | NumberOfTrialsExceededException | ADBNotFoundException ex) {
             Logger.getLogger(Terminal.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
