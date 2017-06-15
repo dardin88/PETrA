@@ -3,6 +3,7 @@ package it.unisa.petra.core;
 import it.unisa.petra.core.batterystats.BatteryStatsParser;
 import it.unisa.petra.core.batterystats.EnergyInfo;
 import it.unisa.petra.core.exceptions.ADBNotFoundException;
+import it.unisa.petra.core.exceptions.AppNameCannotBeExtractedException;
 import it.unisa.petra.core.exceptions.NoDeviceFoundException;
 import it.unisa.petra.core.powerprofile.PowerProfile;
 import it.unisa.petra.core.powerprofile.PowerProfileParser;
@@ -17,12 +18,14 @@ import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Process {
 
     public void installApp(String apkLocation) throws NoDeviceFoundException, ADBNotFoundException {
 
-        this.checkADBExists(System.getenv("ANDROID_HOME"));
+        this.checkADBExists();
 
         this.executeCommand("adb shell dumpsys battery set ac 0", null);
         this.executeCommand("adb shell dumpsys battery set usb 0", null);
@@ -33,7 +36,7 @@ public class Process {
 
     public void uninstallApp(String appName) throws NoDeviceFoundException, ADBNotFoundException {
 
-        this.checkADBExists(System.getenv("ANDROID_HOME"));
+        this.checkADBExists();
 
         System.out.println("Uninstalling app.");
         this.executeCommand("adb shell pm uninstall " + appName, null);
@@ -44,7 +47,7 @@ public class Process {
             throws InterruptedException, IOException, NoDeviceFoundException, ADBNotFoundException {
 
         String sdkFolderPath = System.getenv("ANDROID_HOME");
-        this.checkADBExists(sdkFolderPath);
+        this.checkADBExists();
 
         String platformToolsFolder = sdkFolderPath + File.separator + "platform-tools";
         String toolsFolder = sdkFolderPath + File.separator + "tools";
@@ -143,7 +146,6 @@ public class Process {
         } else {
             System.out.println("Run " + run + ": running monkeyrunner script.");
             String jarDirectory = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath()).getParentFile().getPath();
-            System.out.println(jarDirectory);
             this.executeCommand("jar xf " + jarDirectory + "/PETrA-1.0-jar-with-dependencies.jar " + jarDirectory + "/monkey_playback.py", null);
             this.executeCommand(toolsFolder + "/bin/monkeyrunner " + jarDirectory + "/monkey_playback.py " + scriptLocationPath, null);
             this.executeCommand("rm -rf " + jarDirectory + "/monkey_playback.py", null);
@@ -302,7 +304,10 @@ public class Process {
         this.executeCommand("adb shell pm clear " + appName, null);
     }
 
-    private void executeCommand(String command, File outputFile) throws NoDeviceFoundException {
+    private String executeCommand(String command, File outputFile) throws NoDeviceFoundException {
+
+        StringBuilder output = new StringBuilder();
+
         try {
             List<String> listCommands = new ArrayList<>();
 
@@ -319,6 +324,7 @@ public class Process {
             try (BufferedReader in = new BufferedReader(new InputStreamReader(commandProcess.getInputStream()))) {
                 String line;
                 while ((line = in.readLine()) != null) {
+                    output.append(line).append("\n");
                     if (line.contains("error: no devices/emulators found")) {
                         throw new NoDeviceFoundException();
                     }
@@ -329,9 +335,11 @@ public class Process {
         } catch (IOException | InterruptedException ex) {
             Logger.getLogger(Process.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return output.toString();
     }
 
-    private void checkADBExists(String sdkFolderPath) throws ADBNotFoundException {
+    private void checkADBExists() throws ADBNotFoundException {
+        String sdkFolderPath = System.getenv("ANDROID_HOME");
         String adbPath = sdkFolderPath + "/platform-tools/adb";
         File adbFile = new File(adbPath);
         if (!adbFile.exists()) {
@@ -339,4 +347,24 @@ public class Process {
         }
     }
 
+    public String extractAppName(String apkLocationPath) throws NoDeviceFoundException, AppNameCannotBeExtractedException {
+        String sdkFolderPath = System.getenv("ANDROID_HOME");
+        String aaptPath = sdkFolderPath + "/build-tools/25.0.3/aapt";
+        String aaptOutput = this.executeCommand(aaptPath + " dump badging " + apkLocationPath, null);
+        String appName = "";
+        Pattern pattern = Pattern.compile("package: name='([^']*)' versionCode='[^']*' versionName='[^']*' platformBuildVersionName='[^']*'");
+
+        for (String line : aaptOutput.split("\n")) {
+            Matcher matcher = pattern.matcher(line);
+            if (matcher.find()) {
+                appName = matcher.group(1);
+            }
+        }
+
+        if (appName.isEmpty()) {
+            throw new AppNameCannotBeExtractedException();
+        }
+
+        return appName;
+    }
 }

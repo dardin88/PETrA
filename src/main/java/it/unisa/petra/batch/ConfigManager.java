@@ -65,15 +65,6 @@ class ConfigManager {
         return Integer.parseInt(prop.getProperty("timeBetweenInteractions"));
     }
 
-    String getAppName() throws IOException {
-        Properties prop = new Properties();
-        try (InputStream inputStream = this.getPropertiesStream()) {
-            prop.load(inputStream);
-        }
-
-        return prop.getProperty("appName");
-    }
-
     String getApkLocationPath() throws IOException {
         Properties prop = new Properties();
         try (InputStream inputStream = this.getPropertiesStream()) {

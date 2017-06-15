@@ -2,10 +2,7 @@ package it.unisa.petra.batch;
 
 import it.unisa.petra.core.Process;
 import it.unisa.petra.core.ProcessOutput;
-import it.unisa.petra.core.exceptions.ADBNotFoundException;
-import it.unisa.petra.core.exceptions.ApkNotFoundException;
-import it.unisa.petra.core.exceptions.NoDeviceFoundException;
-import it.unisa.petra.core.exceptions.NumberOfTrialsExceededException;
+import it.unisa.petra.core.exceptions.*;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -32,6 +29,8 @@ public class Terminal {
             appDataFolder.delete();
             appDataFolder.mkdirs();
 
+            String appName = process.extractAppName(configManager.getApkLocationPath());
+
             if (configManager.getScriptLocationPath().isEmpty()) {
                 File seedsFile = new File(configManager.getOutputLocation() + File.separator + "seeds");
                 seedsWriter = new BufferedWriter(new FileWriter(seedsFile, true));
@@ -57,7 +56,7 @@ public class Terminal {
                     if (trials == configManager.getTrials()) {
                         throw new NumberOfTrialsExceededException();
                     }
-                    ProcessOutput output = process.playRun(run, configManager.getAppName(), configManager.getInteractions(),
+                    ProcessOutput output = process.playRun(run, appName, configManager.getInteractions(),
                             configManager.getTimeBetweenInteractions(), timeCapturing, configManager.getScriptLocationPath(),
                             configManager.getPowerProfileFile(), configManager.getOutputLocation());
                     if (seedsWriter != null) {
@@ -69,8 +68,9 @@ public class Terminal {
                     trials++;
                 }
             }
-            process.uninstallApp(configManager.getAppName());
-        } catch (ApkNotFoundException | NoDeviceFoundException | IOException | NumberOfTrialsExceededException | ADBNotFoundException ex) {
+            process.uninstallApp(appName);
+        } catch (ApkNotFoundException | AppNameCannotBeExtractedException | NoDeviceFoundException | IOException |
+                NumberOfTrialsExceededException | ADBNotFoundException ex) {
             Logger.getLogger(Terminal.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

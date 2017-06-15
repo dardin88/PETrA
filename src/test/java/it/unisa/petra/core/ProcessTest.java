@@ -15,6 +15,17 @@ import static org.junit.Assert.assertEquals;
 public class ProcessTest {
 
     @Test
+    public void testAppNameExtraction() throws Exception {
+        String apkLocationPath = "src/test/resources/a2dp.Vol.apk";
+
+        Process process = new Process();
+
+        String appName = process.extractAppName(apkLocationPath);
+
+        assertEquals(appName, "a2dp.Vol");
+    }
+
+    @Test
     public void testParser() throws Exception {
         String traceviewFilename = "src/test/resources/tracedump_example";
         String batteryStatsFilename = "src/test/resources/batterystats_example";

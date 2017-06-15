@@ -6,6 +6,7 @@ import com.intellij.uiDesigner.core.Spacer;
 import it.unisa.petra.core.Process;
 import it.unisa.petra.core.ProcessOutput;
 import it.unisa.petra.core.exceptions.ADBNotFoundException;
+import it.unisa.petra.core.exceptions.AppNameCannotBeExtractedException;
 import it.unisa.petra.core.exceptions.NoDeviceFoundException;
 import it.unisa.petra.core.exceptions.NumberOfTrialsExceededException;
 
@@ -21,8 +22,6 @@ import java.util.logging.Logger;
 
 public class MainUI extends JDialog {
     private JPanel contentPane;
-    private JTextField appNameField;
-    private JPanel appNameLabel;
     private JTextField apkLocationField;
     private JLabel apkLocationLabel;
     private JButton apkLocationButton;
@@ -124,7 +123,6 @@ public class MainUI extends JDialog {
         statusArea.setText(null);
         statisticsButton.setEnabled(false);
 
-        String appName = appNameField.getText();
         String apkLocationPath = apkLocationField.getText();
         int runs = runsSlider.getValue();
         int interactions = interactionsSlider.getValue();
@@ -133,14 +131,7 @@ public class MainUI extends JDialog {
         String scriptLocationPath = scriptLocationField.getText();
         String powerProfilePath = powerProfileFileField.getText();
 
-        String outputLocationPath = new File(apkLocationPath).getParent() + File.separator + "test_data" + File.separator + appName;
-
         boolean valid = true;
-
-        if (appName.isEmpty()) {
-            System.out.println("App name missing.");
-            valid = false;
-        }
 
         if (apkLocationPath.isEmpty()) {
             System.out.println("Apk location missing.");
@@ -163,8 +154,8 @@ public class MainUI extends JDialog {
 
         progressBar.setValue(0);
 
-        MainUI.Task task = new MainUI.Task(appName, apkLocationPath, interactions, timeBetweenInteractions,
-                scriptLocationPath, scriptTime, runs, powerProfilePath, outputLocationPath);
+        MainUI.Task task = new MainUI.Task(apkLocationPath, interactions, timeBetweenInteractions,
+                scriptLocationPath, scriptTime, runs, powerProfilePath);
         task.addPropertyChangeListener((PropertyChangeEvent evt1) -> {
             if ("progress".equals(evt1.getPropertyName())) {
                 progressBar.setValue((Integer) evt1.getNewValue());
@@ -199,8 +190,8 @@ public class MainUI extends JDialog {
 
     private void statisticsButtonActionPerformed() {
         this.setVisible(false);
-        String outputLocationPath = new File(apkLocationField.getText()).getParent() + File.separator + "test_data" + File.separator + appNameField.getText();
-        new StatsUI(outputLocationPath).setVisible(true);
+        //String outputLocationPath = new File(apkLocationField.getText()).getParent() + File.separator + "test_data" + File.separator + appNameField.getText();
+        //new StatsUI(outputLocationPath).setVisible(true);
     }
 
     private void scriptLocationButtonActionPerformed() {
@@ -222,14 +213,59 @@ public class MainUI extends JDialog {
      */
     private void $$$setupUI$$$() {
         contentPane = new JPanel();
-        contentPane.setLayout(new GridLayoutManager(8, 3, new Insets(10, 10, 10, 10), -1, -1));
-        appNameLabel = new JPanel();
-        appNameLabel.setLayout(new GridLayoutManager(3, 9, new Insets(0, 0, 0, 0), -1, -1));
-        contentPane.add(appNameLabel, new GridConstraints(0, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(884, 203), null, 0, false));
+        contentPane.setLayout(new GridLayoutManager(9, 3, new Insets(10, 10, 10, 10), -1, -1));
         final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
-        appNameLabel.add(panel1, new GridConstraints(2, 0, 1, 9, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        panel1.setBorder(BorderFactory.createTitledBorder("Monkey Options"));
+        panel1.setLayout(new GridLayoutManager(2, 3, new Insets(0, 0, 0, 0), -1, -1));
+        contentPane.add(panel1, new GridConstraints(3, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        panel1.setBorder(BorderFactory.createTitledBorder("Monkeyrunner Options"));
+        scriptLocationLabel = new JLabel();
+        scriptLocationLabel.setText("Script Location");
+        panel1.add(scriptLocationLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        scriptLocationField = new JTextField();
+        scriptLocationField.setEditable(false);
+        scriptLocationField.setToolTipText("The location of the Monkeyrunner script.");
+        panel1.add(scriptLocationField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(400, -1), null, 0, false));
+        scriptLocationButton = new JButton();
+        scriptLocationButton.setIcon(new ImageIcon(getClass().getResource("/folder.png")));
+        scriptLocationButton.setText("Open");
+        scriptLocationButton.setToolTipText("Select monkeyrunner script.");
+        panel1.add(scriptLocationButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        scriptTimeField = new JLabel();
+        scriptTimeField.setText("Time needed for executing the script");
+        panel1.add(scriptTimeField, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        scriptTimeSpinner = new JSpinner();
+        panel1.add(scriptTimeSpinner, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        progressBar = new JProgressBar();
+        progressBar.setStringPainted(true);
+        contentPane.add(progressBar, new GridConstraints(6, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        startEstimationButton = new JButton();
+        startEstimationButton.setIcon(new ImageIcon(getClass().getResource("/play-button.png")));
+        startEstimationButton.setText("Start Energy Estimation");
+        startEstimationButton.setToolTipText("Start the process.");
+        contentPane.add(startEstimationButton, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(250, 45), null, 0, false));
+        statisticsButton = new JButton();
+        statisticsButton.setEnabled(false);
+        statisticsButton.setIcon(new ImageIcon(getClass().getResource("/graph.png")));
+        statisticsButton.setText("Statistics");
+        statisticsButton.setToolTipText("View statistics.");
+        contentPane.add(statisticsButton, new GridConstraints(8, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(250, 45), null, 0, false));
+        final Spacer spacer1 = new Spacer();
+        contentPane.add(spacer1, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(-1, 5), null, 0, false));
+        final Spacer spacer2 = new Spacer();
+        contentPane.add(spacer2, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(-1, 5), null, 0, false));
+        final Spacer spacer3 = new Spacer();
+        contentPane.add(spacer3, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(-1, 5), null, 0, false));
+        statusAreaScroll = new JScrollPane();
+        contentPane.add(statusAreaScroll, new GridConstraints(5, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        statusArea = new JTextArea();
+        statusArea.setEditable(false);
+        statusArea.setEnabled(true);
+        statusArea.setRows(8);
+        statusAreaScroll.setViewportView(statusArea);
+        final JPanel panel2 = new JPanel();
+        panel2.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
+        contentPane.add(panel2, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        panel2.setBorder(BorderFactory.createTitledBorder("Monkey Options"));
         interactionsSlider = new JSlider();
         interactionsSlider.setMajorTickSpacing(500);
         interactionsSlider.setMaximum(5000);
@@ -240,13 +276,13 @@ public class MainUI extends JDialog {
         interactionsSlider.setSnapToTicks(true);
         interactionsSlider.setToolTipText("Time between an Android Monkey event and the next one in ms.");
         interactionsSlider.setValue(100);
-        panel1.add(interactionsSlider, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(400, -1), null, 0, false));
+        panel2.add(interactionsSlider, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(400, -1), null, 0, false));
         interactionsLabel = new JLabel();
         interactionsLabel.setText("Interactions");
-        panel1.add(interactionsLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel2.add(interactionsLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         timeBetweenInteractionsLabel = new JLabel();
         timeBetweenInteractionsLabel.setText("Time Between Interactions");
-        panel1.add(timeBetweenInteractionsLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel2.add(timeBetweenInteractionsLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         timeBetweenInteractionsSlider = new JSlider();
         timeBetweenInteractionsSlider.setMajorTickSpacing(500);
         timeBetweenInteractionsSlider.setMaximum(5000);
@@ -257,45 +293,35 @@ public class MainUI extends JDialog {
         timeBetweenInteractionsSlider.setSnapToTicks(true);
         timeBetweenInteractionsSlider.setToolTipText("Number of Android Monkey event to perform.");
         timeBetweenInteractionsSlider.setValue(100);
-        panel1.add(timeBetweenInteractionsSlider, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(400, -1), null, 0, false));
-        final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(3, 5, new Insets(0, 0, 0, 0), -1, -1));
-        appNameLabel.add(panel2, new GridConstraints(0, 0, 1, 9, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        final JLabel label1 = new JLabel();
-        label1.setText("App name");
-        panel2.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        appNameField = new JTextField();
-        appNameField.setText("");
-        appNameField.setToolTipText("Name of the app to analyze (must be the same of the app core).");
-        panel2.add(appNameField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(300, -1), null, 0, false));
+        panel2.add(timeBetweenInteractionsSlider, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(400, -1), null, 0, false));
+        final JPanel panel3 = new JPanel();
+        panel3.setLayout(new GridLayoutManager(3, 5, new Insets(0, 0, 0, 0), -1, -1));
+        contentPane.add(panel3, new GridConstraints(0, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         powerProfileFileLabel = new JLabel();
         powerProfileFileLabel.setText("Power Profile File");
-        panel2.add(powerProfileFileLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        panel3.add(powerProfileFileLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         powerProfileFileField = new JTextField();
         powerProfileFileField.setEditable(false);
         powerProfileFileField.setEnabled(true);
         powerProfileFileField.setToolTipText("Device power profile (see https://source.android.com/devices/tech/power/).");
-        panel2.add(powerProfileFileField, new GridConstraints(1, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        apkLocationLabel = new JLabel();
-        apkLocationLabel.setText("Apk Location");
-        panel2.add(apkLocationLabel, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(powerProfileFileField, new GridConstraints(1, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         apkLocationField = new JTextField();
         apkLocationField.setEditable(false);
         apkLocationField.setToolTipText("Apk to analyze.");
-        panel2.add(apkLocationField, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(300, -1), null, 0, false));
+        panel3.add(apkLocationField, new GridConstraints(0, 1, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(300, -1), null, 0, false));
         apkLocationButton = new JButton();
         apkLocationButton.setIcon(new ImageIcon(getClass().getResource("/folder.png")));
         apkLocationButton.setText("Open");
         apkLocationButton.setToolTipText("Select apk.");
-        panel2.add(apkLocationButton, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(apkLocationButton, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         powerProfileFileButton = new JButton();
         powerProfileFileButton.setIcon(new ImageIcon(getClass().getResource("/folder.png")));
         powerProfileFileButton.setText("Open");
         powerProfileFileButton.setToolTipText("Select power profile file.");
-        panel2.add(powerProfileFileButton, new GridConstraints(1, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(powerProfileFileButton, new GridConstraints(1, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         runsLabel = new JLabel();
         runsLabel.setText("Runs");
-        panel2.add(runsLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        panel3.add(runsLabel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         runsSlider = new JSlider();
         runsSlider.setMajorTickSpacing(5);
         runsSlider.setMaximum(30);
@@ -305,57 +331,10 @@ public class MainUI extends JDialog {
         runsSlider.setPaintTicks(true);
         runsSlider.setSnapToTicks(true);
         runsSlider.setValue(1);
-        panel2.add(runsSlider, new GridConstraints(2, 1, 1, 4, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final Spacer spacer1 = new Spacer();
-        appNameLabel.add(spacer1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(-1, 5), null, 0, false));
-        final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(2, 3, new Insets(0, 0, 0, 0), -1, -1));
-        contentPane.add(panel3, new GridConstraints(2, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        panel3.setBorder(BorderFactory.createTitledBorder("Monkeyrunner Options"));
-        scriptLocationLabel = new JLabel();
-        scriptLocationLabel.setText("Script Location");
-        panel3.add(scriptLocationLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        scriptLocationField = new JTextField();
-        scriptLocationField.setEditable(false);
-        scriptLocationField.setToolTipText("The location of the Monkeyrunner script.");
-        panel3.add(scriptLocationField, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(400, -1), null, 0, false));
-        scriptLocationButton = new JButton();
-        scriptLocationButton.setIcon(new ImageIcon(getClass().getResource("/folder.png")));
-        scriptLocationButton.setText("Open");
-        scriptLocationButton.setToolTipText("Select monkeyrunner script.");
-        panel3.add(scriptLocationButton, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        scriptTimeField = new JLabel();
-        scriptTimeField.setText("Time needed for executing the script");
-        panel3.add(scriptTimeField, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        scriptTimeSpinner = new JSpinner();
-        panel3.add(scriptTimeSpinner, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        progressBar = new JProgressBar();
-        progressBar.setStringPainted(true);
-        contentPane.add(progressBar, new GridConstraints(5, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        startEstimationButton = new JButton();
-        startEstimationButton.setIcon(new ImageIcon(getClass().getResource("/play-button.png")));
-        startEstimationButton.setText("Start Energy Estimation");
-        startEstimationButton.setToolTipText("Start the process.");
-        contentPane.add(startEstimationButton, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(250, 45), null, 0, false));
-        statisticsButton = new JButton();
-        statisticsButton.setEnabled(false);
-        statisticsButton.setIcon(new ImageIcon(getClass().getResource("/graph.png")));
-        statisticsButton.setText("Statistics");
-        statisticsButton.setToolTipText("View statistics.");
-        contentPane.add(statisticsButton, new GridConstraints(7, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(250, 45), null, 0, false));
-        final Spacer spacer2 = new Spacer();
-        contentPane.add(spacer2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(-1, 5), null, 0, false));
-        final Spacer spacer3 = new Spacer();
-        contentPane.add(spacer3, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(-1, 5), null, 0, false));
-        final Spacer spacer4 = new Spacer();
-        contentPane.add(spacer4, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(-1, 5), null, 0, false));
-        statusAreaScroll = new JScrollPane();
-        contentPane.add(statusAreaScroll, new GridConstraints(4, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        statusArea = new JTextArea();
-        statusArea.setEditable(false);
-        statusArea.setEnabled(true);
-        statusArea.setRows(8);
-        statusAreaScroll.setViewportView(statusArea);
+        panel3.add(runsSlider, new GridConstraints(2, 1, 1, 4, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        apkLocationLabel = new JLabel();
+        apkLocationLabel.setText("Apk Location");
+        panel3.add(apkLocationLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
@@ -367,7 +346,6 @@ public class MainUI extends JDialog {
 
     class Task extends SwingWorker<Void, Void> {
 
-        private final String appName;
         private final String apkLocationPath;
         private final int interactions;
         private final int timeBetweenInteractions;
@@ -375,11 +353,9 @@ public class MainUI extends JDialog {
         private final int scriptTime;
         private final int runs;
         private final String powerProfilePath;
-        private final String outputLocationPath;
 
-        Task(String appName, String apkLocationPath, int interactions, int timeBetweenInteractions, String scriptLocationPath,
-             int scriptTime, int runs, String powerProfilePath, String outputLocationPath) {
-            this.appName = appName;
+        Task(String apkLocationPath, int interactions, int timeBetweenInteractions, String scriptLocationPath,
+             int scriptTime, int runs, String powerProfilePath) {
             this.apkLocationPath = apkLocationPath;
             this.interactions = interactions;
             this.timeBetweenInteractions = timeBetweenInteractions;
@@ -387,13 +363,11 @@ public class MainUI extends JDialog {
             this.scriptLocationPath = scriptLocationPath;
             this.runs = runs;
             this.powerProfilePath = powerProfilePath;
-            this.outputLocationPath = outputLocationPath;
         }
 
         @Override
         public Void doInBackground() {
             try {
-                appNameField.setEditable(false);
                 apkLocationButton.setEnabled(false);
                 powerProfileFileField.setEditable(false);
                 runsSlider.setEnabled(false);
@@ -408,6 +382,10 @@ public class MainUI extends JDialog {
                 int progress;
                 int trials = 0;
                 BufferedWriter seedsWriter = null;
+
+                String appName = process.extractAppName(apkLocationPath);
+
+                String outputLocationPath = new File(apkLocationPath).getParent() + File.separator + "test_data" + File.separator + appName;
 
                 File appDataFolder = new File(outputLocationPath);
 
@@ -443,7 +421,6 @@ public class MainUI extends JDialog {
                         trials++;
                     }
                 }
-                appNameField.setEditable(true);
                 apkLocationButton.setEnabled(true);
                 powerProfileFileField.setEditable(true);
                 runsSlider.setEnabled(true);
@@ -455,8 +432,8 @@ public class MainUI extends JDialog {
                 startEstimationButton.setEnabled(true);
                 statisticsButton.setEnabled(true);
                 process.uninstallApp(appName);
-            } catch (NoDeviceFoundException | IOException | NumberOfTrialsExceededException | ADBNotFoundException ex) {
-                appNameField.setEditable(true);
+            } catch (NoDeviceFoundException | AppNameCannotBeExtractedException | IOException | NumberOfTrialsExceededException |
+                    ADBNotFoundException ex) {
                 apkLocationButton.setEnabled(true);
                 powerProfileFileField.setEditable(true);
                 runsSlider.setEnabled(true);

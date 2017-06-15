@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="it.unisa.petra.ui.MainUI">
-  <grid id="cbd77" binding="contentPane" layout-manager="GridLayoutManager" row-count="8" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="cbd77" binding="contentPane" layout-manager="GridLayoutManager" row-count="9" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
       <xy x="48" y="54" width="963" height="730"/>
@@ -10,200 +10,10 @@
       <font/>
     </border>
     <children>
-      <grid id="e3588" binding="appNameLabel" layout-manager="GridLayoutManager" row-count="3" column-count="9" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-        <margin top="0" left="0" bottom="0" right="0"/>
-        <constraints>
-          <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="7" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
-            <preferred-size width="884" height="203"/>
-          </grid>
-        </constraints>
-        <properties/>
-        <border type="none"/>
-        <children>
-          <grid id="c9a4d" layout-manager="GridLayoutManager" row-count="2" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-            <margin top="0" left="0" bottom="0" right="0"/>
-            <constraints>
-              <grid row="2" column="0" row-span="1" col-span="9" vsize-policy="7" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties/>
-            <border type="none" title="Monkey Options"/>
-            <children>
-              <component id="1996f" class="javax.swing.JSlider" binding="interactionsSlider">
-                <constraints>
-                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="400" height="-1"/>
-                  </grid>
-                </constraints>
-                <properties>
-                  <majorTickSpacing value="500"/>
-                  <maximum value="5000"/>
-                  <minimum value="100"/>
-                  <minorTickSpacing value="100"/>
-                  <paintLabels value="true"/>
-                  <paintTicks value="true"/>
-                  <snapToTicks value="true"/>
-                  <toolTipText value="Time between an Android Monkey event and the next one in ms."/>
-                  <value value="100"/>
-                </properties>
-              </component>
-              <component id="982ce" class="javax.swing.JLabel" binding="interactionsLabel">
-                <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="2" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="Interactions"/>
-                </properties>
-              </component>
-              <component id="7e281" class="javax.swing.JLabel" binding="timeBetweenInteractionsLabel">
-                <constraints>
-                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="Time Between Interactions"/>
-                </properties>
-              </component>
-              <component id="55f25" class="javax.swing.JSlider" binding="timeBetweenInteractionsSlider">
-                <constraints>
-                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="400" height="-1"/>
-                  </grid>
-                </constraints>
-                <properties>
-                  <majorTickSpacing value="500"/>
-                  <maximum value="5000"/>
-                  <minimum value="100"/>
-                  <minorTickSpacing value="100"/>
-                  <paintLabels value="true"/>
-                  <paintTicks value="true"/>
-                  <snapToTicks value="true"/>
-                  <toolTipText value="Number of Android Monkey event to perform."/>
-                  <value value="100"/>
-                </properties>
-              </component>
-            </children>
-          </grid>
-          <grid id="8435f" layout-manager="GridLayoutManager" row-count="3" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
-            <margin top="0" left="0" bottom="0" right="0"/>
-            <constraints>
-              <grid row="0" column="0" row-span="1" col-span="9" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties/>
-            <border type="none"/>
-            <children>
-              <component id="394d5" class="javax.swing.JLabel">
-                <constraints>
-                  <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="4" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="App name"/>
-                </properties>
-              </component>
-              <component id="a3f73" class="javax.swing.JTextField" binding="appNameField">
-                <constraints>
-                  <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="300" height="-1"/>
-                  </grid>
-                </constraints>
-                <properties>
-                  <text value=""/>
-                  <toolTipText value="Name of the app to analyze (must be the same of the app core)."/>
-                </properties>
-              </component>
-              <component id="6270c" class="javax.swing.JLabel" binding="powerProfileFileLabel">
-                <constraints>
-                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="4" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="Power Profile File"/>
-                </properties>
-              </component>
-              <component id="488c2" class="javax.swing.JTextField" binding="powerProfileFileField">
-                <constraints>
-                  <grid row="1" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <editable value="false"/>
-                  <enabled value="true"/>
-                  <toolTipText value="Device power profile (see https://source.android.com/devices/tech/power/)."/>
-                </properties>
-              </component>
-              <component id="f19ea" class="javax.swing.JLabel" binding="apkLocationLabel">
-                <constraints>
-                  <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="Apk Location"/>
-                </properties>
-              </component>
-              <component id="3defd" class="javax.swing.JTextField" binding="apkLocationField">
-                <constraints>
-                  <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
-                    <preferred-size width="300" height="-1"/>
-                  </grid>
-                </constraints>
-                <properties>
-                  <editable value="false"/>
-                  <toolTipText value="Apk to analyze."/>
-                </properties>
-              </component>
-              <component id="429db" class="javax.swing.JButton" binding="apkLocationButton">
-                <constraints>
-                  <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <icon value="folder.png"/>
-                  <text value="Open"/>
-                  <toolTipText value="Select apk."/>
-                </properties>
-              </component>
-              <component id="31c3" class="javax.swing.JButton" binding="powerProfileFileButton">
-                <constraints>
-                  <grid row="1" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <icon value="folder.png"/>
-                  <text value="Open"/>
-                  <toolTipText value="Select power profile file."/>
-                </properties>
-              </component>
-              <component id="5bff5" class="javax.swing.JLabel" binding="runsLabel">
-                <constraints>
-                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="4" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <text value="Runs"/>
-                </properties>
-              </component>
-              <component id="c1651" class="javax.swing.JSlider" binding="runsSlider">
-                <constraints>
-                  <grid row="2" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
-                </constraints>
-                <properties>
-                  <majorTickSpacing value="5"/>
-                  <maximum value="30"/>
-                  <minimum value="1"/>
-                  <minorTickSpacing value="1"/>
-                  <paintLabels value="true"/>
-                  <paintTicks value="true"/>
-                  <snapToTicks value="true"/>
-                  <value value="1"/>
-                </properties>
-              </component>
-            </children>
-          </grid>
-          <vspacer id="3b1bd">
-            <constraints>
-              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
-                <preferred-size width="-1" height="5"/>
-              </grid>
-            </constraints>
-          </vspacer>
-        </children>
-      </grid>
       <grid id="6d6a5" layout-manager="GridLayoutManager" row-count="2" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="2" column="0" row-span="1" col-span="3" vsize-policy="7" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="3" column="0" row-span="1" col-span="3" vsize-policy="7" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none" title="Monkeyrunner Options"/>
@@ -255,7 +65,7 @@
       </grid>
       <component id="fa7b2" class="javax.swing.JProgressBar" binding="progressBar">
         <constraints>
-          <grid row="5" column="0" row-span="1" col-span="3" vsize-policy="4" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+          <grid row="6" column="0" row-span="1" col-span="3" vsize-policy="4" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <stringPainted value="true"/>
@@ -263,7 +73,7 @@
       </component>
       <component id="9b41f" class="javax.swing.JButton" binding="startEstimationButton">
         <constraints>
-          <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="4" hsize-policy="2" anchor="4" fill="0" indent="0" use-parent-layout="false">
+          <grid row="8" column="0" row-span="1" col-span="1" vsize-policy="4" hsize-policy="2" anchor="4" fill="0" indent="0" use-parent-layout="false">
             <preferred-size width="250" height="45"/>
           </grid>
         </constraints>
@@ -275,7 +85,7 @@
       </component>
       <component id="e06a2" class="javax.swing.JButton" binding="statisticsButton">
         <constraints>
-          <grid row="7" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="8" fill="0" indent="0" use-parent-layout="false">
+          <grid row="8" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="8" fill="0" indent="0" use-parent-layout="false">
             <preferred-size width="250" height="45"/>
           </grid>
         </constraints>
@@ -288,28 +98,28 @@
       </component>
       <vspacer id="40772">
         <constraints>
-          <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+          <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
             <preferred-size width="-1" height="5"/>
           </grid>
         </constraints>
       </vspacer>
       <vspacer id="df4b6">
         <constraints>
-          <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
             <preferred-size width="-1" height="5"/>
           </grid>
         </constraints>
       </vspacer>
       <vspacer id="528f2">
         <constraints>
-          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+          <grid row="7" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
             <preferred-size width="-1" height="5"/>
           </grid>
         </constraints>
       </vspacer>
       <scrollpane id="8c1fc" binding="statusAreaScroll">
         <constraints>
-          <grid row="4" column="0" row-span="1" col-span="3" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="5" column="0" row-span="1" col-span="3" vsize-policy="7" hsize-policy="7" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none"/>
@@ -324,6 +134,158 @@
           </component>
         </children>
       </scrollpane>
+      <grid id="c9a4d" layout-manager="GridLayoutManager" row-count="2" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints>
+          <grid row="1" column="0" row-span="1" col-span="3" vsize-policy="7" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none" title="Monkey Options"/>
+        <children>
+          <component id="1996f" class="javax.swing.JSlider" binding="interactionsSlider">
+            <constraints>
+              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="400" height="-1"/>
+              </grid>
+            </constraints>
+            <properties>
+              <majorTickSpacing value="500"/>
+              <maximum value="5000"/>
+              <minimum value="100"/>
+              <minorTickSpacing value="100"/>
+              <paintLabels value="true"/>
+              <paintTicks value="true"/>
+              <snapToTicks value="true"/>
+              <toolTipText value="Time between an Android Monkey event and the next one in ms."/>
+              <value value="100"/>
+            </properties>
+          </component>
+          <component id="982ce" class="javax.swing.JLabel" binding="interactionsLabel">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="2" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Interactions"/>
+            </properties>
+          </component>
+          <component id="7e281" class="javax.swing.JLabel" binding="timeBetweenInteractionsLabel">
+            <constraints>
+              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Time Between Interactions"/>
+            </properties>
+          </component>
+          <component id="55f25" class="javax.swing.JSlider" binding="timeBetweenInteractionsSlider">
+            <constraints>
+              <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="400" height="-1"/>
+              </grid>
+            </constraints>
+            <properties>
+              <majorTickSpacing value="500"/>
+              <maximum value="5000"/>
+              <minimum value="100"/>
+              <minorTickSpacing value="100"/>
+              <paintLabels value="true"/>
+              <paintTicks value="true"/>
+              <snapToTicks value="true"/>
+              <toolTipText value="Number of Android Monkey event to perform."/>
+              <value value="100"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
+      <grid id="8435f" layout-manager="GridLayoutManager" row-count="3" column-count="5" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+        <margin top="0" left="0" bottom="0" right="0"/>
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="3" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+        <border type="none"/>
+        <children>
+          <component id="6270c" class="javax.swing.JLabel" binding="powerProfileFileLabel">
+            <constraints>
+              <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="4" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Power Profile File"/>
+            </properties>
+          </component>
+          <component id="488c2" class="javax.swing.JTextField" binding="powerProfileFileField">
+            <constraints>
+              <grid row="1" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <editable value="false"/>
+              <enabled value="true"/>
+              <toolTipText value="Device power profile (see https://source.android.com/devices/tech/power/)."/>
+            </properties>
+          </component>
+          <component id="3defd" class="javax.swing.JTextField" binding="apkLocationField">
+            <constraints>
+              <grid row="0" column="1" row-span="1" col-span="3" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
+                <preferred-size width="300" height="-1"/>
+              </grid>
+            </constraints>
+            <properties>
+              <editable value="false"/>
+              <toolTipText value="Apk to analyze."/>
+            </properties>
+          </component>
+          <component id="429db" class="javax.swing.JButton" binding="apkLocationButton">
+            <constraints>
+              <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <icon value="folder.png"/>
+              <text value="Open"/>
+              <toolTipText value="Select apk."/>
+            </properties>
+          </component>
+          <component id="31c3" class="javax.swing.JButton" binding="powerProfileFileButton">
+            <constraints>
+              <grid row="1" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <icon value="folder.png"/>
+              <text value="Open"/>
+              <toolTipText value="Select power profile file."/>
+            </properties>
+          </component>
+          <component id="5bff5" class="javax.swing.JLabel" binding="runsLabel">
+            <constraints>
+              <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="4" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Runs"/>
+            </properties>
+          </component>
+          <component id="c1651" class="javax.swing.JSlider" binding="runsSlider">
+            <constraints>
+              <grid row="2" column="1" row-span="1" col-span="4" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <majorTickSpacing value="5"/>
+              <maximum value="30"/>
+              <minimum value="1"/>
+              <minorTickSpacing value="1"/>
+              <paintLabels value="true"/>
+              <paintTicks value="true"/>
+              <snapToTicks value="true"/>
+              <value value="1"/>
+            </properties>
+          </component>
+          <component id="f19ea" class="javax.swing.JLabel" binding="apkLocationLabel">
+            <constraints>
+              <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+            </constraints>
+            <properties>
+              <text value="Apk Location"/>
+            </properties>
+          </component>
+        </children>
+      </grid>
     </children>
   </grid>
 </form>

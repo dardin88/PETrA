@@ -36,29 +36,23 @@ public class ConfigManagerTest {
     @Test
     public void testConfigManager5() throws Exception {
         ConfigManager configManager = new ConfigManager("src/test/resources/config.properties");
-        assertEquals("a2dp.Vol", configManager.getAppName());
+        assertEquals("/home/dardin88/test_data/a2dp.Vol/", configManager.getOutputLocation());
     }
 
     @Test
     public void testConfigManager6() throws Exception {
         ConfigManager configManager = new ConfigManager("src/test/resources/config.properties");
-        assertEquals("/home/dardin88/test_data/a2dp.Vol/", configManager.getOutputLocation());
+        assertEquals(5, configManager.getTrials());
     }
 
     @Test
     public void testConfigManager7() throws Exception {
         ConfigManager configManager = new ConfigManager("src/test/resources/config.properties");
-        assertEquals(5, configManager.getTrials());
-    }
-
-    @Test
-    public void testConfigManager8() throws Exception {
-        ConfigManager configManager = new ConfigManager("src/test/resources/config.properties");
         assertEquals("/home/dardin88/a2dp.Vol.apk", configManager.getApkLocationPath());
     }
 
     @Test
-    public void testConfigManager9() throws Exception {
+    public void testConfigManager8() throws Exception {
         ConfigManager configManager = new ConfigManager("src/test/resources/config.properties");
         assertEquals("/home/dardin88/test_data/a2dp.Vol_scripts/", configManager.getScriptLocationPath());
     }
