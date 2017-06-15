@@ -88,12 +88,6 @@ public class Process {
 
         System.out.println("Run " + run + ": aggregating results.");
 
-        if (powerProfileFile.isEmpty()) {
-            System.out.println("Run " + run + ": extracting power profile.");
-            this.extractPowerProfile(outputLocation);
-            powerProfileFile = outputLocation + "power_profile.xml";
-        }
-
         System.out.println("Run " + run + ": parsing power profile.");
         PowerProfile powerProfile = PowerProfileParser.parseFile(powerProfileFile);
 
@@ -116,11 +110,19 @@ public class Process {
         return new ProcessOutput(timeCapturing, seed);
     }
 
-    private void extractPowerProfile(String outputLocation) throws NoDeviceFoundException {
+    public void extractPowerProfile(String outputLocation) throws NoDeviceFoundException {
+        System.out.println("Extracting power profile.");
+        String jarDirectory = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath()).getParentFile().getPath();
+
         this.executeCommand("adb pull /system/framework/framework-res.apk", null);
-        this.executeCommand("java -jar src/main/resources/apktool_2.0.3.jar if framework-res.apk", null);
-        this.executeCommand("java -jar src/main/resources/apktool_2.0.3.jar d framework-res.apk", null);
-        this.executeCommand("mv framework-res/res/xml/power_profile.xml " + outputLocation, null);
+
+        this.executeCommand("jar xf " + jarDirectory + "/PETrA.jar apktool_2.2.2.jar", null);
+        this.executeCommand("java -jar apktool_2.2.2.jar if framework-res.apk", null);
+        this.executeCommand("java -jar apktool_2.2.2.jar d framework-res.apk", null);
+        this.executeCommand("mv " + jarDirectory + "/framework-res/res/xml/power_profile.xml " + outputLocation, null);
+        this.executeCommand("rm -rf " + jarDirectory + "/apktool_2.2.2.jar", null);
+        this.executeCommand("rm -rf " + jarDirectory + "/framework-res.apk", null);
+        this.executeCommand("rm -rf " + jarDirectory + "/framework-res", null);
     }
 
     private void resetApp(String appName, int run) throws NoDeviceFoundException {
@@ -146,7 +148,7 @@ public class Process {
         } else {
             System.out.println("Run " + run + ": running monkeyrunner script.");
             String jarDirectory = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath()).getParentFile().getPath();
-            this.executeCommand("jar xf " + jarDirectory + "/PETrA-1.0-jar-with-dependencies.jar " + jarDirectory + "/monkey_playback.py", null);
+            this.executeCommand("jar xf " + jarDirectory + "/PETrA.jar monkey_playback.py", null);
             this.executeCommand(toolsFolder + "/bin/monkeyrunner " + jarDirectory + "/monkey_playback.py " + scriptLocationPath, null);
             this.executeCommand("rm -rf " + jarDirectory + "/monkey_playback.py", null);
         }

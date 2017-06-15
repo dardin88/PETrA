@@ -41,6 +41,14 @@ public class Terminal {
             } else {
                 throw new ApkNotFoundException();
             }
+
+            String powerProfilePath = configManager.getPowerProfileFile();
+
+            if (powerProfilePath.isEmpty()) {
+                process.extractPowerProfile(configManager.getOutputLocation());
+                powerProfilePath = configManager.getOutputLocation() + "/power_profile.xml";
+            }
+
             int timeCapturing = (configManager.getInteractions() * configManager.getTimeBetweenInteractions()) / 1000;
 
             if (timeCapturing <= 0) {
@@ -58,7 +66,7 @@ public class Terminal {
                     }
                     ProcessOutput output = process.playRun(run, appName, configManager.getInteractions(),
                             configManager.getTimeBetweenInteractions(), timeCapturing, configManager.getScriptLocationPath(),
-                            configManager.getPowerProfileFile(), configManager.getOutputLocation());
+                            powerProfilePath, configManager.getOutputLocation());
                     if (seedsWriter != null) {
                         seedsWriter.append(String.valueOf(output.getSeed())).append("\n");
                     }

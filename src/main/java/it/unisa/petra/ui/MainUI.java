@@ -143,11 +143,6 @@ public class MainUI extends JDialog {
             valid = false;
         }
 
-        if (powerProfilePath.isEmpty()) {
-            System.out.println("Please select an Android Power Profile file.");
-            valid = false;
-        }
-
         if (!valid) {
             return;
         }
@@ -352,7 +347,7 @@ public class MainUI extends JDialog {
         private final String scriptLocationPath;
         private final int scriptTime;
         private final int runs;
-        private final String powerProfilePath;
+        private String powerProfilePath;
 
         Task(String apkLocationPath, int interactions, int timeBetweenInteractions, String scriptLocationPath,
              int scriptTime, int runs, String powerProfilePath) {
@@ -396,6 +391,11 @@ public class MainUI extends JDialog {
                     seedsWriter = new BufferedWriter(new FileWriter(seedsFile, true));
                 }
                 process.installApp(apkLocationPath);
+
+                if (this.powerProfilePath.isEmpty()) {
+                    process.extractPowerProfile(outputLocationPath);
+                    this.powerProfilePath = outputLocationPath + "/power_profile.xml";
+                }
 
                 int timeCapturing = (interactions * timeBetweenInteractions) / 1000;
 
