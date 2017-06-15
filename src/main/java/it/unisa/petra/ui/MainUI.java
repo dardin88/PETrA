@@ -173,7 +173,7 @@ public class MainUI extends JDialog {
 
     private void powerProfileFileButtonActionPerformed() {
         JFileChooser chooser = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Apk Files", "xml");
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("XML Files", "xml");
         chooser.setFileFilter(filter);
         int res = chooser.showOpenDialog(null);
         if (res == JFileChooser.APPROVE_OPTION) {
