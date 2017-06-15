@@ -27,7 +27,7 @@ PETrA has been tested on a LG Nexus 4, but other Android smartphones should work
 
 ## Hiding the status bar
 
-If you would like to hide the status bar and allow Monkey to not lose focus from the app under test, please refer to [SIMIASQUE](https://github.com/Orange-OpenSource/simiasque).
+If you would like to hide the status bar and allow Monkey to not loose focus from the app under test, please refer to [SIMIASQUE](https://github.com/Orange-OpenSource/simiasque).
 
 ## References
 
