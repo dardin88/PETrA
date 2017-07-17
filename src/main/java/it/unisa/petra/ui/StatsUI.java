@@ -55,7 +55,7 @@ class StatsUI extends JDialog {
         $$$setupUI$$$();
     }
 
-    public StatsUI(String inputLocationPath) {
+    StatsUI(String inputLocationPath) {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setTitle("PETrA");
         setResizable(false);

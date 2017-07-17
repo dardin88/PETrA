@@ -9,17 +9,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *
  * @author Antonio Prota
  * @author Dario Di Nucci
  */
 public class BatteryStatsParser {
 
-    public static ArrayList<EnergyInfo> parseFile(String fileName, int traceviewStart, int traceviewLength) throws IOException {
+    public static ArrayList<EnergyInfo> parseFile(String fileName, int traceviewStart) throws IOException {
+        EnergyInfo previousEnergyInfo = null;
         ArrayList<EnergyInfo> energyInfoArray = new ArrayList<>();
         File file = new File(fileName);
-
-        int infoCounter = 0;
 
         String line;
         try (BufferedReader readAll = new BufferedReader(new FileReader(file))) {
@@ -34,50 +32,52 @@ public class BatteryStatsParser {
                 if (matcher1.find()) {
                     variationTime = toMillisec(matcher1.group(1));
                     int realTime = variationTime + traceviewStart;
-                    if (realTime < traceviewStart + traceviewLength) {
-                        EnergyInfo energyInfo = new EnergyInfo();
-                        energyInfo.setTime(realTime);
 
-                        if (!energyInfoArray.isEmpty()) {
-                            energyInfo.setDevices(energyInfoArray.get(infoCounter).getDevices());
-                            energyInfo.setVoltage(energyInfoArray.get(infoCounter).getVoltage());
-                            energyInfo.setPhoneSignalStrength(energyInfoArray.get(infoCounter).getPhoneSignalStrength());
-                        }
-
-                        String devices = matcher1.group(2).split(":")[0];
-                        String[] devicesArray = devices.split(" ");
-                        for (String device : devicesArray) {
-                            if (device.contains("volt=")) {
-                                energyInfo.setVoltage(Integer.parseInt(device.replaceFirst("volt=", "")));
-                            }
-                            if (device.contains("-")) {
-                                String deviceDeactivated = device.replaceFirst("-", "");
-                                energyInfo.removeDevice(deviceDeactivated);
-                            }
-                            if (device.contains("+")) {
-                                if (!device.replaceFirst("\\+", "").startsWith("top")) {
-                                    energyInfo.addDevice(device.replaceFirst("\\+", ""));
-                                }
-                            }
-                            Matcher phoneSignalMatcher = phoneSignalPattern.matcher(device);
-                            if (phoneSignalMatcher.find()) {
-                                energyInfo.setPhoneSignalStrength(Integer.parseInt(phoneSignalMatcher.group(1)));
-                            }
-                        }
-                        if (energyInfoArray.isEmpty()) {
-                            energyInfoArray.add(energyInfo);
-                        } else {
-                            if (!energyInfo.equals(energyInfoArray.get(infoCounter))) {
-                                energyInfoArray.add(energyInfo);
-                            }
-                        }
+                    EnergyInfo energyInfo;
+                    if (previousEnergyInfo != null) {
+                        energyInfo = new EnergyInfo(previousEnergyInfo);
                     } else {
-                        break;
+                        energyInfo = new EnergyInfo();
                     }
-                    infoCounter = energyInfoArray.size() - 1;
+
+                    energyInfo.setEntrance(realTime);
+                    if (energyInfoArray.size() > 0) {
+                        energyInfoArray.get(energyInfoArray.size() - 1).setExit(realTime);
+                    }
+
+                    String devices = matcher1.group(2).split(":")[0];
+                    String[] devicesArray = devices.split(" ");
+                    for (String device : devicesArray) {
+                        if (device.contains("volt=")) {
+                            energyInfo.setVoltage(Integer.parseInt(device.replaceFirst("volt=", "")));
+                        }
+                        if (device.contains("-")) {
+                            String deviceDeactivated = device.replaceFirst("-", "");
+                            energyInfo.removeDevice(deviceDeactivated);
+                        }
+                        if (device.contains("+")) {
+                            if (!device.replaceFirst("\\+", "").startsWith("top")) {
+                                energyInfo.addDevice(device.replaceFirst("\\+", ""));
+                            }
+                        }
+                        Matcher phoneSignalMatcher = phoneSignalPattern.matcher(device);
+                        if (phoneSignalMatcher.find()) {
+                            energyInfo.setPhoneSignalStrength(Integer.parseInt(phoneSignalMatcher.group(1)));
+                        }
+                    }
+
+                    energyInfoArray.add(energyInfo);
+
+                    if (previousEnergyInfo != null && energyInfo.getEntrance() == previousEnergyInfo.getEntrance()) {
+                        energyInfoArray.remove(previousEnergyInfo);
+                    }
+
+                    previousEnergyInfo = energyInfo;
                 }
             }
         }
+
+        energyInfoArray.get(energyInfoArray.size() - 1).setExit(Integer.MAX_VALUE);
 
         return energyInfoArray;
     }

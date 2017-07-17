@@ -122,7 +122,7 @@ public class SysTraceParser {
     }
 
     private static int getLastCoreValue(int core) {
-        List<CpuFrequency> shallowListCopy = (List<CpuFrequency>) frequencyList.clone();
+        List<CpuFrequency> shallowListCopy = new ArrayList<>(frequencyList);
         Collections.reverse(shallowListCopy);
 
         for (CpuFrequency frequency : shallowListCopy) {

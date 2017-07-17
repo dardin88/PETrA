@@ -8,23 +8,41 @@ import java.util.List;
  */
 public class EnergyInfo {
 
-    private int time;
+    private final List<String> devices;
+    private int entrance;
+    private int exit;
     private int volt;
-    private List devices;
-    private List cpuFrequencies;
+    private List<Integer> cpuFrequencies;
     private int phoneSignalStrength;
 
     EnergyInfo() {
-        this.cpuFrequencies = new ArrayList();
+        this.cpuFrequencies = new ArrayList<>();
         this.devices = new ArrayList<>();
     }
 
-    public int getTime() {
-        return time;
+    public EnergyInfo(EnergyInfo toClone) {
+        this.entrance = toClone.getEntrance();
+        this.exit = toClone.getExit();
+        this.volt = toClone.getVoltage();
+        this.devices = new ArrayList<>(toClone.getDevices());
+        this.cpuFrequencies = new ArrayList<>(toClone.getCpuFrequencies());
+        this.phoneSignalStrength = toClone.getPhoneSignalStrength();
     }
 
-    public void setTime(int time) {
-        this.time = time;
+    public int getEntrance() {
+        return entrance;
+    }
+
+    public void setEntrance(int entrance) {
+        this.entrance = entrance;
+    }
+
+    public int getExit() {
+        return exit;
+    }
+
+    void setExit(int exit) {
+        this.exit = exit;
     }
 
     public int getVoltage() {
@@ -39,10 +57,6 @@ public class EnergyInfo {
         return devices;
     }
 
-    void setDevices(List<String> devices) {
-        this.devices = new ArrayList(devices);
-    }
-
     void addDevice(String device) {
         this.devices.add(device);
     }
@@ -55,12 +69,12 @@ public class EnergyInfo {
         }
     }
 
-    public List getCpuFrequencies() {
+    public List<Integer> getCpuFrequencies() {
         return cpuFrequencies;
     }
 
-    public void setCpuFrequencies(List cpuFrequencies) {
-        this.cpuFrequencies = cpuFrequencies;
+    public void setCpuFrequencies(List<Integer> cpuFrequencies) {
+        this.cpuFrequencies = new ArrayList<>(cpuFrequencies);
     }
 
     public int getPhoneSignalStrength() {
@@ -78,7 +92,7 @@ public class EnergyInfo {
 
         EnergyInfo that = (EnergyInfo) o;
 
-        return time == that.time && volt == that.volt && cpuFrequencies.equals(that.cpuFrequencies) &&
+        return entrance == that.entrance && exit == that.exit && volt == that.volt && cpuFrequencies.equals(that.cpuFrequencies) &&
                 devices.equals(that.devices) && phoneSignalStrength == that.phoneSignalStrength;
     }
 }

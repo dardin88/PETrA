@@ -11,13 +11,13 @@ import java.util.logging.Logger;
  *
  * @author Dario Di Nucci
  */
-public class SysTraceRunner implements Runnable {
+class SysTraceRunner implements Runnable {
 
     private final int timeCapturing;
     private final String systraceFilename;
     private final String platformToolsFolder;
 
-    public SysTraceRunner(int timeCapturing, String systraceFilename, String platformToolsFolder) {
+    SysTraceRunner(int timeCapturing, String systraceFilename, String platformToolsFolder) {
         this.timeCapturing = timeCapturing;
         this.systraceFilename = systraceFilename;
         this.platformToolsFolder = platformToolsFolder;

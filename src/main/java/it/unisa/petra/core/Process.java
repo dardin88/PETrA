@@ -43,7 +43,7 @@ public class Process {
     }
 
     public ProcessOutput playRun(int run, String appName, int interactions, int timeBetweenInteractions,
-                                 int timeCapturing, String scriptLocationPath, String powerProfileFile, String outputLocation)
+                                 int timeCapturing, String scriptLocationPath, String powerProfileFile, String outputLocation, String filter)
             throws InterruptedException, IOException, NoDeviceFoundException, ADBNotFoundException {
 
         String sdkFolderPath = System.getenv("ANDROID_HOME");
@@ -92,7 +92,7 @@ public class Process {
         PowerProfile powerProfile = PowerProfileParser.parseFile(powerProfileFile);
 
         List<TraceLine> traceLinesWiConsumptions = parseAndAggregateResults(traceviewFilename, batteryStatsFilename,
-                systraceFilename, powerProfile, appName, run);
+                systraceFilename, powerProfile, filter, run);
 
         PrintWriter resultsWriter = new PrintWriter(runDataFolderName + "result.csv", "UTF-8");
         resultsWriter.println("signature, joule, seconds");
@@ -168,17 +168,17 @@ public class Process {
     }
 
     List<TraceLine> parseAndAggregateResults(String traceviewFilename, String batteryStatsFilename, String systraceFilename,
-                                             PowerProfile powerProfile, String appName, int run) throws IOException {
-        List<TraceLine> traceLinesWConsumption = new ArrayList();
+                                             PowerProfile powerProfile, String filter, int run) throws IOException {
+        List<TraceLine> traceLinesWConsumption = new ArrayList<>();
 
         System.out.println("Run " + run + ": elaborating traceview info.");
-        TraceviewStructure traceviewStructure = TraceViewParser.parseFile(traceviewFilename, appName);
+        TraceviewStructure traceviewStructure = TraceViewParser.parseFile(traceviewFilename, filter);
         List<TraceLine> traceLines = traceviewStructure.getTraceLines();
         int traceviewLength = traceviewStructure.getEndTime();
         int traceviewStart = traceviewStructure.getStartTime();
 
         System.out.println("Run " + run + ": elaborating battery stats info.");
-        List<EnergyInfo> energyInfoArray = BatteryStatsParser.parseFile(batteryStatsFilename, traceviewStart, traceviewLength);
+        List<EnergyInfo> energyInfoArray = BatteryStatsParser.parseFile(batteryStatsFilename, traceviewStart);
 
         System.out.println("Run " + run + ": elaborating systrace stats info.");
         SysTrace cpuInfo = SysTraceParser.parseFile(systraceFilename, traceviewStart, traceviewLength);
@@ -196,20 +196,30 @@ public class Process {
 
         List<Integer> cpuFrequencies = new ArrayList<>();
 
+        List<EnergyInfo> finalEnergyInfoArray = new ArrayList<>();
+
         for (int i = 0; i < numOfCore; i++) {
             cpuFrequencies.add(0);
         }
 
         for (EnergyInfo energyInfo : energyInfoArray) {
-            int fixedEnergyInfoTime = cpuInfo.getSystraceStartTime() + energyInfo.getTime() * 1000; //systrace time are in nanoseconds
+            int fixedEnergyInfoTime = cpuInfo.getSystraceStartTime() + energyInfo.getEntrance();
             for (CpuFrequency frequency : cpuInfo.getFrequencies()) {
-                if (frequency.getTime() <= fixedEnergyInfoTime) {
+                if (frequency.getTime() < fixedEnergyInfoTime) {
+                    EnergyInfo finalEnergyInfo = new EnergyInfo(energyInfo);
+
                     cpuFrequencies.set(frequency.getCore(), frequency.getValue());
+
+                    int finalEnergyInfoTime = frequency.getTime() - cpuInfo.getSystraceStartTime();
+                    finalEnergyInfo.setEntrance(finalEnergyInfoTime);
+                    finalEnergyInfo.setCpuFrequencies(cpuFrequencies);
+                    finalEnergyInfoArray.add(finalEnergyInfo);
+                } else {
+                    break;
                 }
             }
-            energyInfo.setCpuFrequencies(cpuFrequencies);
         }
-        return energyInfoArray;
+        return finalEnergyInfoArray;
     }
 
     private TraceLine calculateConsumption(TraceLine traceLine, List<EnergyInfo> energyInfoArray, PowerProfile powerProfile) {
@@ -223,66 +233,67 @@ public class Process {
 
         for (EnergyInfo energyInfo : energyInfoArray) {
 
-            double ampere = 0;
+            if (traceLine.getEntrance() >= energyInfo.getEntrance()) {
 
-            List<Integer> cpuFrequencies = energyInfo.getCpuFrequencies();
+                double ampere = 0;
 
-            for (int i = 0; i < numberOfCores; i++) {
-                int coreFrequency = cpuFrequencies.get(i);
-                int coreCluster = powerProfile.getClusterByCore(i);
-                ampere += powerProfile.getCpuConsumptionByFrequency(coreCluster, coreFrequency) / 1000;
-                if (coreFrequency != 0) {
-                    if (previouslyIdle[i]) {
-                        ampere += powerProfile.getDevices().get("cpu.awake") / 1000;
+                List<Integer> cpuFrequencies = energyInfo.getCpuFrequencies();
+
+                for (int i = 0; i < numberOfCores; i++) {
+                    int coreFrequency = cpuFrequencies.get(i);
+                    int coreCluster = powerProfile.getClusterByCore(i);
+                    ampere += powerProfile.getCpuConsumptionByFrequency(coreCluster, coreFrequency) / 1000;
+                    if (coreFrequency != 0) {
+                        if (previouslyIdle[i]) {
+                            ampere += powerProfile.getDevices().get("cpu.awake") / 1000;
+                        }
+                    } else {
+                        previouslyIdle[i] = true;
                     }
+                }
+
+                for (String deviceString : energyInfo.getDevices()) {
+                    if (deviceString.contains("wifi")) {
+                        ampere += powerProfile.getDevices().get("wifi.on") / 1000;
+                    } else if (deviceString.contains("wifi.scanning")) {
+                        ampere += powerProfile.getDevices().get("wifi.scan") / 1000;
+                    } else if (deviceString.contains("wifi.running")) {
+                        ampere += powerProfile.getDevices().get("wifi.active") / 1000;
+                    } else if (deviceString.contains("phone.scanning")) {
+                        ampere += powerProfile.getDevices().get("radio.scan") / 1000;
+                    } else if (deviceString.contains("phone.running")) {
+                        ampere += powerProfile.getDevices().get("radio.active") / 1000;
+                    } else if (deviceString.contains("bluetooth")) {
+                        ampere += powerProfile.getDevices().get("bluetooth.on") / 1000;
+                    } else if (deviceString.contains("bluetooth.running")) {
+                        ampere += powerProfile.getDevices().get("bluetooth.active") / 1000;
+                    } else if (deviceString.contains("screen")) {
+                        ampere += powerProfile.getDevices().get("screen.on") / 1000;
+                    } else if (deviceString.contains("gps")) {
+                        ampere += powerProfile.getDevices().get("gps.on") / 1000;
+                    }
+                }
+
+                int phoneSignalStrength = energyInfo.getPhoneSignalStrength();
+
+                if (powerProfile.getRadioInfo().size() == phoneSignalStrength - 1) {
+                    ampere += powerProfile.getRadioInfo().get(phoneSignalStrength - 1) / 1000;
                 } else {
-                    previouslyIdle[i] = true;
+                    ampere += powerProfile.getRadioInfo().get(powerProfile.getRadioInfo().size() - 1) / 1000;
                 }
-            }
-
-            for (String deviceString : energyInfo.getDevices()) {
-                if (deviceString.contains("wifi")) {
-                    ampere += powerProfile.getDevices().get("wifi.on") / 1000;
-                } else if (deviceString.contains("wifi.scanning")) {
-                    ampere += powerProfile.getDevices().get("wifi.scan") / 1000;
-                } else if (deviceString.contains("wifi.running")) {
-                    ampere += powerProfile.getDevices().get("wifi.active") / 1000;
-                } else if (deviceString.contains("phone.scanning")) {
-                    ampere += powerProfile.getDevices().get("radio.scan") / 1000;
-                } else if (deviceString.contains("phone.running")) {
-                    ampere += powerProfile.getDevices().get("radio.active") / 1000;
-                } else if (deviceString.contains("bluetooth")) {
-                    ampere += powerProfile.getDevices().get("bluetooth.on") / 1000;
-                } else if (deviceString.contains("bluetooth.running")) {
-                    ampere += powerProfile.getDevices().get("bluetooth.active") / 1000;
-                } else if (deviceString.contains("screen")) {
-                    ampere += powerProfile.getDevices().get("screen.on") / 1000;
-                } else if (deviceString.contains("gps")) {
-                    ampere += powerProfile.getDevices().get("gps.on") / 1000;
-                }
-            }
-
-            int phoneSignalStrength = energyInfo.getPhoneSignalStrength();
-
-            if (powerProfile.getRadioInfo().size() == phoneSignalStrength - 1) {
-                ampere += powerProfile.getRadioInfo().get(phoneSignalStrength - 1) / 1000;
-            } else {
-                ampere += powerProfile.getRadioInfo().get(powerProfile.getRadioInfo().size() - 1) / 1000;
-            }
 
 
-            double watt = ampere * energyInfo.getVoltage() / 1000;
-            double microseconds = 0;
-            if (traceLine.getEntrance() >= energyInfo.getTime()) {
-                if (traceLine.getEntrance() > energyInfo.getTime()) {
-                    microseconds = traceLine.getExit() - energyInfo.getTime();
+                double watt = ampere * energyInfo.getVoltage() / 1000;
+                double nanoseconds;
+                if (traceLine.getExit() < energyInfo.getExit()) {
+                    nanoseconds = traceLine.getExit() - energyInfo.getEntrance();
                 } else {
-                    microseconds = traceLine.getExit() - traceLine.getEntrance();
+                    nanoseconds = energyInfo.getExit() - energyInfo.getEntrance();
                 }
+                double seconds = nanoseconds / 1000000000;
+                totalSeconds += seconds;
+                joule += watt * seconds;
             }
-            double seconds = microseconds / 1000000000;
-            totalSeconds += seconds;
-            joule += watt * seconds;
         }
 
         traceLine.setTimeLength(totalSeconds);

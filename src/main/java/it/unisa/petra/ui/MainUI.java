@@ -154,7 +154,7 @@ public class MainUI extends JDialog {
 
     private void setMonkeyRadioButtonActionPerformed() {
         scriptLocationField.setText("");
-        scriptTimeSpinner.setValue(new Integer(0));
+        scriptTimeSpinner.setValue(0);
         interactionsSlider.setEnabled(true);
         timeBetweenInteractionsSlider.setEnabled(true);
         scriptLocationField.setEnabled(false);
@@ -469,7 +469,7 @@ public class MainUI extends JDialog {
                     }
                     try {
                         ProcessOutput output = process.playRun(run, appName, interactions, timeBetweenInteractions, timeCapturing,
-                                scriptLocationPath, powerProfilePath, outputLocationPath);
+                                scriptLocationPath, powerProfilePath, outputLocationPath, appName);
                         if (seedsWriter != null) {
                             seedsWriter.append(String.valueOf(output.getSeed())).append("\n");
                         }

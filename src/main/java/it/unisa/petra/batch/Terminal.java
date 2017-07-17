@@ -66,7 +66,7 @@ public class Terminal {
                     }
                     ProcessOutput output = process.playRun(run, appName, configManager.getInteractions(),
                             configManager.getTimeBetweenInteractions(), timeCapturing, configManager.getScriptLocationPath(),
-                            powerProfilePath, configManager.getOutputLocation());
+                            powerProfilePath, configManager.getOutputLocation(), appName);
                     if (seedsWriter != null) {
                         seedsWriter.append(String.valueOf(output.getSeed())).append("\n");
                     }
