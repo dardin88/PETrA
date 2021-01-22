@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.com/dardin88/PETrA.svg?token=693Py2p7SBGgCKKJPQaZ&branch=master)](https://travis-ci.com/dardin88/PETrA)
-
 # PETrA: Power Estimation Tool for Android
 
 PETrA is a software able to estimate the energy consumption of method calls in Android apps.
