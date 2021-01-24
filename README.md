@@ -11,14 +11,6 @@ PETrA is the outcome of the research conducted by the [Software Engineering Lab 
 
 PETrA needs Android SDK and JRE 8. You can find more info on how to install Android SDK [here](https://spring.io/guides/gs/android/).
 
-## Running PETrA
-
-Use this command from terminal.
-
-```
-chmod +x PETrA.sh
-./PETrA.sh
-```
 ## Supported smartphones
 
 PETrA has been tested on a LG Nexus 4, but other Android smartphones should work. If you are experiencing problems, please add a new issue.
