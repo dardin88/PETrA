@@ -184,15 +184,14 @@ public class Process {
         System.out.println("Run " + run + ": saving battery stats.");
         this.executeCommand("adb shell dumpsys batterystats", new File(batteryStatsFilename));
 
-        System.out.println("Run " + run + ": saving traceviews.");
         try {
-            // log.trace file is not immediately available one profiling stops
+            // log.trace file is not immediately available once profiling stops
             Thread.sleep(5000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        this.executeCommand("adb pull ./data/local/tmp/log.trace " + runDataFolderName,
-                new File("/home/miguel/Downloads/log.trace"));
+        System.out.println("Run " + run + ": saving traceviews.");
+        this.executeCommand("adb pull ./data/local/tmp/log.trace " + runDataFolderName, null);
         this.executeCommand(platformToolsFolder + "/dmtracedump -o " + runDataFolderName + "log.trace",
                 new File(traceviewFilename));
     }
@@ -277,7 +276,11 @@ public class Process {
                     ampere += powerProfile.getCpuConsumptionByFrequency(coreCluster, coreFrequency) / 1000;
                     if (coreFrequency != 0) {
                         if (previouslyIdle[i]) {
-                            ampere += powerProfile.getDevices().get("cpu.awake") / 1000;
+                            try {
+                                ampere += powerProfile.getDevices().get("cpu.awake") / 1000;
+                            } catch (Exception e) {
+                                // if device is not available, procede
+                            }
                         }
                     } else {
                         previouslyIdle[i] = true;
