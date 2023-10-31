@@ -32,7 +32,16 @@ class CpuClusterInfo {
     }
 
     double getConsumption(int frequency) {
-        return this.info.get(frequency);
+        double minDiff = 0;
+        int closestFrequency = 0;
+        for (int key : this.info.keySet()) {
+            int diff = Math.abs(key - frequency);
+            if (diff < minDiff) {
+                minDiff = diff;
+                closestFrequency = key;
+            }
+        }
+        return this.info.get(closestFrequency);
     }
 
     void addConsumption(Double consumption) {
