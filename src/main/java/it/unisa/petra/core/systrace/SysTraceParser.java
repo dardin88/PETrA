@@ -1,10 +1,8 @@
 package it.unisa.petra.core.systrace;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
-
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,76 +26,73 @@ public class SysTraceParser {
         int timeStart = 0;
         int timeFinish = 0;
         int timeread = 0;
-        Pattern freqRowPattern = Pattern.compile(".* \\[\\d{3}].* (.*): cpu_frequency: state=(\\d*) cpu_id=(\\d)");
-        Pattern idleRowPattern = Pattern.compile(".* \\[.*] .* (.*): cpu_idle: state=\\d* cpu_id=(\\d)");
+        Pattern freqRowPattern = Pattern.compile("(\\d*\\.\\d*): cpu_frequency: state=(\\d*) cpu_id=(\\d)");
+        Pattern idleRowPattern = Pattern.compile("(\\d*\\.\\d*): cpu_idle: state=(\\d*) cpu_id=(\\d)");
 
-        Document doc = Jsoup.parse(file, "UTF-8", fileName);
-        Elements scriptElements = doc.getElementsByClass("trace-data");
-        String sysTraceText = scriptElements.get(0).dataNodes().get(0).getWholeData();
+        try(BufferedReader br = new BufferedReader(new FileReader(file))) {
+            for(String line; (line = br.readLine()) != null; ) {
 
-        for (String line : sysTraceText.split("\n")) {
+                CpuFrequency frequency = new CpuFrequency();
 
-            CpuFrequency frequency = new CpuFrequency();
+                Matcher freqMatcher = freqRowPattern.matcher(line);
+                Matcher idleMatcher = idleRowPattern.matcher(line);
 
-            Matcher freqMatcher = freqRowPattern.matcher(line);
-            Matcher idleMatcher = idleRowPattern.matcher(line);
+                boolean lineFound = false;
 
-            boolean lineFound = false;
+                if (freqMatcher.find()) {
 
-            if (freqMatcher.find()) {
-
-                if (firstLine) {
-                    String time = toMillisec(freqMatcher.group(1));
-                    timeStart = Integer.parseInt(time) + traceviewStart;
-                    timeFinish = Integer.parseInt(time) + traceviewLength;
-                    firstLine = false;
-                }
-
-                timeread = Integer.parseInt(toMillisec(freqMatcher.group(1)));
-                frequency.setTime(timeread);
-                frequency.setValue(Integer.parseInt(freqMatcher.group(2)));
-                int cpuId = Integer.parseInt(freqMatcher.group(3));
-                frequency.setCpuId(cpuId);
-                if (cpuId + 1 > systrace.getNumberOfCpu()) {
-                    systrace.setNumberOfCpu(cpuId + 1);
-                }
-                lineFound = true;
-            }
-
-            if (idleMatcher.find()) {
-
-                if (firstLine) {
-                    String time = toMillisec(idleMatcher.group(1));
-                    timeStart = Integer.parseInt(time) + traceviewStart;
-                    timeFinish = Integer.parseInt(time) + traceviewLength;
-                    firstLine = false;
-                }
-
-                timeread = Integer.parseInt(toMillisec(idleMatcher.group(1)));
-                frequency.setTime(timeread);
-                frequency.setValue(0);
-                int cpuId = Integer.parseInt(idleMatcher.group(2));
-                frequency.setCpuId(cpuId);
-                if (cpuId + 1 > systrace.getNumberOfCpu()) {
-                    systrace.setNumberOfCpu(cpuId + 1);
-                }
-                lineFound = true;
-            }
-
-            if (lineFound && timeread < timeFinish) {
-
-                if (frequencyList.isEmpty()) {
-                    frequencyList.add(frequency);
-                } else {
-                    int lastCoreFrequency = SysTraceParser.getLastCoreValue(frequency.getCore());
-                    if (frequency.getValue() != lastCoreFrequency) {
-                        frequencyList.add(frequency);
+                    if (firstLine) {
+                        String time = toMillisec(freqMatcher.group(1));
+                        timeStart = Integer.parseInt(time) + traceviewStart;
+                        timeFinish = Integer.parseInt(time) + traceviewLength;
+                        firstLine = false;
                     }
-                }
-            } else if (timeread > timeFinish) {
-                break;
-            }
 
+                    timeread = Integer.parseInt(toMillisec(freqMatcher.group(1)));
+                    frequency.setTime(timeread);
+                    frequency.setValue(Integer.parseInt(freqMatcher.group(2)));
+                    int cpuId = Integer.parseInt(freqMatcher.group(3));
+                    frequency.setCpuId(cpuId);
+                    if (cpuId + 1 > systrace.getNumberOfCpu()) {
+                        systrace.setNumberOfCpu(cpuId + 1);
+                    }
+                    lineFound = true;
+                }
+
+                if (idleMatcher.find()) {
+
+                    if (firstLine) {
+                        String time = toMillisec(idleMatcher.group(1));
+                        timeStart = Integer.parseInt(time) + traceviewStart;
+                        timeFinish = Integer.parseInt(time) + traceviewLength;
+                        firstLine = false;
+                    }
+
+                    timeread = Integer.parseInt(toMillisec(idleMatcher.group(1)));
+                    frequency.setTime(timeread);
+                    frequency.setValue(0);
+                    int cpuId = Integer.parseInt(idleMatcher.group(3));
+                    frequency.setCpuId(cpuId);
+                    if (cpuId + 1 > systrace.getNumberOfCpu()) {
+                        systrace.setNumberOfCpu(cpuId + 1);
+                    }
+                    lineFound = true;
+                }
+
+                if (lineFound && timeread < timeFinish) {
+
+                    if (frequencyList.isEmpty()) {
+                        frequencyList.add(frequency);
+                    } else {
+                        int lastCoreFrequency = SysTraceParser.getLastCoreValue(frequency.getCore());
+                        if (frequency.getValue() != lastCoreFrequency) {
+                            frequencyList.add(frequency);
+                        }
+                    }
+                } else if (timeread > timeFinish) {
+                    break;
+                }
+            }
         }
         systrace.setFrequencies(frequencyList);
         systrace.setSystraceStartTime(timeStart);

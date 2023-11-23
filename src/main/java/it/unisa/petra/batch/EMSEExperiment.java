@@ -25,16 +25,19 @@ class EMSEExperiment {
             String apksLocation = "/home/dardin88/Desktop/energy_consumption_bad_smell/icse_experiment/apks/";
 
             String line;
-            BufferedReader br = new BufferedReader(new FileReader("/home/dardin88/Desktop/energy_consumption_bad_smell/icse_experiment/app_list.csv"));
+            BufferedReader br = new BufferedReader(
+                    new FileReader("/home/dardin88/Desktop/energy_consumption_bad_smell/icse_experiment/app_list.csv"));
             while ((line = br.readLine()) != null) {
                 appNames.add(line);
                 apkNames.add(line + ".apk");
             }
+            br.close();
 
             for (int appCounter = 0; appCounter < appNames.size(); appCounter++) {
                 int trials = 0;
                 String appName = appNames.get(appCounter);
-                String outputLocation = "/home/dardin88/Desktop/energy_consumption_bad_smell/icse_experiment/member_ignoring_method_test_data/" + appName + "/";
+                String outputLocation = "/home/dardin88/Desktop/energy_consumption_bad_smell/icse_experiment/member_ignoring_method_test_data/"
+                        + appName + "/";
                 int maxRun = 0;
                 int maxTrials = 0;
                 int interactions = 0;
@@ -65,6 +68,7 @@ class EMSEExperiment {
                 if (apkLocation.exists()) {
                     process.installApp(apkNames.get(appCounter));
                 } else {
+                    seedsWriter.close();
                     throw new ApkNotFoundException();
                 }
 
@@ -84,8 +88,10 @@ class EMSEExperiment {
                     }
                 }
                 process.uninstallApp(appName);
+                seedsWriter.close();
             }
-        } catch (ApkNotFoundException | FileNotFoundException | ADBNotFoundException | NoDeviceFoundException | NumberOfTrialsExceededException e) {
+        } catch (ApkNotFoundException | FileNotFoundException | ADBNotFoundException | NoDeviceFoundException
+                | NumberOfTrialsExceededException e) {
             e.printStackTrace();
         }
 

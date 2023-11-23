@@ -46,7 +46,7 @@ public class Terminal {
 
             if (powerProfilePath.isEmpty()) {
                 process.extractPowerProfile(configManager.getOutputLocation());
-                powerProfilePath = configManager.getOutputLocation() + "/power_profile.xml";
+                powerProfilePath = configManager.getOutputLocation() + "power_profile.xml";
             }
 
             int timeCapturing = (configManager.getInteractions() * configManager.getTimeBetweenInteractions()) / 1000;
@@ -64,9 +64,12 @@ public class Terminal {
                     if (trials == configManager.getTrials()) {
                         throw new NumberOfTrialsExceededException();
                     }
+                    // FIXME sometimes dmtracedump's app name differs from the actual app name
+                    String[] tokens = appName.split("\\.");
+                    String filter = tokens[tokens.length - 1];
                     ProcessOutput output = process.playRun(run, appName, configManager.getInteractions(),
                             configManager.getTimeBetweenInteractions(), timeCapturing, configManager.getScriptLocationPath(),
-                            powerProfilePath, configManager.getOutputLocation(), appName);
+                            powerProfilePath, configManager.getOutputLocation(), filter);
                     if (seedsWriter != null) {
                         seedsWriter.append(String.valueOf(output.getSeed())).append("\n");
                     }

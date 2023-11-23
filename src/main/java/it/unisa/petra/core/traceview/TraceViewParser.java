@@ -24,7 +24,7 @@ public class TraceViewParser {
         int firstRowTime = 0;
         int actualRowTime = 0;
 
-        Pattern traceViewPattern = Pattern.compile("(\\d*)\\s(\\w{3})\\s*(\\d*)[\\s|-](.*)");
+        Pattern traceViewPattern = Pattern.compile("(\\d*)\\s(\\w{3})\\s+(\\d*)[\\s|-](.*)");
         Pattern processPattern = Pattern.compile("(\\d*)\\smain");
 
         ArrayList<TraceLine> tracelines = new ArrayList<>();
