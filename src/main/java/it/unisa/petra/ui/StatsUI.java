@@ -8,14 +8,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.commons.io.filefilter.NameFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.CategoryAxis;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.labels.BoxAndWhiskerToolTipGenerator;
-import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.renderer.category.BoxAndWhiskerRenderer;
-import org.jfree.data.statistics.DefaultBoxAndWhiskerCategoryDataset;
+import org.knowm.xchart.BoxChart;
+import org.knowm.xchart.BoxChartBuilder;
+import org.knowm.xchart.XChartPanel;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -204,7 +199,13 @@ class StatsUI extends JDialog {
 
         List<ConsumptionData> mostGreedyAveragedData = averagedConsumptionsDataList.subList(0, numOfBoxplot);
 
-        DefaultBoxAndWhiskerCategoryDataset dataset = new DefaultBoxAndWhiskerCategoryDataset();
+        BoxChart chart = new BoxChartBuilder()
+                .title("Top 5 Energy Greedy Methods")
+                .xAxisTitle("Signatures")
+                .yAxisTitle("Consumptions")
+                .build();
+
+        chart.getStyler().setToolTipsEnabled(true);
 
         int i = 0;
         for (ConsumptionData mInstance : mostGreedyAveragedData) {
@@ -214,34 +215,11 @@ class StatsUI extends JDialog {
                     mostGreedyData.addValue(fInstance.getJoule());
                 }
             }
-            dataset.add(mostGreedyData.getValues(), (i + 1) + ": " + mostGreedyData.getSignature(), (i + 1));
+            chart.addSeries((i + 1) + ": " + mostGreedyData.getSignature(), mostGreedyData.getValues());
             i++;
         }
 
-        String boxplot_title = "Top 5 Energy Greedy Methods";
-
-        CategoryAxis xAxis = new CategoryAxis("Signatures");
-        NumberAxis yAxis = new NumberAxis("Consumptions");
-
-        yAxis.setAutoRangeIncludesZero(false);
-        BoxAndWhiskerRenderer renderer = new BoxAndWhiskerRenderer();
-
-        renderer.setFillBox(true);
-        renderer.setBaseToolTipGenerator(new BoxAndWhiskerToolTipGenerator());
-
-        CategoryPlot plot = new CategoryPlot(dataset, xAxis, yAxis, renderer);
-
-        JFreeChart chart = new JFreeChart(
-                boxplot_title,
-                new Font("SansSerif", Font.BOLD, 14),
-                plot,
-                true
-        );
-
-        chart.setAntiAlias(true);
-
-        ChartPanel chartPanel = new ChartPanel(chart, true, true, true, true, true);
-        chartPanel.setMouseWheelEnabled(true);
+        XChartPanel<BoxChart> chartPanel = new XChartPanel<>(chart);
 
         tab2.removeAll();
         tab2.add(chartPanel, new GridConstraints());
