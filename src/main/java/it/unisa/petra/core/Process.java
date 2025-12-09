@@ -94,14 +94,15 @@ public class Process {
         List<TraceLine> traceLinesWiConsumptions = parseAndAggregateResults(traceviewFilename, batteryStatsFilename,
                 systraceFilename, powerProfile, filter, run);
 
-        PrintWriter resultsWriter = new PrintWriter(runDataFolderName + "result.csv", "UTF-8");
-        resultsWriter.println("signature, joule, seconds");
+        try (PrintWriter resultsWriter = new PrintWriter(runDataFolderName + "result.csv", "UTF-8")) {
+            resultsWriter.println("signature, joule, seconds");
 
-        for (TraceLine traceLine : traceLinesWiConsumptions) {
-            resultsWriter.println(traceLine.getSignature() + "," + traceLine.getConsumption() + "," + traceLine.getTimeLength());
+            for (TraceLine traceLine : traceLinesWiConsumptions) {
+                resultsWriter.println(traceLine.getSignature() + "," + traceLine.getConsumption() + "," + traceLine.getTimeLength());
+            }
+
+            resultsWriter.flush();
         }
-
-        resultsWriter.flush();
         this.stopApp(appName, run);
 
         this.executeCommand("adb shell dumpsys battery reset", null);

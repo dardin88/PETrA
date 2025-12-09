@@ -25,10 +25,11 @@ class EMSEExperiment {
             String apksLocation = "/home/dardin88/Desktop/energy_consumption_bad_smell/icse_experiment/apks/";
 
             String line;
-            BufferedReader br = new BufferedReader(new FileReader("/home/dardin88/Desktop/energy_consumption_bad_smell/icse_experiment/app_list.csv"));
-            while ((line = br.readLine()) != null) {
-                appNames.add(line);
-                apkNames.add(line + ".apk");
+            try (BufferedReader br = new BufferedReader(new FileReader("/home/dardin88/Desktop/energy_consumption_bad_smell/icse_experiment/app_list.csv"))) {
+                while ((line = br.readLine()) != null) {
+                    appNames.add(line);
+                    apkNames.add(line + ".apk");
+                }
             }
 
             for (int appCounter = 0; appCounter < appNames.size(); appCounter++) {
@@ -59,28 +60,29 @@ class EMSEExperiment {
                 appDataFolder.mkdirs();
 
                 File seedsFile = new File(outputLocation + "seeds");
-                BufferedWriter seedsWriter = new BufferedWriter(new FileWriter(seedsFile, true));
+                try (BufferedWriter seedsWriter = new BufferedWriter(new FileWriter(seedsFile, true))) {
 
-                File apkLocation = new File(apksLocation + apkNames.get(appCounter));
-                if (apkLocation.exists()) {
-                    process.installApp(apkNames.get(appCounter));
-                } else {
-                    throw new ApkNotFoundException();
-                }
+                    File apkLocation = new File(apksLocation + apkNames.get(appCounter));
+                    if (apkLocation.exists()) {
+                        process.installApp(apkNames.get(appCounter));
+                    } else {
+                        throw new ApkNotFoundException();
+                    }
 
-                for (int run = 1; run <= maxRun; run++) {
-                    try {
-                        if (trials == maxTrials) {
-                            throw new NumberOfTrialsExceededException();
+                    for (int run = 1; run <= maxRun; run++) {
+                        try {
+                            if (trials == maxTrials) {
+                                throw new NumberOfTrialsExceededException();
+                            }
+                            ProcessOutput output = process.playRun(run, appName, interactions,
+                                    timeBetweenInteractions, timeCapturing, "",
+                                    powerProfilePath, outputLocation, appName);
+                            seedsWriter.append(String.valueOf(output.getSeed())).append("\n");
+                            timeCapturing = output.getTimeCapturing();
+                        } catch (InterruptedException | IOException ex) {
+                            run--;
+                            trials++;
                         }
-                        ProcessOutput output = process.playRun(run, appName, interactions,
-                                timeBetweenInteractions, timeCapturing, "",
-                                powerProfilePath, outputLocation, appName);
-                        seedsWriter.append(String.valueOf(output.getSeed())).append("\n");
-                        timeCapturing = output.getTimeCapturing();
-                    } catch (InterruptedException | IOException ex) {
-                        run--;
-                        trials++;
                     }
                 }
                 process.uninstallApp(appName);
