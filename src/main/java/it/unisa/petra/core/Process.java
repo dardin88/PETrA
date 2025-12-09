@@ -10,6 +10,7 @@ import it.unisa.petra.core.powerprofile.PowerProfileParser;
 import it.unisa.petra.core.systrace.CpuFrequency;
 import it.unisa.petra.core.systrace.SysTrace;
 import it.unisa.petra.core.systrace.SysTraceParser;
+import it.unisa.petra.core.PerfettoRunner;
 import it.unisa.petra.core.traceview.TraceLine;
 import it.unisa.petra.core.traceview.TraceViewParser;
 import it.unisa.petra.core.traceview.TraceviewStructure;
@@ -64,16 +65,16 @@ public class Process {
         runDataFolder.mkdirs();
 
         String batteryStatsFilename = runDataFolderName + "batterystats";
-        String systraceFilename = runDataFolderName + "systrace";
+        String perfettoFilename = runDataFolderName + "perfetto-trace";
         String traceviewFilename = runDataFolderName + "tracedump";
 
         this.resetApp(appName, run);
         this.startApp(appName);
 
         Date time1 = new Date();
-        SysTraceRunner sysTraceRunner = this.startProfiling(appName, run, timeCapturing, systraceFilename, platformToolsFolder);
-        Thread systraceThread = new Thread(sysTraceRunner);
-        systraceThread.start();
+        PerfettoRunner perfettoRunner = this.startProfilingPerfetto(appName, run, timeCapturing, perfettoFilename, platformToolsFolder);
+        Thread perfettoThread = new Thread(perfettoRunner);
+        perfettoThread.start();
 
         this.executeActions(appName, run, scriptLocationPath, toolsFolder, interactions, timeBetweenInteractions, seed);
 
@@ -84,7 +85,7 @@ public class Process {
 
         this.extractInfo(appName, run, batteryStatsFilename, runDataFolderName, platformToolsFolder, traceviewFilename);
 
-        systraceThread.join();
+        perfettoThread.join();
 
         System.out.println("Run " + run + ": aggregating results.");
 
@@ -92,7 +93,7 @@ public class Process {
         PowerProfile powerProfile = PowerProfileParser.parseFile(powerProfileFile);
 
         List<TraceLine> traceLinesWiConsumptions = parseAndAggregateResults(traceviewFilename, batteryStatsFilename,
-                systraceFilename, powerProfile, filter, run);
+            perfettoFilename, powerProfile, filter, run);
 
         try (PrintWriter resultsWriter = new PrintWriter(runDataFolderName + "result.csv", "UTF-8")) {
             resultsWriter.println("signature, joule, seconds");
@@ -132,13 +133,12 @@ public class Process {
         this.executeCommand("adb shell dumpsys batterystats --reset", null);
     }
 
-    private SysTraceRunner startProfiling(String appName, int run, int timeCapturing, String systraceFilename,
-                                          String platformToolsFolder) throws NoDeviceFoundException {
-        System.out.println("Run " + run + ": starting profiling.");
-        this.executeCommand("adb shell am profile start " + appName + " ./data/local/tmp/log.trace", null);
-
-        System.out.println("Run " + run + ": capturing system traces.");
-        return new SysTraceRunner(timeCapturing, systraceFilename, platformToolsFolder);
+    private PerfettoRunner startProfilingPerfetto(String appName, int run, int timeCapturing, String perfettoFilename,
+                                                  String platformToolsFolder) throws NoDeviceFoundException {
+        System.out.println("Run " + run + ": starting Perfetto profiling.");
+        // Optionally, add any setup needed for Perfetto here
+        System.out.println("Run " + run + ": capturing system traces with Perfetto.");
+        return new PerfettoRunner(timeCapturing, perfettoFilename, platformToolsFolder);
     }
 
     private void executeActions(String appName, int run, String scriptLocationPath, String toolsFolder, int interactions,

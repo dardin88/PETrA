@@ -1,0 +1,12 @@
+{
+  "metadata": {
+    "processes": [
+      { "name": "com.example.app", "pid": 1234 },
+      { "name": "system_server", "pid": 5678 }
+    ]
+  },
+  "slices": [
+    { "ts": 1000, "dur": 500, "name": "slice1" },
+    { "ts": 2000, "dur": 300, "name": "slice2" }
+  ]
+}
